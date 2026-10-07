@@ -1,6 +1,6 @@
 // Juegos de clase · servidor para Render
 // Ejecuta el mismo código de los servidores de Google Apps Script (Guerra de Titulares,
-// Juego de SEO y Carrera de la Redacción), pero en memoria, sin las esperas de Google.
+// Juego de SEO, Carrera de la Redacción, La Vuelta de Deportes y La Liguilla), pero en memoria, sin las esperas de Google.
 "use strict";
 const http = require("http");
 const fs = require("fs");
@@ -13,7 +13,7 @@ const DATA = path.join(__dirname, "data");
 try { fs.mkdirSync(DATA, { recursive: true }); } catch (e) {}
 
 // ── cada juego en su propia caja, con las piezas de Google que usa ──
-function cargarJuego(nombre) {
+function cargarJuego(nombre, script) {
   const fichero = path.join(DATA, nombre + ".json");
   let store = {};
   try { store = JSON.parse(fs.readFileSync(fichero, "utf8")); } catch (e) {}
@@ -42,7 +42,7 @@ function cargarJuego(nombre) {
     console,
   };
   vm.createContext(ctx);
-  vm.runInContext(fs.readFileSync(path.join(__dirname, nombre + ".gs.js"), "utf8"), ctx, { filename: nombre });
+  vm.runInContext(fs.readFileSync(path.join(__dirname, (script || nombre) + ".gs.js"), "utf8"), ctx, { filename: nombre });
   return (bodyText) => ctx.doPost({ postData: { contents: bodyText }, parameter: {} }).body;
 }
 
@@ -50,6 +50,8 @@ const JUEGOS = {
   guerra: cargarJuego("guerra"),
   seo: cargarJuego("seo"),
   carrera: cargarJuego("carrera"),
+  vuelta: cargarJuego("vuelta", "carrera"),   // la Vuelta usa el mismo servidor que la Carrera, con sus propias partidas
+  liguilla: cargarJuego("liguilla"),
 };
 
 const TIPOS = {
@@ -66,7 +68,7 @@ function cors(res) {
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, "http://x");
-  const m = url.pathname.match(/^\/api\/(guerra|seo|carrera)\/?$/);
+  const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla)\/?$/);
   if (m) {
     cors(res);
     if (req.method === "OPTIONS") { res.writeHead(204); return res.end(); }
