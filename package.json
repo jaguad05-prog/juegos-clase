@@ -1,0 +1,9 @@
+{
+  "name": "juegos-clase",
+  "version": "1.0.0",
+  "description": "Guerra de Titulares, Juego de SEO y Carrera de la Redacción en un solo servidor",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" },
+  "license": "UNLICENSED"
+}
