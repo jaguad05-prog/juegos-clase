@@ -90,13 +90,22 @@ function limpiarViejas() {
   }
 }
 
+// v2: la carrera no termina con el primero, sigue hasta que llegan tres equipos a la meta
+// (o todos, si juegan menos de tres). Los que ya han llegado esperan en la meta.
+var PODIO = 3;
 function comprobarMeta(g, e) {
-  if (g.status === "running" && e.pos >= g.meta) {
+  if (g.status === "running" && e.pos >= g.meta && !e.finishedAt) {
     e.pos = g.meta;
     e.finishedAt = Date.now();
-    g.status = "over";
-    g.winner = e.id;
-    g.endedAt = Date.now();
+    e.phase = "done";
+    g.arrivals = g.arrivals || [];
+    if (g.arrivals.indexOf(e.id) < 0) g.arrivals.push(e.id);
+    e.place = g.arrivals.length;
+    if (!g.winner) g.winner = e.id;
+    if (g.arrivals.length >= Math.min(PODIO, g.teams.length)) {
+      g.status = "over";
+      g.endedAt = Date.now();
+    }
     guardar("G_" + g.code, g);
   }
 }
@@ -131,7 +140,7 @@ var ACCIONES = {
     var g = {
       code: code, admin: String(Math.random()).slice(2) + String(Date.now()),
       meta: meta, stops: stops, tasks: tasks, status: "lobby", teams: [],
-      created: Date.now(), startedAt: 0, endedAt: 0, winner: null
+      created: Date.now(), startedAt: 0, endedAt: 0, winner: null, arrivals: []
     };
     guardar("G_" + code, g);
     if (p.extra && p.extra.length) guardar("Q_" + code, p.extra);
