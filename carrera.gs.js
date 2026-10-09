@@ -118,6 +118,19 @@ function repetido(e, p) {
   return false;
 }
 
+// v3: preguntas que ya han salido en clase (las manda la pantalla de la profesora al crear la partida)
+// y preguntas que salen en esta partida (las manda cada equipo al responder).
+function limpiarIds(lista) {
+  if (!lista || !lista.length) return [];
+  return lista.map(function (x) { return String(x).slice(0, 20); }).filter(function (x) { return x; }).slice(-3000);
+}
+function anotarPregunta(g, q) {
+  q = String(q || "").slice(0, 20);
+  if (!q) return;
+  g.asked = g.asked || [];
+  if (g.asked.indexOf(q) < 0) { g.asked.push(q); guardar("G_" + g.code, g); }
+}
+
 function enParada(g, e) {
   return e.stop < g.stops.length && e.pos >= g.stops[e.stop];
 }
@@ -140,7 +153,8 @@ var ACCIONES = {
     var g = {
       code: code, admin: String(Math.random()).slice(2) + String(Date.now()),
       meta: meta, stops: stops, tasks: tasks, status: "lobby", teams: [],
-      created: Date.now(), startedAt: 0, endedAt: 0, winner: null, arrivals: []
+      created: Date.now(), startedAt: 0, endedAt: 0, winner: null, arrivals: [],
+      used: limpiarIds(p.used), asked: []
     };
     guardar("G_" + code, g);
     if (p.extra && p.extra.length) guardar("Q_" + code, p.extra);
@@ -181,6 +195,7 @@ var ACCIONES = {
   "ok": function (p) {
     var g = partida(p.c), e = equipo(g, p.t);
     if (g.status !== "running" || e.phase !== "run" || repetido(e, p)) return { ok: true, team: e, status: g.status };
+    anotarPregunta(g, p.q);
     e.pos++; e.ok++;
     if (enParada(g, e)) { e.phase = "write"; e.note = ""; }
     comprobarMeta(g, e);
@@ -191,6 +206,7 @@ var ACCIONES = {
   "ko": function (p) {
     var g = partida(p.c), e = equipo(g, p.t);
     if (g.status !== "running" || e.phase !== "run" || repetido(e, p)) return { ok: true, team: e, status: g.status };
+    anotarPregunta(g, p.q);
     e.ko++;
     e.pos = Math.max(e.floor, e.pos - 1);
     guardarEquipo(g, e);
