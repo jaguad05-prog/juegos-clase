@@ -5,8 +5,8 @@
  */
 
 var P = PropertiesService.getScriptProperties();
-var COLORES = ["#C8102E", "#1565C0", "#2E7D32", "#B7791F", "#6A1B9A", "#EF6C00", "#00838F", "#AD1457", "#4E342E", "#37474F"];
-var MAX_EQUIPOS = 10, MAX_BUSQUEDAS = 6, PUNTOS_PATRON = 10;
+var COLORES = (function(){ var a = ["#C8102E","#1565C0","#2E7D32","#B7791F","#6A1B9A","#EF6C00","#00838F","#AD1457","#4E342E","#37474F"]; for (var k = 0; a.length < 40; k++) a.push("hsl(" + ((k * 53) % 360) + ",65%,45%)"); return a; })();
+var MAX_EQUIPOS = 40, MAX_BUSQUEDAS = 6, PUNTOS_PATRON = 10, LIMITE_MS = 75000;
 
 function doGet(e) { return responder((e && e.parameter) || {}); }
 function doPost(e) {
@@ -97,7 +97,7 @@ var ACCIONES = {
     do { code = ""; for (var i = 0; i < 4; i++) code += letras.charAt(Math.floor(Math.random() * letras.length)); }
     while (P.getProperty("G_" + code));
     var g = { code: code, admin: String(Math.random()).slice(2) + String(Date.now()), created: Date.now(),
-      status: "lobby", teams: [], p1: null, key: null, revealed: 0, round: -1, sit: null, slots: 0, open: 0, awards: {} };
+      status: "lobby", teams: [], p1: null, key: null, revealed: 0, round: -1, sit: null, slots: 0, open: 0, awards: {}, deadline: 0 };
     guardar("G_" + code, g); guardar("D_" + code, {}); guardar("M_" + code, {}); guardar("B_" + code, {}); guardar("T_" + code, {});
     return { ok: true, code: code, admin: g.admin };
   },
@@ -125,7 +125,7 @@ var ACCIONES = {
     var c = p.content || {};
     g.p1 = { heads: (c.heads || []).slice(0, 12).map(function (h) { return String(h).slice(0, 220); }),
              pats: (c.pats || []).slice(0, 8).map(function (x) { return { L: String(x.L).slice(0, 1), name: String(x.name).slice(0, 60), desc: String(x.desc).slice(0, 140) }; }) };
-    g.status = "match"; g.key = null; g.revealed = 0;
+    g.status = "match"; g.key = null; g.revealed = 0; g.deadline = 0;
     guardar("G_" + g.code, g); guardar("M_" + g.code, {});
     return { ok: true };
   },
@@ -171,7 +171,7 @@ var ACCIONES = {
     g.round = parseInt(p.round, 10) || 0;
     g.sit = { tag: String(p.tag || "").slice(0, 30), text: String(p.text || "").slice(0, 300), trap: !!p.trap };
     g.slots = Math.max(1, Math.min(8, parseInt(p.slots, 10) || 1));
-    g.status = "search"; g.open = 0; g.awards = {}; g.panel = [];
+    g.status = "search"; g.open = 0; g.awards = {}; g.panel = []; g.deadline = Date.now() + LIMITE_MS;
     guardar("G_" + g.code, g); guardar("B_" + g.code, {});
     return { ok: true };
   },
@@ -179,6 +179,7 @@ var ACCIONES = {
     var g = partida(p.c), t = equipoDe(g, String(p.dev || ""));
     if (!t) throw new Error("Este móvil no está en ningún equipo");
     if (g.status !== "search") throw new Error("Ya no se pueden añadir búsquedas");
+    if (g.deadline && Date.now() > g.deadline + 1000) throw new Error("Se acabó el tiempo de esta ronda");
     var txt = String(p.text || "").trim().replace(/\s+/g, " ").slice(0, 90);
     if (!txt) throw new Error("Escribe la búsqueda");
     var B = leer("B_" + g.code) || {};
@@ -199,7 +200,7 @@ var ACCIONES = {
   "search_close": function (p) {
     var g = partida(p.c); admin(g, p.k);
     if (g.status !== "search") throw new Error("No hay ninguna ronda abierta");
-    g.status = "reveal"; g.open = 0;
+    g.status = "reveal"; g.open = 0; g.deadline = 0;
     guardar("G_" + g.code, g);
     return { ok: true };
   },
@@ -245,7 +246,7 @@ var ACCIONES = {
       handle: String(m.handle || "").slice(0, 40), meta: String(m.meta || "").slice(0, 120), caption: String(m.caption || "").slice(0, 160),
       task: String(m.task || "").slice(0, 200) };
     g.suceso = String(p.suceso || "").slice(0, 300);
-    g.status = "t_write"; g.tscore = null; g.tref = "";
+    g.status = "t_write"; g.tscore = null; g.tref = ""; g.deadline = Date.now() + LIMITE_MS; g.tmarks = {};
     guardar("G_" + g.code, g); guardar("T_" + g.code, {});
     return { ok: true };
   },
@@ -253,6 +254,7 @@ var ACCIONES = {
     var g = partida(p.c), t = equipoDe(g, String(p.dev || ""));
     if (!t) throw new Error("Este móvil no está en ningún equipo");
     if (g.status !== "t_write") throw new Error("Ya no se puede enviar el titular");
+    if (g.deadline && Date.now() > g.deadline + 1000) throw new Error("Se acabó el tiempo de esta ronda");
     var txt = String(p.text || "").trim().replace(/\s+/g, " ").slice(0, 200);
     if (!txt) throw new Error("Escribe el titular");
     var T = leer("T_" + g.code) || {}; T[t] = txt; guardar("T_" + g.code, T);
@@ -266,7 +268,7 @@ var ACCIONES = {
     var sc = p.scores || {};
     g.teams.forEach(function (t) { var n = Math.max(0, parseInt(sc[t.id], 10) || 0); g.tscore[t.id] = n; t.pts += n; });
     g.tref = String(p.ref || "").slice(0, 200);
-    g.status = "t_review";
+    g.status = "t_review"; g.deadline = 0;
     guardar("G_" + g.code, g);
     return { ok: true };
   },
@@ -279,6 +281,17 @@ var ACCIONES = {
     return { ok: true };
   },
 
+  "t_award_item": function (p) {
+    var g = partida(p.c); admin(g, p.k);
+    if (g.status !== "t_review") throw new Error("Ahora no se puede puntuar");
+    var t = String(p.t || ""), i = String(parseInt(p.i, 10)), pts = Math.max(0, Math.min(100, parseInt(p.pts, 10) || 0));
+    if (!g.tscore) g.tscore = {};
+    g.tmarks = g.tmarks || {}; g.tmarks[t] = g.tmarks[t] || {};
+    if (g.tmarks[t][i] !== undefined) { var was = g.tmarks[t][i]; delete g.tmarks[t][i]; sumar(g, t, -was); g.tscore[t] = Math.max(0, (g.tscore[t] || 0) - was); }
+    else { g.tmarks[t][i] = pts; sumar(g, t, pts); g.tscore[t] = (g.tscore[t] || 0) + pts; }
+    guardar("G_" + g.code, g);
+    return { ok: true };
+  },
   "end": function (p) {
     var g = partida(p.c); admin(g, p.k);
     g.status = "over"; guardar("G_" + g.code, g);
