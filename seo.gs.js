@@ -6,7 +6,7 @@
 
 var P = PropertiesService.getScriptProperties();
 var COLORES = (function(){ var a = ["#C8102E","#1565C0","#2E7D32","#B7791F","#6A1B9A","#EF6C00","#00838F","#AD1457","#4E342E","#37474F"]; for (var k = 0; a.length < 40; k++) a.push("hsl(" + ((k * 53) % 360) + ",65%,45%)"); return a; })();
-var MAX_EQUIPOS = 40, MAX_BUSQUEDAS = 6, PUNTOS_PATRON = 10, LIMITE_MS = 75000;
+var MAX_EQUIPOS = 40, MAX_BUSQUEDAS = 6, PUNTOS_PATRON = 10, LIMITE_MS = 75000, LIMITE_P3_MS = 150000;
 
 function doGet(e) { return responder((e && e.parameter) || {}); }
 function doPost(e) {
@@ -125,7 +125,7 @@ var ACCIONES = {
     var c = p.content || {};
     g.p1 = { heads: (c.heads || []).slice(0, 12).map(function (h) { return String(h).slice(0, 220); }),
              pats: (c.pats || []).slice(0, 8).map(function (x) { return { L: String(x.L).slice(0, 1), name: String(x.name).slice(0, 60), desc: String(x.desc).slice(0, 140) }; }) };
-    g.status = "match"; g.key = null; g.revealed = 0; g.deadline = 0;
+    g.status = "match"; g.key = null; g.revealed = 0; g.deadline = Date.now() + LIMITE_MS;
     guardar("G_" + g.code, g); guardar("M_" + g.code, {});
     return { ok: true };
   },
@@ -133,6 +133,7 @@ var ACCIONES = {
     var g = partida(p.c), t = equipoDe(g, String(p.dev || ""));
     if (!t) throw new Error("Este móvil no está en ningún equipo");
     if (g.status !== "match") throw new Error("Ya no se pueden cambiar las respuestas");
+    if (g.deadline && Date.now() > g.deadline + 1000) throw new Error("Se acabó el tiempo de la parte 1");
     var i = parseInt(p.i, 10), L = String(p.L || "").toUpperCase().slice(0, 1);
     if (!(i >= 1 && i <= g.p1.heads.length)) throw new Error("Ese titular no existe");
     var M = leer("M_" + g.code) || {};
@@ -246,7 +247,7 @@ var ACCIONES = {
       handle: String(m.handle || "").slice(0, 40), meta: String(m.meta || "").slice(0, 120), caption: String(m.caption || "").slice(0, 160),
       task: String(m.task || "").slice(0, 200) };
     g.suceso = String(p.suceso || "").slice(0, 300);
-    g.status = "t_write"; g.tscore = null; g.tref = ""; g.deadline = Date.now() + LIMITE_MS; g.tmarks = {};
+    g.status = "t_write"; g.tscore = null; g.tref = ""; g.deadline = Date.now() + LIMITE_P3_MS; g.tmarks = {};
     guardar("G_" + g.code, g); guardar("T_" + g.code, {});
     return { ok: true };
   },
