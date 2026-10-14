@@ -1,6 +1,6 @@
 // Juegos de clase · servidor para Render
 // Ejecuta el mismo código de los servidores de Google Apps Script (Guerra de Titulares,
-// Juego de SEO, Carrera de la Redacción, La Vuelta de Deportes y La Liguilla), pero en memoria, sin las esperas de Google.
+// Juego de SEO, Carrera de la Redacción, La Vuelta de Deportes, La Liguilla y El Ahorcado de los Medios), pero en memoria, sin las esperas de Google.
 "use strict";
 const http = require("http");
 const fs = require("fs");
@@ -52,6 +52,7 @@ const JUEGOS = {
   carrera: cargarJuego("carrera"),
   vuelta: cargarJuego("vuelta", "carrera"),   // la Vuelta usa el mismo servidor que la Carrera, con sus propias partidas
   liguilla: cargarJuego("liguilla"),
+  ahorcado: cargarJuego("ahorcado"),
 };
 
 const TIPOS = {
@@ -68,7 +69,7 @@ function cors(res) {
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, "http://x");
-  const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla)\/?$/);
+  const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla|ahorcado)\/?$/);
   if (m) {
     cors(res);
     if (req.method === "OPTIONS") { res.writeHead(204); return res.end(); }

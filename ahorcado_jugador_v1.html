@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Ahorcado de los Medios</title>
+<style>
+:root{--red:#C8102E;--dark:#1B1B1F;--ink:#2B2B30;--gold:#E8B54A;--muted:#6B6B72;--border:#D8D8DC;--green:#1E7A45;--bg:#F5F5F7}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+.topbar{background:var(--dark);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;gap:10px}
+.tt{font-size:15px;font-weight:800;letter-spacing:.04em}
+.me{font-size:13px;font-weight:700;color:var(--gold);text-align:right}
+.me b{color:#fff;font-size:18px}
+.wrap{max-width:860px;margin:0 auto;padding:18px 16px 40px;display:flex;flex-direction:column;gap:16px}
+.card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px}
+label{display:block;font-size:13px;font-weight:700;margin:12px 0 6px}
+input{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:12px;font-size:17px;font-family:inherit}
+.btn{border:none;padding:13px 20px;border-radius:10px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.b-red{background:var(--red);color:#fff}.b-dark{background:var(--dark);color:#fff}
+.err{color:var(--red);font-weight:700;margin-top:10px;min-height:18px}
+.muted{color:var(--muted)}
+.wait{text-align:center;padding:36px 20px;font-size:18px;line-height:1.5}
+.tag{display:inline-block;background:var(--red);color:#fff;font-weight:800;font-size:12.5px;letter-spacing:.1em;padding:6px 12px;border-radius:20px}
+.who{font-size:clamp(30px,6vw,46px);font-weight:900;margin:14px 0 10px;color:var(--dark)}
+.game{display:grid;grid-template-columns:180px 1fr;gap:20px;align-items:center}
+@media(max-width:600px){.game{grid-template-columns:1fr}.game svg{max-width:160px;margin:0 auto}}
+.slots{display:flex;flex-wrap:wrap;gap:14px 24px}
+.word{display:flex;gap:5px}
+.sl{width:clamp(24px,4.6vw,38px);height:clamp(36px,6vw,50px);border-bottom:4px solid var(--dark);display:flex;align-items:flex-end;justify-content:center;font-size:clamp(22px,4.4vw,34px);font-weight:900;padding-bottom:2px}
+.sl.fixed{border-bottom-color:var(--border);color:var(--muted)}
+.fallos{margin-top:12px;font-size:14px;font-weight:700;color:var(--muted)}
+.fallos b{color:var(--red)}
+.kb{display:grid;grid-template-columns:repeat(9,1fr);gap:6px}
+@media(max-width:600px){.kb{grid-template-columns:repeat(7,1fr)}}
+.k{border:2px solid var(--border);background:#fff;border-radius:8px;padding:11px 0;font-size:18px;font-weight:800;cursor:pointer;font-family:inherit;color:var(--ink)}
+.k:hover:not(:disabled){border-color:var(--dark)}
+.k.ok{background:var(--green);border-color:var(--green);color:#fff}
+.k.ko{background:#fdeceb;border-color:var(--red);color:var(--red);text-decoration:line-through}
+.k:disabled{cursor:default}
+.solve{display:flex;gap:8px;margin-top:14px}
+.solve input{flex:1}
+.hint{font-size:13px;color:var(--muted);margin-top:8px}
+.banner{border-radius:14px;padding:20px;text-align:center;font-size:20px;font-weight:800;line-height:1.4}
+.banner.win{background:#eef7f1;border:2px solid var(--green);color:var(--green)}
+.banner.dead{background:#fdeceb;border:2px solid var(--red);color:var(--red)}
+.banner big{display:block;font-size:40px}
+.reveal{background:var(--dark);color:#fff;border-radius:14px;padding:22px}
+.reveal .who{color:#fff}
+.reveal .who em{font-style:normal;color:var(--gold)}
+.reveal .lbl{font-size:13px;font-weight:800;letter-spacing:.12em;color:var(--gold);margin-top:12px}
+.reveal .emp{font-size:clamp(26px,5vw,38px);font-weight:900;margin-top:4px}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--red);color:#fff;padding:11px 16px;border-radius:10px;font-weight:700;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9;max-width:90vw;text-align:center}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="tt">EL AHORCADO DE LOS MEDIOS</div><div class="me" id="me"></div></div>
+<div class="wrap" id="main"></div>
+<div id="toast"></div>
+<script>
+const API = location.origin + "/api/ahorcado";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const lsGet = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch(e){ return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch(e){} };
+const qs = new URLSearchParams(location.search);
+let DEV = lsGet("ahor_dev", "");
+if (!DEV){ DEV = "d" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); lsSet("ahor_dev", DEV); }
+let CODE = (qs.get("c") || lsGet("ahor_j_code", "")).toUpperCase();
+let unido = !!CODE && lsGet("ahor_j_joined", "") === CODE;
+let S = null, vista = "", pidiendo = false, enviando = false;
+const LETRAS = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split("");
+
+async function api(params){
+  const r = await fetch(API, { method:"POST", body: JSON.stringify(Object.assign({ c: CODE, dev: DEV }, params)) });
+  const j = await r.json();
+  if (j.error) throw new Error(j.error);
+  return j;
+}
+function toast(t){ const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("show"), 3000); }
+
+function pintarEntrada(){
+  $("me").innerHTML = "";
+  $("main").innerHTML = `<div class="card"><h2 style="font-size:22px">Entra en la partida</h2>
+    <label for="inC">Código de la partida</label><input id="inC" value="${esc(CODE)}" maxlength="6" autocomplete="off" style="text-transform:uppercase;letter-spacing:.1em">
+    <label for="inN">Tu nombre y la inicial de tu apellido</label><input id="inN" value="${esc(lsGet("ahor_j_name", ""))}" maxlength="30" autocomplete="off" placeholder="Lucía M.">
+    <div style="margin-top:16px"><button class="btn b-red" id="bEntrar">Entrar</button></div><div class="err" id="err"></div></div>`;
+  const entrar = async () => {
+    CODE = $("inC").value.trim().toUpperCase();
+    const name = $("inN").value.trim();
+    if (!CODE || !name) return $("err").textContent = "Escribe el código y tu nombre";
+    try { await api({ a:"join", name }); lsSet("ahor_j_code", CODE); lsSet("ahor_j_name", name); lsSet("ahor_j_joined", CODE); unido = true; vista = ""; await refrescar(true); }
+    catch(e){ $("err").textContent = e.message; }
+  };
+  $("bEntrar").onclick = entrar;
+  $("inN").onkeydown = e => { if (e.key === "Enter") entrar(); };
+}
+
+async function refrescar(forzar){
+  if (!unido || (pidiendo && !forzar)) return;
+  pidiendo = true;
+  try { S = await api({ a:"state" }); if (!S.me){ unido = false; pintarEntrada(); return; } pintar(); }
+  catch(e){ if (/No existe/.test(e.message)){ unido = false; pintarEntrada(); } }
+  finally { pidiendo = false; }
+}
+setInterval(() => { if (!document.hidden) refrescar(); }, 1300 + Math.floor(Math.random() * 400));
+
+function huecos(plantilla){
+  return `<div class="slots">${plantilla.map(w => {
+    const fija = w.every(ch => ch !== null);
+    return `<div class="word">${w.map(ch => `<div class="sl${fija && S.game.status === "play" && !S.me.done ? " fixed" : ""}">${ch ? esc(ch) : ""}</div>`).join("")}</div>`;
+  }).join("")}</div>`;
+}
+
+function dibujo(f){
+  const parte = (n, el) => f >= n ? el : "";
+  return `<svg viewBox="0 0 160 190" width="100%" aria-label="${f} fallos de 6">
+    <g stroke="#1B1B1F" stroke-width="6" stroke-linecap="round" fill="none">
+      <line x1="15" y1="180" x2="105" y2="180"/><line x1="40" y1="180" x2="40" y2="12"/><line x1="40" y1="12" x2="115" y2="12"/><line x1="115" y1="12" x2="115" y2="36"/>
+    </g>
+    <g stroke="#C8102E" stroke-width="5" stroke-linecap="round" fill="none">
+      ${parte(1, '<circle cx="115" cy="52" r="16"/>')}
+      ${parte(2, '<line x1="115" y1="68" x2="115" y2="118"/>')}
+      ${parte(3, '<line x1="115" y1="80" x2="94" y2="102"/>')}
+      ${parte(4, '<line x1="115" y1="80" x2="136" y2="102"/>')}
+      ${parte(5, '<line x1="115" y1="118" x2="97" y2="150"/>')}
+      ${parte(6, '<line x1="115" y1="118" x2="133" y2="150"/>')}
+    </g></svg>`;
+}
+
+function pintar(){
+  const g = S.game, me = S.me;
+  const pos = S.ranking.findIndex(r => r.id === me.id) + 1;
+  $("me").innerHTML = `${esc(me.name)}<br><b>${me.pts}</b> puntos · ${pos}.º`;
+  if (g.status === "lobby"){
+    if (vista === "lobby") return; vista = "lobby";
+    $("main").innerHTML = `<div class="card wait">Ya estás dentro.<br><span class="muted">En cuanto la profesora saque el primer nombre, empieza el juego.</span></div>`;
+    return;
+  }
+  if (g.status === "over"){
+    if (vista === "over") return; vista = "over";
+    $("main").innerHTML = `<div class="card wait"><b style="font-size:26px">Fin del juego</b><br>Has terminado ${pos}.º con ${me.pts} puntos.</div>`;
+    return;
+  }
+  if (g.status === "reveal") return pintarRevelacion();
+  pintarJuego();
+}
+
+function pintarJuego(){
+  const g = S.game, me = S.me, c = g.card;
+  const fallos = (me.wrong || []).length;
+  const clave = "play|" + g.round + "|" + (me.letters || []).join("") + "|" + (me.wrong || []).join("") + "|" + (me.done || "");
+  if (vista === clave) return;
+  const conFoco = document.activeElement && document.activeElement.id === "inS", texto = $("inS") ? $("inS").value : "";
+  vista = clave;
+  let abajo;
+  if (me.done === "win") abajo = `<div class="banner win"><big>¡Lo tienes!</big>Has sido el ${me.puesto}.º y sumas ${me.gained} puntos. Espera a que se revele la empresa.</div>`;
+  else if (me.done === "dead") abajo = `<div class="banner dead"><big>Ahorcado</big>Este nombre ya no puntúa para ti. Espera al siguiente.</div>`;
+  else abajo = `<div class="card"><div class="kb">${LETRAS.map(L => {
+      const l = L.toLowerCase();
+      const cls = (me.letters || []).includes(l) ? " ok" : (me.wrong || []).includes(l) ? " ko" : "";
+      return `<button class="k${cls}" data-l="${L}"${cls ? " disabled" : ""}>${L}</button>`;
+    }).join("")}</div>
+    <div class="solve"><input id="inS" placeholder="¿Lo sabes ya? Escribe el apellido entero" autocomplete="off"><button class="btn b-dark" id="bS">Resolver</button></div>
+    <div class="hint">Si fallas al resolver, cuenta como un fallo. Las tildes no importan.</div></div>`;
+  $("main").innerHTML = `<div class="card"><span class="tag">${esc(c.bloque.toUpperCase())} · ${c.enBloque} de ${c.deBloque}</span>
+      <div class="game"><div>${dibujo(fallos)}</div><div><div class="who">${esc(c.nombre)}</div>${huecos(me.plantilla)}
+      <div class="fallos">Fallos: <b>${fallos}</b> de ${g.maxFallos}${(me.wrong || []).length ? " · " + me.wrong.filter(x => x !== "·").map(x => x.toUpperCase()).join(" ") : ""}</div></div></div></div>
+    ${abajo}`;
+  $("main").querySelectorAll(".k:not([disabled])").forEach(b => b.onclick = () => letra(b.dataset.l));
+  if ($("bS")){
+    $("inS").value = texto;
+    if (conFoco) $("inS").focus();
+    $("bS").onclick = resolver;
+    $("inS").onkeydown = e => { if (e.key === "Enter") resolver(); e.stopPropagation(); };
+  }
+}
+
+async function letra(L){
+  if (enviando || !S || S.game.status !== "play" || S.me.done) return;
+  enviando = true;
+  try { const j = await api({ a:"letter", l: L }); if (j.state){ S = j.state; pintar(); } }
+  catch(e){ toast(e.message); refrescar(true); }
+  finally { enviando = false; }
+}
+async function resolver(){
+  const t = ($("inS") && $("inS").value || "").trim();
+  if (!t || enviando) return;
+  enviando = true;
+  try { const j = await api({ a:"solve", text: t }); if (j.hit === false) toast("Ese no es. Te cuenta como un fallo."); if (j.state){ S = j.state; $("inS") && ($("inS").value = ""); vista = ""; pintar(); } }
+  catch(e){ toast(e.message); }
+  finally { enviando = false; }
+}
+document.addEventListener("keydown", e => {
+  if (!S || S.game.status !== "play" || S.me.done || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (document.activeElement && document.activeElement.tagName === "INPUT") return;
+  const L = e.key.toUpperCase();
+  if (LETRAS.includes(L)) letra(L);
+});
+
+function pintarRevelacion(){
+  const g = S.game, me = S.me, c = g.card, clave = "rev|" + g.round;
+  if (vista === clave) return; vista = clave;
+  const mio = me.done === "win" ? `Has sido el ${me.puesto}.º y has sumado ${me.gained} puntos.` : "Este no lo has resuelto entre los tres primeros.";
+  $("main").innerHTML = `<div class="reveal"><span class="tag">${esc(c.bloque.toUpperCase())}</span>
+      <div class="who">${esc(c.nombre)} <em>${esc(c.apellido)}</em></div>
+      <div class="lbl">MANDA EN</div><div class="emp">${c.empresas.map(esc).join(" y ")}</div></div>
+    <div class="card wait" style="padding:20px">${mio}<br><span class="muted">Mira el proyector, enseguida sale el siguiente nombre.</span></div>`;
+}
+
+if (unido) refrescar(true); else pintarEntrada();
+</script>
+</body>
+</html>
