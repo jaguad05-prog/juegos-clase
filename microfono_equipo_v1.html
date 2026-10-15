@@ -38,6 +38,20 @@ textarea{resize:vertical;min-height:110px}
 .st.mine{outline:2px solid var(--red)}
 .st .nm{flex:1;font-weight:800;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .st .pt{font-size:18px;font-weight:900;color:var(--red)}
+.opt{display:flex;gap:12px;align-items:flex-start;border:2px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px;background:#fff;cursor:pointer;width:100%;text-align:left;font-family:inherit;font-size:15px;color:var(--ink)}
+.opt .L{flex:none;width:34px;height:34px;border-radius:50%;background:var(--dark);color:var(--gold);font-weight:900;display:flex;align-items:center;justify-content:center}
+.opt .tx{flex:1;line-height:1.4;white-space:pre-wrap;word-break:break-word}
+.opt .pos{flex:none;font-weight:900;font-size:13px;padding:4px 8px;border-radius:8px;align-self:center}
+.opt.s1{border-color:var(--red);background:#fdf0f2}.opt.s1 .pos{background:var(--red);color:#fff}
+.opt.s2{border-color:var(--gold);background:#fdf8ec}.opt.s2 .pos{background:var(--gold);color:var(--dark)}
+.opt.own{opacity:.45;cursor:not-allowed;border-style:dashed}
+.res{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)}
+.res:last-child{border-bottom:none}
+.res.mine{background:#fdf0f2;border-radius:8px;padding:10px 8px}
+.res .bd{flex:1;min-width:0}.res .tm{font-weight:900;color:var(--red)}
+.res .tx{font-size:14px;margin-top:2px;white-space:pre-wrap;word-break:break-word}
+.res .vt{font-size:12px;color:var(--muted);margin-top:2px}
+.res .pp{font-weight:900;font-size:20px;color:var(--red)}
 .champ{text-align:center;background:linear-gradient(135deg,var(--gold),#f3d38a);border-radius:14px;padding:26px}
 .champ .big{font-size:48px}.champ .nm{font-size:32px;font-weight:900}
 </style>
@@ -53,7 +67,7 @@ const qs = new URLSearchParams(location.search);
 let CODE = (qs.get("c") || "").toUpperCase().replace(/[^A-Z]/g, "");
 let ME = null; // {c, t, name}
 try { const m = JSON.parse(localStorage.getItem("microfono_equipo") || "null"); if (m && (!CODE || m.c === CODE)) { ME = m; CODE = m.c; } } catch (e) {}
-let S = null, vistaClave = "", guardado = null, errUnir = "";
+let S = null, vistaClave = "", guardado = null, errUnir = "", sel = [];
 
 async function llamar(p) {
   const r = await fetch(API, { method: "POST", body: JSON.stringify(p) });
@@ -125,22 +139,65 @@ function pintar() {
     vistaClave = ""; return;
   }
   const juega = S.active.some((e) => e.id === ME.t);
-  if (!juega) {
-    app.innerHTML = `<div class="wait"><b>La Gran Final la juegan los dos mejores equipos.</b><p style="margin-top:6px">Mirad el proyector.</p></div>${marcador()}`;
-    vistaClave = ""; return;
-  }
-  const fase = g.status === "final" ? `⭐ GRAN FINAL · RONDA ${g.finalIdx + 1}/${g.finalTotal}` : `RONDA ${g.round + 1}`;
+  const enFinal = g.status === "final";
+  const fase = enFinal ? `⭐ GRAN FINAL · RONDA ${g.finalIdx + 1}/${g.finalTotal}` : `RONDA ${g.round + 1}`;
   if (clave !== vistaClave) {
     vistaClave = clave;
     let accion = "";
-    if (g.phase === "open") accion = `<div class="panel"><div class="ph">TU RESPUESTA</div><div class="pb"><textarea id="resp" oninput="alEscribir()" placeholder="Escribe la respuesta de tu equipo…">${esc(S.mine ? S.mine.answer : "")}</textarea>
-      <button class="btn" style="margin-top:10px" onclick="enviar()">Enviar</button><div class="muted" id="estado" style="margin-top:8px">${S.mine && S.mine.answer ? "Enviada ✓ · puedes corregirla hasta que la profesora cierre" : "Aún no has enviado nada"}</div></div></div>`;
-    else if (g.phase === "closed") accion = `<div class="wait">Respuestas cerradas. Esperando el veredicto…</div>`;
-    else if (g.phase === "judged") accion = (S.mine && S.mine.verdict) ? `<div class="nota"><div class="muted" style="color:var(--gold);font-weight:800;letter-spacing:.1em">TU PUNTUACIÓN</div><div class="n">${S.mine.verdict.p}</div><p>${esc(S.mine.verdict.c)}</p></div>` : `<div class="wait">Esperando la siguiente ronda…</div>`;
+    if (g.phase === "open") {
+      if (juega) accion = `<div class="panel"><div class="ph">TU RESPUESTA</div><div class="pb"><textarea id="resp" oninput="alEscribir()" placeholder="Escribe la respuesta de tu equipo…">${esc(S.mine ? S.mine.answer : "")}</textarea>
+        <button class="btn" style="margin-top:10px" onclick="enviar()">Enviar</button><div class="muted" id="estado" style="margin-top:8px">${S.mine && S.mine.answer ? "Enviada ✓ · puedes corregirla hasta que la profesora cierre" : "Aún no has enviado nada"}</div></div></div>`;
+      else accion = `<div class="wait"><b>La Gran Final la juegan los dos mejores equipos.</b><p style="margin-top:6px">Cuando terminen de escribir, vosotros seréis el jurado y votaréis desde aquí.</p></div>`;
+    } else if (g.phase === "vote") {
+      sel = (S.mine && S.mine.vote) ? S.mine.vote.slice() : [];
+      accion = `<div id="voto"></div>`;
+    } else if (g.phase === "judged") {
+      const v = S.mine && S.mine.verdict;
+      const lista = (S.options || []).slice().sort((x, y) => y.p - x.p);
+      accion = (v ? `<div class="nota"><div class="muted" style="color:var(--gold);font-weight:800;letter-spacing:.1em">VUESTROS PUNTOS EN ESTA RONDA</div><div class="n">${v.p}</div><p>${esc(v.c)}</p></div>` : "") +
+        `<div class="panel" style="margin-top:14px"><div class="ph">ASÍ HA QUEDADO LA RONDA</div><div class="pb">` +
+        lista.map((o) => `<div class="res ${o.id === ME.t ? "mine" : ""}"><div class="bd"><div class="tm">${o.L} · ${esc(o.team)}</div><div class="tx">${esc(o.text)}</div>
+          <div class="vt">${enFinal ? o.n1 + (o.n1 === 1 ? " voto" : " votos") : o.n1 + " × 1º · " + o.n2 + " × 2º"}</div></div><div class="pp">+${o.p}</div></div>`).join("") +
+        `</div></div>`;
+    }
     app.innerHTML = `<div class="panel"><div class="ph">${fase} · ${esc(g.modoNombre.toUpperCase())}</div><div class="pb">${contenido()}</div></div><div id="accion">${accion}</div><div id="marc">${marcador()}</div><button class="link" onclick="salir()">No soy este equipo</button>`;
+    if (g.phase === "vote") pintarVoto();
   } else {
     const m = $("marc"); if (m) m.innerHTML = marcador();
   }
+}
+
+function pintarVoto() {
+  const box = $("voto"); if (!box || !S) return;
+  const m = S.mine || {}, enFinal = S.game.status === "final";
+  if (!m.canVote) { box.innerHTML = `<div class="wait"><b>Está votando el jurado.</b><p style="margin-top:6px">Los equipos eliminados eligen la mejor respuesta. Mirad el proyector.</p></div>`; return; }
+  if (!m.need) { box.innerHTML = `<div class="wait">No hay respuestas de otros equipos para votar. Mirad el proyector.</div>`; return; }
+  const pide = m.need === 2 ? `Tocad la <b>mejor</b> (${S.game.pts1} puntos) y después la <b>segunda</b> (${S.game.pts2} puntos). La vuestra no se puede votar.`
+    : enFinal ? `Sois el jurado: tocad la <b>mejor</b> respuesta (${S.game.pts1} puntos).` : `Tocad la <b>mejor</b> respuesta (${S.game.pts1} puntos). La vuestra no se puede votar.`;
+  const listo = sel.length === m.need;
+  const enviado = m.vote && m.vote.join() === sel.join();
+  box.innerHTML = `<div class="panel"><div class="ph">${enFinal ? "VOTO DEL JURADO" : "VOTAD · SIN NOMBRES"}</div><div class="pb">
+    <p class="muted" style="margin-bottom:12px;font-size:14px">${pide}</p>` +
+    S.options.map((o) => { const own = o.L === m.letter, i = sel.indexOf(o.L);
+      return `<button class="opt ${own ? "own" : ""} ${i === 0 ? "s1" : i === 1 ? "s2" : ""}" ${own ? "disabled" : ""} onclick="elegirOpcion('${o.L}')"><div class="L">${o.L}</div><div class="tx">${esc(o.text)}</div>${own ? '<div class="pos" style="color:var(--muted)">la vuestra</div>' : i === 0 ? '<div class="pos">1º</div>' : i === 1 ? '<div class="pos">2º</div>' : ""}</button>`; }).join("") +
+    `<button class="btn" style="margin-top:6px" ${listo && !enviado ? "" : "disabled"} onclick="votar()">${enviado ? "Voto enviado ✓" : "Enviar voto"}</button>
+    <div class="muted" id="estvoto" style="margin-top:8px">${enviado ? "Podéis cambiarlo hasta que la profesora cierre la votación." : listo ? "" : m.need === 2 ? "Elegid dos respuestas." : "Elegid una respuesta."}</div></div></div>`;
+}
+function elegirOpcion(L) {
+  const m = S.mine || {}; if (L === m.letter) return;
+  const i = sel.indexOf(L);
+  if (i >= 0) sel.splice(i, 1);
+  else if (sel.length < m.need) sel.push(L);
+  else sel[sel.length - 1] = L;
+  pintarVoto();
+}
+async function votar() {
+  try {
+    const j = await llamar({ a: "vote", c: ME.c, t: ME.t, v1: sel[0], v2: sel[1] });
+    if (j.error) { $("estvoto").textContent = j.error; return; }
+    if (j.state) S = j.state;
+    pintarVoto();
+  } catch (e) { $("estvoto").textContent = "No se ha podido enviar. Probad otra vez."; }
 }
 
 if (ME) sondear(); else pintarUnir();

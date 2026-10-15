@@ -63,6 +63,18 @@ textarea{width:100%;border:2px solid var(--border);border-radius:10px;padding:11
 .champ{background:linear-gradient(135deg,var(--gold),#f3d38a);border-radius:16px;padding:30px;text-align:center}
 .champ .tr2{font-size:52px;display:block}
 .champ .nm{font-size:44px;font-weight:900}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.opt{border:2px solid var(--border);border-radius:14px;padding:16px 18px;background:#fff;display:flex;gap:14px;align-items:flex-start}
+.opt .L{flex:none;width:44px;height:44px;border-radius:50%;background:var(--dark);color:var(--gold);font-size:22px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.opt .tx{font-size:clamp(17px,1.6vw,22px);line-height:1.4;font-weight:700;color:var(--dark);white-space:pre-wrap;word-break:break-word}
+.res{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.res:last-child{border-bottom:none}
+.res .L{flex:none;width:34px;height:34px;border-radius:50%;background:var(--dark);color:var(--gold);font-weight:900;display:flex;align-items:center;justify-content:center}
+.res .bd{flex:1;min-width:0}
+.res .tm{font-weight:900;font-size:16px;color:var(--red)}
+.res .tx{font-size:15px;color:var(--ink);margin-top:2px;white-space:pre-wrap;word-break:break-word}
+.res .vt{font-size:12.5px;color:var(--muted);margin-top:3px}
+.res .pp{font-size:28px;font-weight:900;color:var(--red);min-width:44px;text-align:center}
 .empty{text-align:center;color:var(--muted);padding:20px;font-style:italic;font-size:13px}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--red);color:#fff;padding:12px 18px;border-radius:10px;font-weight:700;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:99}
 #toast.show{opacity:1}
@@ -132,11 +144,6 @@ function contenidoHTML() {
     `<div class="ask">${num ? "Cada equipo: ¿en qué pregunta desaprovechó el periodista la mejor respuesta y qué habríais preguntado? (Puede haber más de una puerta: elegid la más importante y defendedla.)" : "Cada equipo: escribid el titular de esta entrevista."}</div>`;
 }
 
-function copiar() {
-  const ta = $("prompt"); ta.select();
-  (navigator.clipboard ? navigator.clipboard.writeText(ta.value) : Promise.reject()).then(() => toast("¡Copiado! Pégalo en un chat con Claude"), () => { document.execCommand("copy"); toast("Copiado"); });
-}
-
 function pintar() {
   const tr = $("tr"), main = $("main"), side = $("side");
   if (!H || !S) {
@@ -172,33 +179,39 @@ function pintar() {
     return;
   }
 
-  const enAbierta = g.phase === "open", enCerrada = g.phase === "closed", enJuzgada = g.phase === "judged";
-  let panel = "";
-  if (enAbierta) {
+  const enFinal = g.status === "final";
+  let panel = "", arriba = "";
+  if (g.phase === "open") {
     panel = `<div class="panel"><div class="ph">RESPUESTAS <span>${S.active.filter((e) => S.answered[e.id]).length}/${S.active.length}</span></div><div class="pb">
       <div class="chips" style="margin-top:0">${S.active.map((e) => `<span class="chip ${S.answered[e.id] ? "ok" : ""}">${esc(e.name)} ${S.answered[e.id] ? "✅" : "⏳"}</span>`).join("")}</div>
-      <p class="muted" style="margin-top:12px;font-size:13px">No se ve lo que escriben hasta que cierres, así no se copian.</p>
-      <div style="margin-top:16px"><button class="btn b-red" onclick="api({a:'close'})">Cerrar respuestas y juzgar</button></div></div></div>`;
-  } else if (enCerrada) {
-    panel = `<div class="panel"><div class="ph">PASO 1 · COPIA ESTO Y PÉGALO EN UN CHAT CON CLAUDE</div><div class="pb">
-      <textarea id="prompt" rows="6" readonly>${esc(S.prompt)}</textarea>
-      <div class="row" style="margin-top:10px"><button class="btn b-gold" onclick="copiar()">Copiar</button></div></div></div>
-      <div class="panel"><div class="ph">PASO 2 · PEGA AQUÍ LA RESPUESTA DE CLAUDE</div><div class="pb">
-      <textarea id="notas" rows="5" placeholder="Equipo:puntos:comentario (una línea por equipo)"></textarea>
-      <div class="row" style="margin-top:10px"><button class="btn b-red" onclick="aplicar()">Aplicar notas</button>
-      <button class="btn b-out" onclick="api({a:'manual'})">Puntuar a mano</button>
-      <button class="btn b-out" onclick="api({a:'reopen'})">Reabrir ronda</button></div></div></div>`;
-  } else if (enJuzgada) {
-    panel = `<div class="panel"><div class="ph">PUNTOS DE LA RONDA <span>ajusta con + y −</span></div><div class="pb">` +
-      S.active.map((e) => { const v = (S.verdicts && S.verdicts[e.id]) || { p: 0, c: "" };
-        return `<div class="vrow"><div class="nm">${esc(e.name)}</div><div class="cm">${esc(v.c)}</div>
-        <button class="adj" onclick="api({a:'adjust',t:${e.id},d:-1})">−</button><div class="pp">${v.p}</div><button class="adj" onclick="api({a:'adjust',t:${e.id},d:1})">+</button></div>`; }).join("") +
-      `</div></div><div class="clave"><div class="lbl">LA CLAVE</div><p>${esc(S.clave || "")}</p></div>
-      <button class="btn b-red" onclick="api({a:'confirm'})">${g.status === "final" && g.finalIdx + 1 >= g.finalTotal ? "Sumar puntos y ver al campeón" : "Sumar puntos y siguiente ronda"}</button>`;
+      <p class="muted" style="margin-top:12px;font-size:13px">No se ve lo que escriben hasta que cierres, así no se copian. Luego saldrán todas sin nombre para votar.</p>
+      <div style="margin-top:16px"><button class="btn b-red" onclick="api({a:'close'})">Cerrar respuestas y votar</button></div></div></div>`;
+  } else if (g.phase === "vote") {
+    const votan = S.teams.filter((t) => (S.voters || []).indexOf(t.id) >= 0);
+    const hechos = votan.filter((t) => S.voted[t.id]).length;
+    const regla = enFinal ? `Vota el jurado (los equipos eliminados) desde sus móviles: la respuesta elegida suma ${g.pts1} puntos.`
+      : `Cada equipo vota desde su móvil la mejor (${g.pts1} puntos) y la segunda (${g.pts2} puntos). Nunca la suya.`;
+    arriba = `<div class="panel"><div class="ph">VOTACIÓN · ¿CUÁL ES LA MEJOR? <span>sin nombres</span></div><div class="pb">
+      <div class="opts">${S.options.map((o) => `<div class="opt"><div class="L">${o.L}</div><div class="tx">${esc(o.text)}</div></div>`).join("")}</div>
+      <p class="muted" style="margin-top:14px">${regla}</p></div></div>`;
+    panel = `<div class="panel"><div class="ph">${enFinal ? "JURADO" : "VOTOS"} <span>${hechos}/${votan.length}</span></div><div class="pb">
+      ${votan.length ? `<div class="chips" style="margin-top:0">${votan.map((t) => `<span class="chip ${S.voted[t.id] ? "ok" : ""}">${esc(t.name)} ${S.voted[t.id] ? "✅" : "⏳"}</span>`).join("")}</div>`
+        : `<p class="muted">No hay equipos que puedan votar. Cierra la votación y pon tú los puntos con + y −.</p>`}
+      <div class="row" style="margin-top:16px"><button class="btn b-red" onclick="api({a:'tally'})">Cerrar votación y ver resultados</button>
+      <button class="btn b-out" onclick="api({a:'reopen'})">Reabrir respuestas</button></div></div></div>`;
+  } else if (g.phase === "judged") {
+    const porId = {}; (S.options || []).forEach((o) => { porId[o.id] = o; });
+    const filas = S.active.map((e) => { const v = (S.verdicts && S.verdicts[e.id]) || { p: 0, c: "" }; return { e, v, o: porId[e.id] }; })
+      .sort((x, y) => y.v.p - x.v.p || (x.o ? 0 : 1) - (y.o ? 0 : 1));
+    arriba = `<div class="panel"><div class="ph">RESULTADOS DE LA RONDA <span>ajusta con + y − si hace falta</span></div><div class="pb">` +
+      filas.map(({ e, v, o }) => `<div class="res"><div class="L">${o ? o.L : "–"}</div><div class="bd"><div class="tm">${esc(e.name)}</div>
+        ${o ? `<div class="tx">${esc(o.text)}</div>` : ""}<div class="vt">${esc(v.c)}</div></div>
+        <button class="adj" onclick="api({a:'adjust',t:${e.id},d:-1})">−</button><div class="pp">${v.p}</div><button class="adj" onclick="api({a:'adjust',t:${e.id},d:1})">+</button></div>`).join("") +
+      `</div></div><div class="clave"><div class="lbl">${g.modo === 2 ? "DÓNDE FALLÓ DE VERDAD EL PERIODISTA" : "LA CLAVE"}</div><p>${esc(S.clave || "")}</p></div>
+      <button class="btn b-red" onclick="api({a:'confirm'})">${enFinal && g.finalIdx + 1 >= g.finalTotal ? "Sumar puntos y ver al campeón" : "Sumar puntos y siguiente ronda"}</button>`;
   }
-  main.innerHTML = `<div class="panel"><div class="ph">${esc(g.modoNombre.toUpperCase())}</div><div class="pb">${contenidoHTML()}</div></div>${panel}`;
+  main.innerHTML = arriba + `<div class="panel"><div class="ph">${esc(g.modoNombre.toUpperCase())}</div><div class="pb">${contenidoHTML()}</div></div>` + panel;
 }
-async function aplicar() { try { await api({ a: "notes", x: $("notas").value }); } catch (e) {} }
 
 pintar(); sondear(); setInterval(sondear, 1500);
 </script>

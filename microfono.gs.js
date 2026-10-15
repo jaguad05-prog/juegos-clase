@@ -1,17 +1,18 @@
 
 /**
- * EL MICRÓFONO · servidor · v1
- * Juego de entrevistas para Periodismo Deportivo. Por equipos; cada equipo responde desde su móvil
- * y la profesora puntúa en el proyector. Tres retos que se alternan: la siguiente pregunta,
- * ¿dónde falló el periodista? y el titular. Desde la segunda ronda se puede lanzar la Gran Final
- * (4 rondas con los dos mejores, marcador a cero). La clave y el criterio de cada ronda no salen
- * nunca del servidor hacia los móviles de los equipos.
- * Puntuación: la pantalla genera un texto con la ronda, la clave y las respuestas; la profesora lo
- * pega en un chat con Claude y pega de vuelta la respuesta (Equipo:puntos:comentario). Sin API de pago.
+ * EL MICRÓFONO · servidor · v2 (votación entre equipos)
+ * Juego de entrevistas para Periodismo Deportivo. Por equipos; cada equipo responde desde su móvil.
+ * Tres retos que se alternan: la siguiente pregunta, ¿dónde falló el periodista? y el titular.
+ * Puntuación: al cerrar la ronda, las respuestas aparecen sin nombre (A, B, C…) y cada equipo vota
+ * desde su móvil la mejor y la segunda mejor, nunca la suya. 1º = 5 puntos, 2º = 3 puntos.
+ * Desde la segunda ronda se puede lanzar la Gran Final (4 rondas con los dos mejores, marcador a cero);
+ * en la final votan como jurado los equipos eliminados y la respuesta elegida suma 5.
+ * La clave de cada ronda no sale nunca del servidor hacia los móviles de los equipos.
  */
 
 var P = PropertiesService.getScriptProperties();
 var MAX_EQUIPOS = 14;
+var PTS1 = 5, PTS2 = 3;
 
 function doGet(e) { return responder((e && e.parameter) || {}); }
 function doPost(e) {
@@ -92,49 +93,31 @@ function abrirRonda(g, modo, contenido) {
   g.phase = "open";
   g.answers = {};
   g.verdicts = null;
-  g.prompt = null;
+  g.order = null;
+  g.votes = {};
 }
 function nombreModo(id) { for (var i = 0; i < MODOS.length; i++) if (MODOS[i].id === id) return MODOS[i].nombre; return ""; }
 
-function construirPrompt(g) {
-  var eq = equiposActivos(g), c = g.contenido, modo = g.modo;
-  var lista = eq.map(function (e) {
-    var r = String(g.answers[e.id] || "").trim();
-    return "- " + e.name + ": " + (r || "(sin respuesta)");
-  }).join("\n");
-  var cabecera, criterio;
-  if (modo === 1) {
-    cabecera = "SITUACIÓN: " + c.texto;
-    criterio = "CLAVE (lo que hace buena a una pregunta aquí): " + c.dardo + "\n\nCriterio de puntuación (0 a 3):\n3 = la pregunta persigue exactamente el hilo revelador; 2 = correcta pero no la mejor; 1 = floja o previsible; 0 = banal (\"¿qué sientes?\") o fuera de lugar.";
-  } else if (modo === 2) {
-    var tt = c.turnos.map(function (t, i) { return "P" + (i + 1) + ": " + t.p + "\nR" + (i + 1) + ": " + t.r; }).join("\n");
-    cabecera = "ENTREVISTA (" + c.contexto + "):\n" + tt;
-    criterio = "EL FALLO PRINCIPAL: la pregunta P" + (c.failIndex + 1) + " desaprovechó la respuesta anterior. " + c.explica + "\n\nCada equipo responde con el número de pregunta donde falló el periodista y la pregunta que ellos habrían hecho ahí.\nCriterio de puntuación (0 a 3), premia el criterio aunque no acierten el número exacto:\n3 = señala el fallo principal (P" + (c.failIndex + 1) + ") y su pregunta recoge bien el hilo; 2 = señala el fallo principal con pregunta floja, O señala una puerta secundaria real bien defendida; 1 = punto poco defendible o pregunta que no aporta; 0 = no había nada que profundizar ahí.";
-  } else {
-    var t3 = c.turnos.map(function (t) { return "P: " + t.p + "\nR: " + t.r; }).join("\n");
-    cabecera = "ENTREVISTA (" + c.contexto + "):\n" + t3;
-    criterio = "CLAVE (dónde está el buen titular): " + c.clave + "\n\nCriterio de puntuación (0 a 3):\n3 = pesca la idea más valiosa y tiene gancho propio; 2 = pesca lo importante pero sin gancho, o viceversa; 1 = anecdótico o tópico; 0 = banal o ignora lo jugoso.";
-  }
-  return "Eres el árbitro de \"El Micrófono\", un juego de clase de periodismo deportivo. Puntúa cada respuesta de 0 a 3 según el criterio.\n\n" +
-    cabecera + "\n\n" + criterio + "\n\nRespuestas de los equipos:\n" + lista +
-    "\n\nResponde ÚNICAMENTE con una línea por equipo, en este formato exacto y nada más (sin JSON, sin explicación aparte):\nNombreDelEquipo:puntos:comentario breve en español (máximo 15 palabras)\n\nEjemplo de una línea: Los Tiburones:2:Buena pregunta, pero deja parte del hilo sobre la mesa";
+// ── votación ──
+function letra(i) { return String.fromCharCode(65 + i); }
+function mezclar(a) {
+  for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var x = a[i]; a[i] = a[j]; a[j] = x; }
+  return a;
 }
-
-function leerNotas(texto, eq) {
-  var res = {};
-  String(texto || "").split("\n").forEach(function (linea) {
-    linea = linea.trim();
-    if (!linea) return;
-    var partes = linea.split(":");
-    if (partes.length < 2) return;
-    var nombre = partes[0].replace(/^[\s\-\*•]+/, "").trim().toLowerCase();
-    var pts = Math.max(0, Math.min(3, parseInt(partes[1], 10) || 0));
-    var com = partes.slice(2).join(":").trim();
-    for (var i = 0; i < eq.length; i++) {
-      if (eq[i].name.trim().toLowerCase() === nombre) { res[eq[i].id] = { p: pts, c: com }; break; }
-    }
-  });
-  return res;
+// Quién vota: en rondas normales todos los equipos; en la Gran Final, los eliminados (jurado)
+function votantes(g) {
+  if (g.status === "final") return g.teams.filter(function (t) { return g.finalists.indexOf(t.id) < 0; }).map(function (t) { return t.id; });
+  return g.teams.map(function (t) { return t.id; });
+}
+function letraDe(g, id) { var i = (g.order || []).indexOf(id); return i < 0 ? "" : letra(i); }
+function idDe(g, L) {
+  var i = String(L || "").toUpperCase().charCodeAt(0) - 65;
+  return (g.order && i >= 0 && i < g.order.length) ? g.order[i] : null;
+}
+// Cuántas respuestas tiene que elegir un equipo (2 normalmente; 1 en la final o si solo hay una ajena)
+function cuantasElige(g, id) {
+  var n = (g.order || []).filter(function (x) { return x !== id; }).length;
+  return Math.min(g.status === "final" ? 1 : 2, n);
 }
 
 var ACCIONES = {
@@ -145,7 +128,7 @@ var ACCIONES = {
     var g = {
       code: code, admin: nuevaClave(), created: Date.now(), status: "lobby",
       teams: [], nextId: 1, round: 0, modo: null, contenido: null, phase: null,
-      answers: {}, verdicts: null, prompt: null, used: { 1: [], 2: [], 3: [] },
+      answers: {}, verdicts: null, order: null, votes: {}, used: { 1: [], 2: [], 3: [] },
       finalIdx: 0, finalists: null, fp: {}, champion: null
     };
     guardarPartida(g);
@@ -195,34 +178,57 @@ var ACCIONES = {
   close: function (p) {
     var g = partida(p.c); admin(g, p.k);
     if (g.phase !== "open") throw new Error("No hay ronda abierta");
-    g.phase = "closed";
-    g.prompt = construirPrompt(g);
+    var ids = equiposActivos(g).filter(function (e) { return String(g.answers[e.id] || "").trim(); }).map(function (e) { return e.id; });
+    if (!ids.length) throw new Error("Nadie ha respondido todavía");
+    g.order = mezclar(ids);
+    g.votes = {};
+    g.phase = "vote";
+    guardarPartida(g);
+    return { ok: true };
+  },
+  vote: function (p) {
+    var g = partida(p.c);
+    if (g.phase !== "vote") throw new Error("La votación está cerrada");
+    var yo = Number(p.t);
+    if (votantes(g).indexOf(yo) < 0) throw new Error(g.status === "final" ? "En la Gran Final votan los equipos eliminados" : "Tu equipo no vota en esta ronda");
+    var n = cuantasElige(g, yo);
+    if (!n) throw new Error("No hay respuestas de otros equipos para votar");
+    var elegidos = [p.v1, p.v2].slice(0, n).map(function (L) { return idDe(g, L); });
+    for (var i = 0; i < elegidos.length; i++) {
+      if (elegidos[i] == null) throw new Error(n === 2 ? "Elegid la primera y la segunda" : "Elegid una respuesta");
+      if (elegidos[i] === yo) throw new Error("No podéis votar vuestra propia respuesta");
+    }
+    if (n === 2 && elegidos[0] === elegidos[1]) throw new Error("La primera y la segunda tienen que ser distintas");
+    g.votes[yo] = elegidos;
+    guardarPartida(g);
+    return { ok: true };
+  },
+  tally: function (p) {
+    var g = partida(p.c); admin(g, p.k);
+    if (g.phase !== "vote") throw new Error("No hay ninguna votación abierta");
+    var n1 = {}, n2 = {};
+    for (var k in g.votes) {
+      var e = g.votes[k] || [];
+      if (e[0] != null) n1[e[0]] = (n1[e[0]] || 0) + 1;
+      if (e[1] != null) n2[e[1]] = (n2[e[1]] || 0) + 1;
+    }
+    var v = {};
+    equiposActivos(g).forEach(function (eq) {
+      var a = n1[eq.id] || 0, b = n2[eq.id] || 0, c;
+      if (g.order.indexOf(eq.id) < 0) c = "Sin respuesta";
+      else if (g.status === "final") c = a + (a === 1 ? " voto del jurado" : " votos del jurado");
+      else c = a + " × 1º · " + b + " × 2º";
+      v[eq.id] = { p: a * PTS1 + b * PTS2, c: c, n1: a, n2: b };
+    });
+    g.verdicts = v;
+    g.phase = "judged";
     guardarPartida(g);
     return { ok: true };
   },
   reopen: function (p) {
     var g = partida(p.c); admin(g, p.k);
-    g.phase = "open"; g.prompt = null; g.verdicts = null;
-    guardarPartida(g);
-    return { ok: true };
-  },
-  notes: function (p) {
-    var g = partida(p.c); admin(g, p.k);
-    if (g.phase !== "closed") throw new Error("Primero cierra las respuestas");
-    var eq = equiposActivos(g);
-    var v = leerNotas(p.x, eq);
-    if (!Object.keys(v).length) throw new Error("No he podido leer ninguna nota. El formato es Equipo:puntos:comentario, una línea por equipo.");
-    eq.forEach(function (e) { if (!v[e.id]) v[e.id] = { p: 0, c: "(sin nota)" }; });
-    g.verdicts = v; g.phase = "judged";
-    guardarPartida(g);
-    return { ok: true };
-  },
-  manual: function (p) {
-    var g = partida(p.c); admin(g, p.k);
-    if (g.phase !== "closed") throw new Error("Primero cierra las respuestas");
-    var v = {};
-    equiposActivos(g).forEach(function (e) { v[e.id] = { p: 0, c: "" }; });
-    g.verdicts = v; g.phase = "judged";
+    if (g.phase !== "vote") throw new Error("Solo se pueden reabrir las respuestas durante la votación");
+    g.phase = "open"; g.order = null; g.votes = {}; g.verdicts = null;
     guardarPartida(g);
     return { ok: true };
   },
@@ -230,7 +236,7 @@ var ACCIONES = {
     var g = partida(p.c); admin(g, p.k);
     var id = Number(p.t), d = Number(p.d) || 0;
     if (!g.verdicts || !g.verdicts[id]) throw new Error("Sin veredicto para ese equipo");
-    g.verdicts[id].p = Math.max(0, Math.min(3, g.verdicts[id].p + d));
+    g.verdicts[id].p = Math.max(0, g.verdicts[id].p + d);
     guardarPartida(g);
     return { ok: true };
   },
@@ -248,7 +254,7 @@ var ACCIONES = {
       if (g.finalIdx >= GRAN_FINAL.length) {
         var a = g.finalists[0], b = g.finalists[1];
         g.champion = (g.fp[a] || 0) === (g.fp[b] || 0) ? "tie" : ((g.fp[a] || 0) > (g.fp[b] || 0) ? a : b);
-        g.status = "over"; g.phase = null; g.contenido = null; g.verdicts = null; g.answers = {}; g.prompt = null;
+        g.status = "over"; g.phase = null; g.contenido = null; g.verdicts = null; g.answers = {}; g.order = null; g.votes = {};
       } else {
         abrirRonda(g, GRAN_FINAL[g.finalIdx].modo, GRAN_FINAL[g.finalIdx].contenido);
       }
@@ -288,7 +294,7 @@ function estado(p) {
     ok: true, now: Date.now(),
     game: {
       code: g.code, status: g.status, round: g.round, finalIdx: g.finalIdx, finalTotal: GRAN_FINAL.length,
-      modo: g.modo, modoNombre: g.modo ? nombreModo(g.modo) : "", phase: g.phase,
+      modo: g.modo, modoNombre: g.modo ? nombreModo(g.modo) : "", phase: g.phase, pts1: PTS1, pts2: PTS2,
       champion: g.champion, canFinal: g.status === "play" && g.teams.length >= 2 && g.round >= 1 && g.phase === "open"
     },
     teams: g.teams.map(function (t) { return { id: t.id, name: t.name, pts: t.pts }; }),
@@ -300,16 +306,36 @@ function estado(p) {
     var c = g.contenido;
     resp.content = g.modo === 1 ? { texto: c.texto } : { contexto: c.contexto, turnos: c.turnos };
   }
+  var vs = votantes(g), votes = g.votes || {};
+  if ((g.phase === "vote" || g.phase === "judged") && g.order) {
+    var revela = g.phase === "judged";
+    resp.options = g.order.map(function (id, i) {
+      var o = { L: letra(i), text: g.answers[id] || "" };
+      if (revela) {
+        var t = g.teams.filter(function (x) { return x.id === id; })[0];
+        var vv = (g.verdicts && g.verdicts[id]) || { p: 0, n1: 0, n2: 0 };
+        o.id = id; o.team = t ? t.name : "?"; o.p = vv.p; o.n1 = vv.n1 || 0; o.n2 = vv.n2 || 0;
+      }
+      return o;
+    });
+    resp.voters = vs;
+    resp.voted = {};
+    vs.forEach(function (id) { resp.voted[id] = !!votes[id]; });
+  }
   var yo = Number(p.t);
   if (yo) {
-    resp.mine = { answer: g.answers[yo] || "" };
+    resp.mine = { answer: g.answers[yo] || "", letter: letraDe(g, yo) };
+    if (g.phase === "vote") {
+      resp.mine.canVote = vs.indexOf(yo) >= 0;
+      resp.mine.need = cuantasElige(g, yo);
+      resp.mine.vote = votes[yo] ? votes[yo].map(function (id) { return letraDe(g, id); }) : null;
+    }
     if (g.verdicts && g.verdicts[yo] && g.phase === "judged") resp.mine.verdict = g.verdicts[yo];
   }
   if (esProfe) {
     resp.admin = true;
     resp.answers = g.answers;
     resp.verdicts = g.verdicts;
-    resp.prompt = g.prompt;
     if (g.contenido && g.phase === "judged") {
       resp.clave = g.modo === 1 ? g.contenido.dardo : g.modo === 2 ? g.contenido.explica : g.contenido.clave;
     }
