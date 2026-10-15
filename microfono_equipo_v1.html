@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Micrófono · Equipo</title>
+<style>
+:root{--red:#C8102E;--dark:#1B1B1F;--ink:#2B2B30;--gold:#E8B54A;--muted:#6B6B72;--border:#D8D8DC;--green:#1E7A45;--bg:#F5F5F7}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+.topbar{background:var(--dark);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.tt{font-size:15px;font-weight:800;letter-spacing:.04em}
+.ts{font-size:11px;color:var(--gold);letter-spacing:.06em}
+.me{background:var(--red);color:#fff;font-weight:800;font-size:13px;padding:6px 12px;border-radius:18px;max-width:50vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wrap{max-width:640px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+.panel{background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden}
+.ph{background:var(--dark);color:#fff;padding:10px 14px;font-size:12px;font-weight:800;letter-spacing:.06em}
+.pb{padding:16px}
+.sit{font-size:19px;line-height:1.45;font-weight:700;color:var(--dark)}
+.ctx{color:var(--muted);font-size:14px;margin-bottom:6px}
+.turno{margin-top:10px;font-size:15px}
+.turno b{color:var(--red)}
+.turno .r{color:#444;padding-left:22px;margin-top:2px}
+.ask{margin-top:14px;color:var(--muted);font-size:14px}
+input,textarea{width:100%;border:2px solid var(--border);border-radius:10px;padding:12px 13px;font-size:16px;font-family:inherit;outline:none}
+textarea{resize:vertical;min-height:110px}
+.btn{width:100%;border:none;padding:14px;border-radius:10px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;background:var(--red);color:#fff}
+.btn:disabled{opacity:.4}
+.link{background:none;border:none;color:var(--muted);text-decoration:underline;font-size:13px;cursor:pointer;margin-top:6px}
+.err{color:var(--red);font-weight:700;min-height:18px;font-size:14px}
+.muted{color:var(--muted);font-size:13px}
+.nota{text-align:center;padding:22px;background:var(--dark);color:#fff;border-radius:14px;border:2px solid var(--gold)}
+.nota .n{font-size:56px;font-weight:900;color:var(--gold);line-height:1}
+.nota p{margin-top:8px;font-size:15px}
+.wait{text-align:center;padding:22px;background:#fff;border:2px dashed var(--border);border-radius:14px;color:var(--muted)}
+.st{display:flex;align-items:center;gap:9px;background:var(--bg);border-radius:9px;padding:8px 10px;margin-bottom:7px}
+.st .rk{width:24px;height:24px;border-radius:50%;background:var(--dark);color:var(--gold);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
+.st.mine{outline:2px solid var(--red)}
+.st .nm{flex:1;font-weight:800;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.st .pt{font-size:18px;font-weight:900;color:var(--red)}
+.champ{text-align:center;background:linear-gradient(135deg,var(--gold),#f3d38a);border-radius:14px;padding:26px}
+.champ .big{font-size:48px}.champ .nm{font-size:32px;font-weight:900}
+</style>
+</head>
+<body>
+<div class="topbar"><div><div class="tt">EL MICRÓFONO</div><div class="ts">EQUIPO</div></div><div class="me" id="me" style="display:none"></div></div>
+<div class="wrap" id="app"></div>
+<script>
+const API = location.origin + "/api/microfono";
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const qs = new URLSearchParams(location.search);
+let CODE = (qs.get("c") || "").toUpperCase().replace(/[^A-Z]/g, "");
+let ME = null; // {c, t, name}
+try { const m = JSON.parse(localStorage.getItem("microfono_equipo") || "null"); if (m && (!CODE || m.c === CODE)) { ME = m; CODE = m.c; } } catch (e) {}
+let S = null, vistaClave = "", guardado = null, errUnir = "";
+
+async function llamar(p) {
+  const r = await fetch(API, { method: "POST", body: JSON.stringify(p) });
+  return r.json();
+}
+async function unirse() {
+  const c = ($("cod") ? $("cod").value : CODE).toUpperCase().replace(/[^A-Z]/g, "");
+  const n = $("nom").value.trim();
+  if (!c || !n) { errUnir = "Escribe el código y el nombre de tu equipo."; pintarUnir(); return; }
+  const j = await llamar({ a: "join", c, n });
+  if (j.error) { errUnir = j.error; pintarUnir(); return; }
+  ME = { c, t: j.t, name: j.name }; CODE = c;
+  localStorage.setItem("microfono_equipo", JSON.stringify(ME));
+  vistaClave = ""; sondear();
+}
+function salir() { localStorage.removeItem("microfono_equipo"); ME = null; S = null; vistaClave = ""; pintarUnir(); }
+function pintarUnir() {
+  $("me").style.display = "none";
+  $("app").innerHTML = `<div class="panel"><div class="ph">ENTRA EN LA PARTIDA</div><div class="pb">
+    ${CODE ? "" : '<p class="muted" style="margin-bottom:6px">Código de la partida</p><input id="cod" maxlength="6" placeholder="Código (4 letras)" style="margin-bottom:12px;text-transform:uppercase">'}
+    <p class="muted" style="margin-bottom:6px">Nombre de tu equipo</p>
+    <input id="nom" maxlength="24" placeholder="Nombre del equipo" style="margin-bottom:12px">
+    <button class="btn" onclick="unirse()">Entrar</button><div class="err" style="margin-top:8px">${esc(errUnir)}</div></div></div>`;
+}
+
+function marcador() {
+  const orden = S.active.slice().sort((a, b) => b.pts - a.pts);
+  return `<div class="panel"><div class="ph">CLASIFICACIÓN</div><div class="pb" style="padding:12px">` +
+    orden.map((e, i) => `<div class="st ${e.id === ME.t ? "mine" : ""}"><div class="rk">${i + 1}</div><div class="nm">${esc(e.name)}</div><div class="pt">${e.pts}</div></div>`).join("") + `</div></div>`;
+}
+function contenido() {
+  const c = S.content; if (!c) return "";
+  if (S.game.modo === 1) return `<div class="sit">${esc(c.texto)}</div><div class="ask">¿Cuál es la siguiente pregunta que harías?</div>`;
+  const num = S.game.modo === 2;
+  return `<div class="ctx">${esc(c.contexto)}</div>` + c.turnos.map((t, i) => `<div class="turno"><b>P${num ? i + 1 : ""}.</b> ${esc(t.p)}<div class="r">${esc(t.r)}</div></div>`).join("") +
+    `<div class="ask">${num ? "¿En qué pregunta falló el periodista y qué habríais preguntado? Escribid el número y vuestra pregunta." : "Escribid el titular."}</div>`;
+}
+
+function enviar() {
+  const t = $("resp"); if (!t) return;
+  clearTimeout(guardado);
+  $("estado").textContent = "Guardando…";
+  llamar({ a: "answer", c: ME.c, t: ME.t, x: t.value }).then((j) => { $("estado").textContent = j.error ? j.error : "Guardado ✓ · puedes corregirla hasta que la profesora cierre"; });
+}
+function alEscribir() { clearTimeout(guardado); $("estado").textContent = "Escribiendo…"; guardado = setTimeout(enviar, 700); }
+
+async function sondear() {
+  if (!ME) return;
+  try {
+    const j = await llamar({ a: "state", c: ME.c, t: ME.t });
+    if (j.error) { if (/No existe/.test(j.error)) salir(); return; }
+    S = j; pintar();
+  } catch (e) {}
+}
+
+function pintar() {
+  if (!ME || !S) return;
+  const g = S.game, me = $("me"); me.style.display = "block"; me.textContent = ME.name;
+  const clave = [g.status, g.round, g.finalIdx, g.phase].join("|");
+  const app = $("app");
+
+  if (g.status === "lobby") {
+    app.innerHTML = `<div class="wait"><b>¡Estás dentro!</b><p style="margin-top:6px">Esperando a que la profesora empiece el juego…</p><p class="muted" style="margin-top:10px">${S.teams.length} equipos apuntados</p></div><button class="link" onclick="salir()">No soy este equipo</button>`;
+    vistaClave = ""; return;
+  }
+  if (g.status === "over") {
+    const camp = S.teams.concat(S.active).filter((t) => t.id === g.champion)[0];
+    app.innerHTML = `<div class="champ">${g.champion === "tie" ? '<div class="big">🤝</div><div class="nm">¡Empate en la final!</div>' : camp ? `<div class="big">🏆</div><div class="nm">${esc(camp.name)}</div>` : '<div class="big">🏁</div><div class="nm">Fin de la partida</div>'}</div>${marcador()}`;
+    vistaClave = ""; return;
+  }
+  const juega = S.active.some((e) => e.id === ME.t);
+  if (!juega) {
+    app.innerHTML = `<div class="wait"><b>La Gran Final la juegan los dos mejores equipos.</b><p style="margin-top:6px">Mirad el proyector.</p></div>${marcador()}`;
+    vistaClave = ""; return;
+  }
+  const fase = g.status === "final" ? `⭐ GRAN FINAL · RONDA ${g.finalIdx + 1}/${g.finalTotal}` : `RONDA ${g.round + 1}`;
+  if (clave !== vistaClave) {
+    vistaClave = clave;
+    let accion = "";
+    if (g.phase === "open") accion = `<div class="panel"><div class="ph">TU RESPUESTA</div><div class="pb"><textarea id="resp" oninput="alEscribir()" placeholder="Escribe la respuesta de tu equipo…">${esc(S.mine ? S.mine.answer : "")}</textarea>
+      <button class="btn" style="margin-top:10px" onclick="enviar()">Enviar</button><div class="muted" id="estado" style="margin-top:8px">${S.mine && S.mine.answer ? "Enviada ✓ · puedes corregirla hasta que la profesora cierre" : "Aún no has enviado nada"}</div></div></div>`;
+    else if (g.phase === "closed") accion = `<div class="wait">Respuestas cerradas. Esperando el veredicto…</div>`;
+    else if (g.phase === "judged") accion = (S.mine && S.mine.verdict) ? `<div class="nota"><div class="muted" style="color:var(--gold);font-weight:800;letter-spacing:.1em">TU PUNTUACIÓN</div><div class="n">${S.mine.verdict.p}</div><p>${esc(S.mine.verdict.c)}</p></div>` : `<div class="wait">Esperando la siguiente ronda…</div>`;
+    app.innerHTML = `<div class="panel"><div class="ph">${fase} · ${esc(g.modoNombre.toUpperCase())}</div><div class="pb">${contenido()}</div></div><div id="accion">${accion}</div><div id="marc">${marcador()}</div><button class="link" onclick="salir()">No soy este equipo</button>`;
+  } else {
+    const m = $("marc"); if (m) m.innerHTML = marcador();
+  }
+}
+
+if (ME) sondear(); else pintarUnir();
+setInterval(sondear, 1500);
+</script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Micrófono · Pantalla</title>
+<style>
+:root{--red:#C8102E;--dark:#1B1B1F;--ink:#2B2B30;--gold:#E8B54A;--muted:#6B6B72;--border:#D8D8DC;--green:#1E7A45;--bg:#F5F5F7}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+.topbar{background:var(--dark);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:12px 18px;gap:10px;flex-wrap:wrap}
+.tt{font-size:16px;font-weight:800;letter-spacing:.04em}
+.ts{font-size:11px;color:var(--gold);letter-spacing:.06em}
+.tr{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.badge{background:var(--red);color:#fff;font-weight:800;font-size:13px;padding:7px 14px;border-radius:20px}
+.codebadge{background:#fff;color:var(--dark);font-weight:800;font-size:15px;padding:6px 12px;border-radius:8px;letter-spacing:.12em}
+.tbtn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#fff;padding:8px 13px;border-radius:8px;font-size:12.5px;cursor:pointer;font-family:inherit;font-weight:700}
+.layout{display:grid;grid-template-columns:1fr 320px;gap:18px;padding:18px;max-width:1500px;margin:0 auto}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.panel{background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden}
+.ph{background:var(--dark);color:#fff;padding:11px 16px;font-size:12.5px;font-weight:800;letter-spacing:.06em;display:flex;justify-content:space-between;gap:10px}
+.ph span{color:var(--gold)}
+.pb{padding:20px}
+.btn{border:none;padding:14px 22px;border-radius:10px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.b-red{background:var(--red);color:#fff}.b-dark{background:var(--dark);color:#fff}.b-gold{background:var(--gold);color:var(--dark)}.b-out{background:#fff;border:2px solid var(--border);color:var(--ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--muted)}
+.err{color:var(--red);font-weight:700;margin-top:10px;min-height:18px}
+.lobby{display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:center}
+@media(max-width:700px){.lobby{grid-template-columns:1fr}}
+.bigcode{font-size:64px;font-weight:900;letter-spacing:.14em;color:var(--dark)}
+.link{font-size:15px;word-break:break-all;color:var(--muted);margin-top:6px}
+#qr{background:#fff;padding:6px;border-radius:10px;border:1px solid var(--border)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{border:2px solid var(--border);border-radius:30px;padding:7px 13px;font-weight:800;font-size:14px;background:#fff}
+.chip.ok{border-color:var(--green);background:#eef7f1;color:var(--green)}
+.chip button{border:none;background:none;color:var(--muted);cursor:pointer;font-size:15px;margin-left:6px}
+.tag{display:inline-block;background:var(--red);color:#fff;font-weight:800;font-size:14px;letter-spacing:.08em;padding:7px 14px;border-radius:20px}
+.sit{font-size:clamp(20px,2.4vw,30px);line-height:1.45;font-weight:700;color:var(--dark);margin-top:14px}
+.ctx{margin-top:12px;color:var(--muted);font-size:15px}
+.turno{margin-top:12px;font-size:17px}
+.turno b{color:var(--red)}
+.turno .r{color:#444;padding-left:26px;margin-top:2px}
+.ask{margin-top:16px;color:var(--muted);font-size:14px}
+textarea{width:100%;border:2px solid var(--border);border-radius:10px;padding:11px 13px;font-size:14px;font-family:inherit;outline:none;resize:vertical}
+.step{font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--red);margin-bottom:8px}
+.st{display:flex;align-items:center;gap:9px;background:var(--bg);border-radius:9px;padding:8px 10px;margin-bottom:7px}
+.st .rk{width:26px;height:26px;border-radius:50%;background:var(--dark);color:var(--gold);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
+.st.top .rk{background:var(--gold);color:var(--dark)}
+.st .nm{flex:1;font-weight:800;font-size:15px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.st .pt{font-size:19px;font-weight:900;color:var(--red)}
+.vrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.vrow:last-child{border-bottom:none}
+.vrow .nm{font-weight:800;min-width:110px}
+.vrow .cm{flex:1;color:var(--muted);font-size:13px}
+.vrow .pp{font-size:26px;font-weight:900;color:var(--red);width:30px;text-align:center}
+.adj{border:1px solid var(--border);background:#fff;border-radius:6px;width:30px;height:30px;cursor:pointer;font-weight:800;font-size:16px}
+.clave{background:var(--dark);color:#fff;border-radius:14px;padding:22px 26px}
+.clave .lbl{font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--gold)}
+.clave p{font-size:19px;line-height:1.45;margin-top:8px}
+.champ{background:linear-gradient(135deg,var(--gold),#f3d38a);border-radius:16px;padding:30px;text-align:center}
+.champ .tr2{font-size:52px;display:block}
+.champ .nm{font-size:44px;font-weight:900}
+.empty{text-align:center;color:var(--muted);padding:20px;font-style:italic;font-size:13px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--red);color:#fff;padding:12px 18px;border-radius:10px;font-weight:700;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:99}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div><div class="tt">EL MICRÓFONO</div><div class="ts">LA PREGUNTA, EL FALLO Y EL TITULAR</div></div>
+  <div class="tr" id="tr"></div>
+</div>
+<div class="layout">
+  <div class="col" id="main"></div>
+  <div class="col" id="side"></div>
+</div>
+<div id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+const API = location.origin + "/api/microfono";
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+let H = null; try { H = JSON.parse(localStorage.getItem("microfono_host") || "null"); } catch (e) {}
+let S = null, lastSig = "", errMsg = "";
+
+function toast(m) { const t = $("toast"); t.textContent = m; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2600); }
+async function api(params) {
+  const r = await fetch(API, { method: "POST", body: JSON.stringify(Object.assign({ c: H && H.c, k: H && H.k }, params)) });
+  const j = await r.json();
+  if (j.error) { errMsg = j.error; toast(j.error); throw new Error(j.error); }
+  errMsg = "";
+  if (j.state) { S = j.state; lastSig = ""; pintar(); }
+  return j;
+}
+function urlEquipo() { return location.origin + "/microfono_equipo_v1.html?c=" + H.c; }
+
+async function nueva() {
+  try {
+    const r = await fetch(API, { method: "POST", body: JSON.stringify({ a: "new" }) });
+    const j = await r.json(); if (j.error) throw new Error(j.error);
+    H = { c: j.c, k: j.k }; localStorage.setItem("microfono_host", JSON.stringify(H));
+    S = null; lastSig = ""; sondear();
+  } catch (e) { toast("No se ha podido crear la partida: " + e.message); }
+}
+function olvidar() { if (!confirm("¿Empezar una partida nueva? Los equipos actuales dejarán de jugar.")) return; localStorage.removeItem("microfono_host"); H = null; S = null; lastSig = ""; pintar(); }
+
+async function sondear() {
+  if (!H) return;
+  try {
+    const r = await fetch(API, { method: "POST", body: JSON.stringify({ a: "state", c: H.c, k: H.k }) });
+    const j = await r.json();
+    if (j.error) { if (/No existe/.test(j.error)) { localStorage.removeItem("microfono_host"); H = null; S = null; } pintar(); return; }
+    const sig = JSON.stringify(Object.assign({}, j, { now: 0 }));
+    if (sig !== lastSig) { lastSig = sig; S = j; pintar(); }
+  } catch (e) {}
+}
+
+function marcador(lista) {
+  const orden = lista.slice().sort((a, b) => b.pts - a.pts);
+  if (!orden.length) return '<div class="empty">Aún no hay equipos</div>';
+  return orden.map((e, i) => `<div class="st ${i === 0 && e.pts > 0 ? "top" : ""}"><div class="rk">${i + 1}</div><div class="nm">${esc(e.name)}</div><div class="pt">${e.pts}</div></div>`).join("");
+}
+
+function contenidoHTML() {
+  const c = S.content; if (!c) return "";
+  if (S.game.modo === 1) return `<div class="sit">${esc(c.texto)}</div><div class="ask">Cada equipo: ¿cuál es la siguiente pregunta que harías?</div>`;
+  const num = S.game.modo === 2;
+  return `<div class="ctx">${esc(c.contexto)}</div>` + c.turnos.map((t, i) => `<div class="turno"><b>P${num ? i + 1 : ""}.</b> ${esc(t.p)}<div class="r">${esc(t.r)}</div></div>`).join("") +
+    `<div class="ask">${num ? "Cada equipo: ¿en qué pregunta desaprovechó el periodista la mejor respuesta y qué habríais preguntado? (Puede haber más de una puerta: elegid la más importante y defendedla.)" : "Cada equipo: escribid el titular de esta entrevista."}</div>`;
+}
+
+function copiar() {
+  const ta = $("prompt"); ta.select();
+  (navigator.clipboard ? navigator.clipboard.writeText(ta.value) : Promise.reject()).then(() => toast("¡Copiado! Pégalo en un chat con Claude"), () => { document.execCommand("copy"); toast("Copiado"); });
+}
+
+function pintar() {
+  const tr = $("tr"), main = $("main"), side = $("side");
+  if (!H || !S) {
+    tr.innerHTML = "";
+    main.innerHTML = `<div class="panel"><div class="ph">PARTIDA NUEVA</div><div class="pb">
+      <p class="muted" style="margin-bottom:16px">Crea una partida, enseña el QR a los equipos y pulsa «Empezar» cuando estén todos apuntados.</p>
+      <button class="btn b-red" onclick="nueva()">Crear partida</button>${H ? '<div class="err">Conectando…</div>' : ""}</div></div>`;
+    side.innerHTML = ""; return;
+  }
+  const g = S.game;
+  const fase = g.status === "final" ? `⭐ GRAN FINAL · RONDA ${g.finalIdx + 1}/${g.finalTotal}` : g.status === "play" ? `RONDA ${g.round + 1}` : "";
+  tr.innerHTML = (fase ? `<span class="badge">${fase} · ${esc(g.modoNombre.toUpperCase())}</span>` : "") +
+    `<span class="codebadge">${esc(g.code)}</span>` +
+    (g.canFinal ? `<button class="tbtn" style="background:var(--gold);color:var(--dark)" onclick="api({a:'final'})">⭐ Gran final</button>` : "") +
+    `<button class="tbtn" onclick="olvidar()">Partida nueva</button>`;
+  side.innerHTML = `<div class="panel"><div class="ph">CLASIFICACIÓN <span>${g.status === "final" ? "FINAL" : ""}</span></div><div class="pb" style="padding:14px">${marcador(S.active)}</div></div>`;
+
+  if (g.status === "lobby") {
+    main.innerHTML = `<div class="panel"><div class="ph">APUNTA A LOS EQUIPOS <span>${S.teams.length} equipos</span></div><div class="pb">
+      <div class="lobby"><div id="qr"></div><div><div class="muted" style="font-weight:700">Código de la partida</div>
+      <div class="bigcode">${esc(g.code)}</div><div class="link">${esc(urlEquipo())}</div></div></div>
+      <div class="chips">${S.teams.map((t) => `<span class="chip">${esc(t.name)}<button onclick="api({a:'remove',t:${t.id}})" title="Quitar">×</button></span>`).join("") || '<span class="muted">Esperando a los equipos…</span>'}</div>
+      <div style="margin-top:20px"><button class="btn b-red" ${S.teams.length ? "" : "disabled"} onclick="api({a:'start'})">Empezar el juego</button></div></div></div>`;
+    try { const q = qrcode(0, "L"); q.addData(urlEquipo()); q.make(); $("qr").innerHTML = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); $("qr").querySelector("svg").setAttribute("style", "width:240px;height:240px;display:block"); } catch (e) {}
+    return;
+  }
+
+  if (g.status === "over") {
+    const orden = S.active.slice().sort((a, b) => b.pts - a.pts);
+    const camp = S.teams.concat(S.active).filter((t) => t.id === g.champion)[0];
+    main.innerHTML = `<div class="champ">` + (g.champion === "tie" ? `<span class="tr2">🤝</span><div class="nm">¡Empate en la final!</div>` : camp ? `<span class="tr2">🏆</span><div class="nm">${esc(camp.name)}</div><p style="margin-top:6px">¡Campeones de El Micrófono!</p>` : `<span class="tr2">🏁</span><div class="nm">Fin de la partida</div>`) + `</div>
+      <div class="panel" style="margin-top:16px"><div class="ph">RESULTADO</div><div class="pb">${marcador(orden)}<div style="margin-top:14px"><button class="btn b-red" onclick="olvidar()">Partida nueva</button></div></div></div>`;
+    return;
+  }
+
+  const enAbierta = g.phase === "open", enCerrada = g.phase === "closed", enJuzgada = g.phase === "judged";
+  let panel = "";
+  if (enAbierta) {
+    panel = `<div class="panel"><div class="ph">RESPUESTAS <span>${S.active.filter((e) => S.answered[e.id]).length}/${S.active.length}</span></div><div class="pb">
+      <div class="chips" style="margin-top:0">${S.active.map((e) => `<span class="chip ${S.answered[e.id] ? "ok" : ""}">${esc(e.name)} ${S.answered[e.id] ? "✅" : "⏳"}</span>`).join("")}</div>
+      <p class="muted" style="margin-top:12px;font-size:13px">No se ve lo que escriben hasta que cierres, así no se copian.</p>
+      <div style="margin-top:16px"><button class="btn b-red" onclick="api({a:'close'})">Cerrar respuestas y juzgar</button></div></div></div>`;
+  } else if (enCerrada) {
+    panel = `<div class="panel"><div class="ph">PASO 1 · COPIA ESTO Y PÉGALO EN UN CHAT CON CLAUDE</div><div class="pb">
+      <textarea id="prompt" rows="6" readonly>${esc(S.prompt)}</textarea>
+      <div class="row" style="margin-top:10px"><button class="btn b-gold" onclick="copiar()">Copiar</button></div></div></div>
+      <div class="panel"><div class="ph">PASO 2 · PEGA AQUÍ LA RESPUESTA DE CLAUDE</div><div class="pb">
+      <textarea id="notas" rows="5" placeholder="Equipo:puntos:comentario (una línea por equipo)"></textarea>
+      <div class="row" style="margin-top:10px"><button class="btn b-red" onclick="aplicar()">Aplicar notas</button>
+      <button class="btn b-out" onclick="api({a:'manual'})">Puntuar a mano</button>
+      <button class="btn b-out" onclick="api({a:'reopen'})">Reabrir ronda</button></div></div></div>`;
+  } else if (enJuzgada) {
+    panel = `<div class="panel"><div class="ph">PUNTOS DE LA RONDA <span>ajusta con + y −</span></div><div class="pb">` +
+      S.active.map((e) => { const v = (S.verdicts && S.verdicts[e.id]) || { p: 0, c: "" };
+        return `<div class="vrow"><div class="nm">${esc(e.name)}</div><div class="cm">${esc(v.c)}</div>
+        <button class="adj" onclick="api({a:'adjust',t:${e.id},d:-1})">−</button><div class="pp">${v.p}</div><button class="adj" onclick="api({a:'adjust',t:${e.id},d:1})">+</button></div>`; }).join("") +
+      `</div></div><div class="clave"><div class="lbl">LA CLAVE</div><p>${esc(S.clave || "")}</p></div>
+      <button class="btn b-red" onclick="api({a:'confirm'})">${g.status === "final" && g.finalIdx + 1 >= g.finalTotal ? "Sumar puntos y ver al campeón" : "Sumar puntos y siguiente ronda"}</button>`;
+  }
+  main.innerHTML = `<div class="panel"><div class="ph">${esc(g.modoNombre.toUpperCase())}</div><div class="pb">${contenidoHTML()}</div></div>${panel}`;
+}
+async function aplicar() { try { await api({ a: "notes", x: $("notas").value }); } catch (e) {} }
+
+pintar(); sondear(); setInterval(sondear, 1500);
+</script>
+</body>
+</html>
