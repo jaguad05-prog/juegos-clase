@@ -53,6 +53,7 @@ const JUEGOS = {
   vuelta: cargarJuego("vuelta", "carrera"),   // la Vuelta usa el mismo servidor que la Carrera, con sus propias partidas
   liguilla: cargarJuego("liguilla"),
   ahorcado: cargarJuego("ahorcado"),
+  microfono: cargarJuego("microfono"),
 };
 
 const TIPOS = {
@@ -69,7 +70,7 @@ function cors(res) {
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, "http://x");
-  const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla|ahorcado)\/?$/);
+  const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla|ahorcado|microfono)\/?$/);
   if (m) {
     cors(res);
     if (req.method === "OPTIONS") { res.writeHead(204); return res.end(); }
