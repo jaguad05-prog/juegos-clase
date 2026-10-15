@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>El Micrófono · Equipo</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300&display=swap" rel="stylesheet">
 <style>
 :root{--red:#C8102E;--dark:#1B1B1F;--ink:#2B2B30;--gold:#E8B54A;--muted:#6B6B72;--border:#D8D8DC;--green:#1E7A45;--bg:#F5F5F7}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -52,6 +53,19 @@ textarea{resize:vertical;min-height:110px}
 .res .tx{font-size:14px;margin-top:2px;white-space:pre-wrap;word-break:break-word}
 .res .vt{font-size:12px;color:var(--muted);margin-top:2px}
 .res .pp{font-weight:900;font-size:20px;color:var(--red)}
+.gf{position:relative;overflow:hidden;border-radius:18px;background:radial-gradient(120% 95% at 88% 12%,#2f5cff 0%,#1536c2 26%,#0b1c78 52%,#040a33 100%);color:#fff;padding:30px 34px 28px}
+.gf svg.sw{position:absolute;right:-8%;top:-10%;width:78%;height:125%;pointer-events:none}
+.gf .t{position:relative;font-family:'Anton',Impact,'Arial Black',sans-serif;text-transform:uppercase;line-height:.9;transform:skewX(-9deg);text-shadow:0 6px 22px rgba(0,0,0,.35);animation:gfin .9s ease-out both}
+.gf .t .la{display:block;font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:300}
+.gf .t .big{display:block}
+.gf .sub{position:relative;margin-top:16px;font-size:13px;font-weight:800;letter-spacing:.14em;color:#a9c4ff}
+.gf .who{position:relative;margin-top:10px;display:flex;gap:10px;flex-wrap:wrap}
+.gf .fin{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.35);border-radius:12px;padding:9px 15px;font-weight:800;animation:gfin .9s ease-out both}
+.gf .fin small{display:block;font-size:11px;font-weight:700;color:#a9c4ff;letter-spacing:.08em}
+.gf .tw{animation:tw 2.4s ease-in-out infinite}
+@keyframes gfin{from{opacity:0;translate:0 26px}to{opacity:1;translate:0 0}}
+@keyframes tw{0%,100%{opacity:.25}50%{opacity:1}}
+.gf{padding:24px 22px;min-height:300px}.gf .t .la{font-size:44px}.gf .t .big{font-size:84px}.gf .fin{font-size:16px}
 .champ{text-align:center;background:linear-gradient(135deg,var(--gold),#f3d38a);border-radius:14px;padding:26px}
 .champ .big{font-size:48px}.champ .nm{font-size:32px;font-weight:900}
 </style>
@@ -91,6 +105,24 @@ function pintarUnir() {
     <p class="muted" style="margin-bottom:6px">Nombre de tu equipo</p>
     <input id="nom" maxlength="24" placeholder="Nombre del equipo" style="margin-bottom:12px">
     <button class="btn" onclick="unirse()">Entrar</button><div class="err" style="margin-top:8px">${esc(errUnir)}</div></div></div>`;
+}
+
+function heroFinal(lista, sub) {
+  const estrellas = [[300,60,2.2,0],[350,150,1.6,.6],[250,110,1.4,1.2],[330,260,2,1.8],[200,40,1.2,.9],[370,330,1.5,.3],[160,200,1.1,1.5]]
+    .map(([x, y, r, d]) => `<circle class="tw" cx="${x}" cy="${y}" r="${r}" style="animation-delay:${d}s"/>`).join("");
+  return `<div class="gf"><svg class="sw" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs><linearGradient id="gfl" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#8fdcff" stop-opacity="0"/><stop offset=".55" stop-color="#c9f1ff"/><stop offset="1" stop-color="#5aa8ff" stop-opacity="0"/></linearGradient>
+    <filter id="gfg" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4"/></filter></defs>
+    <g fill="none" stroke="url(#gfl)" stroke-linecap="round">
+      <path d="M30 360 C 110 140, 290 40, 390 110" stroke-width="7" filter="url(#gfg)" opacity=".8"/>
+      <path d="M30 360 C 110 140, 290 40, 390 110" stroke-width="2.5"/>
+      <path d="M90 400 C 150 230, 320 170, 400 260" stroke-width="2"/>
+      <path d="M10 250 C 160 270, 300 190, 350 0" stroke-width="5" filter="url(#gfg)" opacity=".6"/>
+      <path d="M10 250 C 160 270, 300 190, 350 0" stroke-width="1.8"/>
+    </g><g fill="#fff">${estrellas}</g></svg>
+    <div class="t"><span class="la">La</span><span class="big">Gran</span><span class="big">Final</span></div>
+    ${lista && lista.length ? `<div class="sub">${esc(sub || "JUEGAN")}</div><div class="who">${lista.map((e, i) => `<div class="fin" style="animation-delay:${0.5 + i * 0.25}s">${esc(e.name)}${e.extra ? `<small>${esc(e.extra)}</small>` : ""}</div>`).join("")}</div>` : ""}
+  </div>`;
 }
 
 function marcador() {
@@ -135,19 +167,27 @@ function pintar() {
   }
   if (g.status === "over") {
     const camp = S.teams.concat(S.active).filter((t) => t.id === g.champion)[0];
-    app.innerHTML = `<div class="champ">${g.champion === "tie" ? '<div class="big">🤝</div><div class="nm">¡Empate en la final!</div>' : camp ? `<div class="big">🏆</div><div class="nm">${esc(camp.name)}</div>` : '<div class="big">🏁</div><div class="nm">Fin de la partida</div>'}</div>${marcador()}`;
+    app.innerHTML = `<div class="champ">${g.champion === "tie" ? `<div class="big">🤝</div><div class="nm">¡Empate en la final!</div><p style="margin-top:6px;font-weight:800">${(g.tied || []).map((id) => esc((S.teams.find((t) => t.id === id) || {}).name || "")).join(" · ")}</p>` : camp ? `<div class="big">🏆</div><div class="nm">${esc(camp.name)}</div>` : '<div class="big">🏁</div><div class="nm">Fin de la partida</div>'}</div>${marcador()}`;
     vistaClave = ""; return;
   }
   const juega = S.active.some((e) => e.id === ME.t);
+  if (g.status === "prefinal") {
+    if (vistaClave === clave) return;
+    vistaClave = clave;
+    app.innerHTML = heroFinal(S.active.slice().sort((a, b) => b.pts - a.pts).map((e) => ({ name: e.name }))) +
+      `<div class="wait" style="margin-top:14px;border-color:#1536c2;color:var(--ink)">${juega ? "<b>¡Estáis en la Gran Final!</b><p style=\"margin-top:6px\">Empezáis con 0 puntos. Son 4 rondas.</p>"
+        : "<b>Vosotros seréis el jurado.</b><p style=\"margin-top:6px\">Votaréis desde aquí las respuestas de los finalistas.</p>"}</div>`;
+    return;
+  }
   const enFinal = g.status === "final";
-  const fase = enFinal ? `⭐ GRAN FINAL · RONDA ${g.finalIdx + 1}/${g.finalTotal}` : `RONDA ${g.round + 1}`;
+  const fase = enFinal ? `⭐ GRAN FINAL · RONDA ${g.finalIdx + 1}/${g.finalTotal}` : `RONDA ${g.round + 1}/${g.roundsTotal}`;
   if (clave !== vistaClave) {
     vistaClave = clave;
     let accion = "";
     if (g.phase === "open") {
       if (juega) accion = `<div class="panel"><div class="ph">TU RESPUESTA</div><div class="pb"><textarea id="resp" oninput="alEscribir()" placeholder="Escribe la respuesta de tu equipo…">${esc(S.mine ? S.mine.answer : "")}</textarea>
         <button class="btn" style="margin-top:10px" onclick="enviar()">Enviar</button><div class="muted" id="estado" style="margin-top:8px">${S.mine && S.mine.answer ? "Enviada ✓ · puedes corregirla hasta que la profesora cierre" : "Aún no has enviado nada"}</div></div></div>`;
-      else accion = `<div class="wait"><b>La Gran Final la juegan los dos mejores equipos.</b><p style="margin-top:6px">Cuando terminen de escribir, vosotros seréis el jurado y votaréis desde aquí.</p></div>`;
+      else accion = `<div class="wait"><b>La Gran Final la juegan los tres mejores equipos.</b><p style="margin-top:6px">Cuando terminen de escribir, vosotros seréis el jurado y votaréis desde aquí.</p></div>`;
     } else if (g.phase === "vote") {
       sel = (S.mine && S.mine.vote) ? S.mine.vote.slice() : [];
       accion = `<div id="voto"></div>`;
@@ -157,7 +197,7 @@ function pintar() {
       accion = (v ? `<div class="nota"><div class="muted" style="color:var(--gold);font-weight:800;letter-spacing:.1em">VUESTROS PUNTOS EN ESTA RONDA</div><div class="n">${v.p}</div><p>${esc(v.c)}</p></div>` : "") +
         `<div class="panel" style="margin-top:14px"><div class="ph">ASÍ HA QUEDADO LA RONDA</div><div class="pb">` +
         lista.map((o) => `<div class="res ${o.id === ME.t ? "mine" : ""}"><div class="bd"><div class="tm">${o.L} · ${esc(o.team)}</div><div class="tx">${esc(o.text)}</div>
-          <div class="vt">${enFinal ? o.n1 + (o.n1 === 1 ? " voto" : " votos") : o.n1 + " × 1º · " + o.n2 + " × 2º"}</div></div><div class="pp">+${o.p}</div></div>`).join("") +
+          <div class="vt">${o.n1 + " × 1º · " + o.n2 + " × 2º"}</div></div><div class="pp">+${o.p}</div></div>`).join("") +
         `</div></div>`;
     }
     app.innerHTML = `<div class="panel"><div class="ph">${fase} · ${esc(g.modoNombre.toUpperCase())}</div><div class="pb">${contenido()}</div></div><div id="accion">${accion}</div><div id="marc">${marcador()}</div><button class="link" onclick="salir()">No soy este equipo</button>`;
@@ -170,13 +210,14 @@ function pintar() {
 function pintarVoto() {
   const box = $("voto"); if (!box || !S) return;
   const m = S.mine || {}, enFinal = S.game.status === "final";
-  if (!m.canVote) { box.innerHTML = `<div class="wait"><b>Está votando el jurado.</b><p style="margin-top:6px">Los equipos eliminados eligen la mejor respuesta. Mirad el proyector.</p></div>`; return; }
+  if (!m.canVote) { box.innerHTML = `<div class="wait"><b>Está votando el jurado.</b><p style="margin-top:6px">Los equipos eliminados eligen las mejores respuestas. Mirad el proyector.</p></div>`; return; }
   if (!m.need) { box.innerHTML = `<div class="wait">No hay respuestas de otros equipos para votar. Mirad el proyector.</div>`; return; }
-  const pide = m.need === 2 ? `Tocad la <b>mejor</b> (${S.game.pts1} puntos) y después la <b>segunda</b> (${S.game.pts2} puntos). La vuestra no se puede votar.`
-    : enFinal ? `Sois el jurado: tocad la <b>mejor</b> respuesta (${S.game.pts1} puntos).` : `Tocad la <b>mejor</b> respuesta (${S.game.pts1} puntos). La vuestra no se puede votar.`;
+  const pide = m.need === 2 && enFinal && S.game.jury ? `Sois el jurado: tocad la <b>mejor</b> (${S.game.pts1} puntos) y después la <b>segunda</b> (${S.game.pts2} puntos).`
+    : m.need === 2 ? `Tocad la <b>mejor</b> (${S.game.pts1} puntos) y después la <b>segunda</b> (${S.game.pts2} puntos). La vuestra no se puede votar.`
+    : `Tocad la <b>mejor</b> respuesta (${S.game.pts1} puntos). La vuestra no se puede votar.`;
   const listo = sel.length === m.need;
   const enviado = m.vote && m.vote.join() === sel.join();
-  box.innerHTML = `<div class="panel"><div class="ph">${enFinal ? "VOTO DEL JURADO" : "VOTAD · SIN NOMBRES"}</div><div class="pb">
+  box.innerHTML = `<div class="panel"><div class="ph">${enFinal && S.game.jury ? "VOTO DEL JURADO" : "VOTAD · SIN NOMBRES"}</div><div class="pb">
     <p class="muted" style="margin-bottom:12px;font-size:14px">${pide}</p>` +
     S.options.map((o) => { const own = o.L === m.letter, i = sel.indexOf(o.L);
       return `<button class="opt ${own ? "own" : ""} ${i === 0 ? "s1" : i === 1 ? "s2" : ""}" ${own ? "disabled" : ""} onclick="elegirOpcion('${o.L}')"><div class="L">${o.L}</div><div class="tx">${esc(o.text)}</div>${own ? '<div class="pos" style="color:var(--muted)">la vuestra</div>' : i === 0 ? '<div class="pos">1º</div>' : i === 1 ? '<div class="pos">2º</div>' : ""}</button>`; }).join("") +

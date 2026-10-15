@@ -5,14 +5,17 @@
  * Tres retos que se alternan: la siguiente pregunta, ¿dónde falló el periodista? y el titular.
  * Puntuación: al cerrar la ronda, las respuestas aparecen sin nombre (A, B, C…) y cada equipo vota
  * desde su móvil la mejor y la segunda mejor, nunca la suya. 1º = 5 puntos, 2º = 3 puntos.
- * Desde la segunda ronda se puede lanzar la Gran Final (4 rondas con los dos mejores, marcador a cero);
- * en la final votan como jurado los equipos eliminados y la respuesta elegida suma 5.
+ * Tras 12 rondas (al acabar el cuarto titular) se anuncia la Gran Final: juegan los tres primeros
+ * (más los empatados con el tercero), 4 rondas con el marcador a cero. Votan como jurado los equipos
+ * eliminados (1º = 5, 2º = 3). La profesora también puede adelantar la Gran Final con un botón.
  * La clave de cada ronda no sale nunca del servidor hacia los móviles de los equipos.
  */
 
 var P = PropertiesService.getScriptProperties();
 var MAX_EQUIPOS = 14;
 var PTS1 = 5, PTS2 = 3;
+var RONDAS_NORMALES = 12;  // 4 vueltas de pregunta, fallo y titular
+var FINALISTAS = 3;
 
 function doGet(e) { return responder((e && e.parameter) || {}); }
 function doPost(e) {
@@ -68,10 +71,10 @@ function nuevaClave() {
 
 // ── lógica del juego ──
 function equiposActivos(g) {
-  if (g.status === "final" || (g.status === "over" && g.finalists)) {
+  if (g.status === "prefinal" || g.status === "final" || (g.status === "over" && g.finalists)) {
     return g.finalists.map(function (id) {
       var t = g.teams.filter(function (x) { return x.id === id; })[0];
-      return { id: id, name: t ? t.name : "?", pts: g.fp[id] || 0 };
+      return { id: id, name: t ? t.name : "?", pts: g.status === "prefinal" ? (t ? t.pts : 0) : (g.fp[id] || 0) };
     });
   }
   return g.teams.map(function (t) { return { id: t.id, name: t.name, pts: t.pts }; });
@@ -96,6 +99,17 @@ function abrirRonda(g, modo, contenido) {
   g.order = null;
   g.votes = {};
 }
+function elegirFinalistas(g) {
+  var orden = g.teams.slice().sort(function (a, b) { return b.pts - a.pts; });
+  if (orden.length <= FINALISTAS) return orden.map(function (t) { return t.id; });
+  var corte = orden[FINALISTAS - 1].pts;  // los empatados con el tercero también entran
+  return orden.filter(function (t) { return t.pts >= corte; }).map(function (t) { return t.id; });
+}
+function anunciarFinal(g) {
+  g.finalists = elegirFinalistas(g);
+  g.status = "prefinal";
+  g.phase = null; g.contenido = null; g.modo = null; g.answers = {}; g.verdicts = null; g.order = null; g.votes = {};
+}
 function nombreModo(id) { for (var i = 0; i < MODOS.length; i++) if (MODOS[i].id === id) return MODOS[i].nombre; return ""; }
 
 // ── votación ──
@@ -106,7 +120,10 @@ function mezclar(a) {
 }
 // Quién vota: en rondas normales todos los equipos; en la Gran Final, los eliminados (jurado)
 function votantes(g) {
-  if (g.status === "final") return g.teams.filter(function (t) { return g.finalists.indexOf(t.id) < 0; }).map(function (t) { return t.id; });
+  if (g.status === "final") {
+    var jurado = g.teams.filter(function (t) { return g.finalists.indexOf(t.id) < 0; }).map(function (t) { return t.id; });
+    return jurado.length ? jurado : g.finalists.slice();  // si no hay eliminados, votan los propios finalistas
+  }
   return g.teams.map(function (t) { return t.id; });
 }
 function letraDe(g, id) { var i = (g.order || []).indexOf(id); return i < 0 ? "" : letra(i); }
@@ -114,10 +131,10 @@ function idDe(g, L) {
   var i = String(L || "").toUpperCase().charCodeAt(0) - 65;
   return (g.order && i >= 0 && i < g.order.length) ? g.order[i] : null;
 }
-// Cuántas respuestas tiene que elegir un equipo (2 normalmente; 1 en la final o si solo hay una ajena)
+// Cuántas respuestas tiene que elegir un equipo (2, o 1 si solo hay una ajena)
 function cuantasElige(g, id) {
   var n = (g.order || []).filter(function (x) { return x !== id; }).length;
-  return Math.min(g.status === "final" ? 1 : 2, n);
+  return Math.min(2, n);
 }
 
 var ACCIONES = {
@@ -216,7 +233,6 @@ var ACCIONES = {
     equiposActivos(g).forEach(function (eq) {
       var a = n1[eq.id] || 0, b = n2[eq.id] || 0, c;
       if (g.order.indexOf(eq.id) < 0) c = "Sin respuesta";
-      else if (g.status === "final") c = a + (a === 1 ? " voto del jurado" : " votos del jurado");
       else c = a + " × 1º · " + b + " × 2º";
       v[eq.id] = { p: a * PTS1 + b * PTS2, c: c, n1: a, n2: b };
     });
@@ -252,16 +268,18 @@ var ACCIONES = {
     if (enFinal) {
       g.finalIdx += 1;
       if (g.finalIdx >= GRAN_FINAL.length) {
-        var a = g.finalists[0], b = g.finalists[1];
-        g.champion = (g.fp[a] || 0) === (g.fp[b] || 0) ? "tie" : ((g.fp[a] || 0) > (g.fp[b] || 0) ? a : b);
+        var max = -1; g.finalists.forEach(function (id) { max = Math.max(max, g.fp[id] || 0); });
+        var top = g.finalists.filter(function (id) { return (g.fp[id] || 0) === max; });
+        g.champion = top.length === 1 ? top[0] : "tie";
+        g.tied = top.length > 1 ? top : null;
         g.status = "over"; g.phase = null; g.contenido = null; g.verdicts = null; g.answers = {}; g.order = null; g.votes = {};
       } else {
         abrirRonda(g, GRAN_FINAL[g.finalIdx].modo, GRAN_FINAL[g.finalIdx].contenido);
       }
     } else {
       g.round += 1;
-      var modo = MODOS[g.round % 3].id;
-      abrirRonda(g, modo, elegir(g, modo));
+      if (g.round >= RONDAS_NORMALES && g.teams.length >= 2) anunciarFinal(g);
+      else { var modo = MODOS[g.round % 3].id; abrirRonda(g, modo, elegir(g, modo)); }
     }
     guardarPartida(g);
     return { ok: true };
@@ -270,10 +288,23 @@ var ACCIONES = {
     var g = partida(p.c); admin(g, p.k);
     if (g.status !== "play") throw new Error("La Gran Final solo se lanza durante el juego");
     if (g.teams.length < 2) throw new Error("Hacen falta al menos 2 equipos");
-    var orden = g.teams.slice().sort(function (a, b) { return b.pts - a.pts; });
-    g.finalists = [orden[0].id, orden[1].id];
-    g.fp = {}; g.fp[orden[0].id] = 0; g.fp[orden[1].id] = 0;
-    g.status = "final"; g.finalIdx = 0; g.champion = null;
+    anunciarFinal(g);
+    guardarPartida(g);
+    return { ok: true };
+  },
+  cancelfinal: function (p) {
+    var g = partida(p.c); admin(g, p.k);
+    if (g.status !== "prefinal" || g.round >= RONDAS_NORMALES) throw new Error("Ya no se puede volver a las rondas");
+    g.status = "play"; g.finalists = null;
+    var modo = MODOS[g.round % 3].id; abrirRonda(g, modo, elegir(g, modo));
+    guardarPartida(g);
+    return { ok: true };
+  },
+  startfinal: function (p) {
+    var g = partida(p.c); admin(g, p.k);
+    if (g.status !== "prefinal") throw new Error("Primero hay que anunciar la Gran Final");
+    g.fp = {}; g.finalists.forEach(function (id) { g.fp[id] = 0; });
+    g.status = "final"; g.finalIdx = 0; g.champion = null; g.tied = null;
     abrirRonda(g, GRAN_FINAL[0].modo, GRAN_FINAL[0].contenido);
     guardarPartida(g);
     return { ok: true };
@@ -293,7 +324,8 @@ function estado(p) {
   var resp = {
     ok: true, now: Date.now(),
     game: {
-      code: g.code, status: g.status, round: g.round, finalIdx: g.finalIdx, finalTotal: GRAN_FINAL.length,
+      code: g.code, status: g.status, round: g.round, roundsTotal: RONDAS_NORMALES, finalIdx: g.finalIdx, finalTotal: GRAN_FINAL.length,
+      finalists: g.finalists || null, tied: g.tied || null, jury: g.status === "final" && g.teams.length > (g.finalists || []).length,
       modo: g.modo, modoNombre: g.modo ? nombreModo(g.modo) : "", phase: g.phase, pts1: PTS1, pts2: PTS2,
       champion: g.champion, canFinal: g.status === "play" && g.teams.length >= 2 && g.round >= 1 && g.phase === "open"
     },
