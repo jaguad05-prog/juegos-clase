@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Serpientes y escaleras · Equipo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#E9E6CB;color:#3C4A38;font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;display:flex;flex-direction:column}
+button{font-family:inherit;cursor:pointer}
+header{background:#F5F3E2;border-bottom:1px solid #CBD3BE;padding:10px 16px;display:flex;align-items:center;gap:10px;font-weight:700}
+header i{width:16px;height:16px;border-radius:50%;display:inline-block;flex-shrink:0}
+header span{margin-left:auto;font-size:13px;color:#7B8C74;font-weight:600}
+main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:22px;text-align:center;max-width:760px;width:100%;margin:0 auto}
+h1{font-size:30px;color:#4A6244;line-height:1.1}
+input{width:100%;max-width:340px;background:#F7F5E6;border:2px solid #C3CDB8;color:#3C4A38;padding:14px;border-radius:10px;font-size:18px;text-align:center;outline:none}
+input:focus{border-color:#5C7A54}
+#code{text-transform:uppercase;letter-spacing:8px;font-size:28px;font-weight:700}
+.big{background:#5C7A54;color:#fff;border:none;padding:18px 40px;border-radius:14px;font-size:22px;font-weight:700;width:100%;max-width:340px}
+.big:disabled{background:#BCC7B4}
+#err{color:#A33B3B;min-height:20px;font-size:14px}
+.sub{color:#7B8C74;font-size:15px}
+.txt{font-size:24px;font-weight:700}
+#preg{font-size:21px;line-height:1.4;font-weight:600}
+#cat{display:inline-block;color:#fff;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 12px;border-radius:12px}
+#ops{display:grid;gap:10px;width:100%}
+.op{display:flex;gap:12px;align-items:center;text-align:left;border:none;color:#fff;padding:16px;border-radius:12px;font-size:17px;font-weight:600;line-height:1.3}
+.op b{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.op.A{background:#C0504D}.op.B{background:#3E79B4}.op.C{background:#C79A2B}.op.D{background:#4E9A5A}
+.op.bien{outline:5px solid #2E7D32}.op.mal{outline:5px solid #A33B3B;opacity:.7}.op.ap{opacity:.3}
+.res{font-size:30px;font-weight:800}
+.hide{display:none!important}
+#dadoV{font-size:80px}
+</style></head><body>
+<header><i id="dot" style="background:#C3CDB8"></i><div id="nom">Serpientes y escaleras</div><span id="cas"></span></header>
+<main>
+ <div id="vJoin">
+  <h1>Entrar en la partida</h1>
+  <div class="sub" style="margin:10px 0">Código que aparece en el proyector</div>
+  <input id="code" maxlength="4" placeholder="CÓDIGO" autocomplete="off"><br><br>
+  <input id="name" maxlength="22" placeholder="Nombre del equipo" autocomplete="off"><br><br>
+  <button class="big" onclick="entra()">Entrar</button>
+  <div id="err"></div>
+ </div>
+ <div id="vEsp" class="hide"><div class="txt" id="eT"></div><div class="sub" id="eS" style="margin-top:8px"></div></div>
+ <div id="vRoll" class="hide"><div class="txt">¡Es vuestro turno!</div><br><button class="big" id="bRoll" onclick="S('roll')">🎲 Tirar el dado</button></div>
+ <div id="vQ" class="hide">
+   <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><div style="flex:1;height:12px;border-radius:6px;background:#DDE3D0;overflow:hidden"><div id="tbar" style="height:100%;width:100%;background:#5C7A54"></div></div><div id="tnum" style="font-size:24px;font-weight:800;min-width:38px;text-align:right">30</div></div>
+   <span id="cat"></span><div id="quien" class="sub" style="margin-top:8px"></div>
+   <img id="pfoto" class="hide" alt="" style="width:170px;height:170px;object-fit:cover;border-radius:14px;margin:12px auto 0;display:block">
+   <div id="preg" style="margin:12px 0"></div>
+   <div id="ops"></div>
+   <div id="pIn" class="hide"><input id="resp" maxlength="60" placeholder="Escribid el apellido" autocomplete="off"><br><br><button class="big" onclick="envia()">Enviar</button><div class="sub" style="margin-top:8px">Vale con el apellido</div></div>
+ </div>
+ <div id="vRes" class="hide"><div class="res" id="rT"></div><div class="sub" id="rS" style="margin-top:8px"></div></div>
+</main>
+<script>
+let me=null,S_=null;
+const API='/api/serpientes';const CID=Math.random().toString(36).slice(2)+Date.now().toString(36);let es=null,abierto=false;
+function S(t,o){if(!abierto)return;fetch(API+'/msg',{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(Object.assign({cid:CID,t},o||{}))}).catch(()=>{});}
+function lee(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function guarda(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function conecta(){
+  es=new EventSource(API+'/stream?cid='+CID);
+  es.onopen=()=>{abierto=true;const c=lee('esc_c'),t=lee('esc_t');if(c&&t)S('join',{code:c,token:t});};
+  es.onmessage=e=>{
+    const m=JSON.parse(e.data);
+    if(m.t==='err'){document.getElementById('err').textContent=m.m;return;}
+    if(m.t==='hello'){me=m.id;guarda('esc_c',m.code);guarda('esc_t',m.token);}
+    if(m.t==='state'){me=m.you||me;pinta(m);}
+  };
+  es.onerror=()=>{abierto=false;};
+}
+function entra(){
+  const code=document.getElementById('code').value.trim().toUpperCase(),name=document.getElementById('name').value.trim();
+  if(code.length<4){document.getElementById('err').textContent='Escribid el código de 4 letras';return;}
+  if(!name){document.getElementById('err').textContent='Poned un nombre al equipo';return;}
+  document.getElementById('err').textContent='';
+  S('join',{code,name,token:null});
+}
+function ver(id){['vJoin','vEsp','vRoll','vQ','vRes'].forEach(x=>document.getElementById(x).classList.toggle('hide',x!==id));}
+const LET='ABCD';
+function envia(){const v=document.getElementById('resp').value;if(v.trim())S('ans',{text:v});}
+function pinta(s){
+  S_=s;
+  const yo=s.teams.find(t=>t.id===me);if(!yo){ver('vJoin');return;}
+  document.getElementById('dot').style.background=yo.color;document.getElementById('nom').textContent=yo.name;
+  document.getElementById('cas').textContent='Casilla '+yo.pos;
+  const cur=s.teams[s.turn],mio=cur&&cur.id===me;
+  if(s.phase!=='question'){document.getElementById('ops').dataset.k='';document.getElementById('pIn').dataset.k='';}
+  if(s.phase==='lobby'){ver('vEsp');eT.textContent='Estáis dentro';eS.textContent='Esperando a que el profesor empiece…';return;}
+  if(s.phase==='end'){ver('vEsp');eT.textContent=s.winner!=null&&s.teams[s.winner].id===me?'🏆 ¡Habéis ganado!':'Ha ganado '+s.teams[s.winner].name;eS.textContent='';return;}
+  if(s.phase==='roll'){
+    if(mio){ver('vRoll');document.getElementById('bRoll').disabled=false;}
+    else{ver('vEsp');eT.textContent='Turno de '+cur.name;eS.textContent='Esperad vuestro turno';}
+    return;
+  }
+  if(s.phase==='rolling'||s.phase==='moved'){ver('vEsp');eT.textContent=mio?'🎲 '+(s.dice||''):'Turno de '+cur.name;eS.textContent=mio?'Mirad el proyector':'';return;}
+  if(s.phase==='question'&&s.q){
+    ver('vQ');
+    const q=s.q;const cat={G:['Palabras de género','#A34A6B'],R:['Cómo se hace un reportaje','#3E7C8C'],P:['¿Quién es?','#B5762A']}[q.cat];
+    const ce=document.getElementById('cat');ce.textContent=cat[0];ce.style.background=cat[1];
+    document.getElementById('preg').textContent=q.text;
+    document.getElementById('quien').textContent=mio?'Contestad vosotros':'Contesta '+cur.name;
+    const ops=document.getElementById('ops'),pIn=document.getElementById('pIn'),ft=document.getElementById('pfoto');
+    const clave=q.text+(mio?'1':'0');
+    if(q.photo){ft.src=API+q.photo;ft.classList.remove('hide');}else ft.classList.add('hide');
+    if(q.kind==='mc'){
+      pIn.classList.add('hide');ops.classList.remove('hide');
+      if(ops.dataset.k!==clave){ops.dataset.k=clave;ops.innerHTML='';q.options.forEach((o,i)=>{const b=document.createElement('button');b.className='op '+LET[i]+(mio?'':' ap');b.innerHTML='<b>'+LET[i]+'</b>';const sp=document.createElement('span');sp.textContent=o;b.appendChild(sp);
+        if(mio)b.onclick=()=>{ops.querySelectorAll('button').forEach(x=>x.disabled=true);S('ans',{i});};else b.disabled=true;ops.appendChild(b);});}
+    }else{
+      ops.classList.add('hide');
+      if(mio){pIn.classList.remove('hide');if(pIn.dataset.k!==q.text){pIn.dataset.k=q.text;document.getElementById('resp').value='';}}
+      else pIn.classList.add('hide');
+    }
+    tEnd=Date.now()+s.rem;reloj();
+    return;
+  }
+  if(s.phase==='reveal'&&s.rev){
+    ver('vRes');
+    if(mio){rT.textContent=s.rev.timeout?'⏱ Se acabó el tiempo':(s.rev.ok?'✔ ¡Correcto!':'✘ Fallo');rT.style.color=s.rev.ok?'#2E7D32':'#A33B3B';rS.textContent=s.rev.ok?'Volvéis a tirar':'Pasa el turno';}
+    else{rT.textContent=s.rev.timeout?cur.name+' no ha contestado a tiempo':cur.name+(s.rev.ok?' acierta':' falla');rT.style.color='#3C4A38';rS.textContent='';}
+    return;
+  }
+}
+document.getElementById('resp').addEventListener('keydown',e=>{if(e.key==='Enter')envia();});
+let tEnd=0,tInt=null;
+function reloj(){const f=()=>{const l=Math.max(0,tEnd-Date.now());const b=document.getElementById('tbar');b.style.width=(100*l/30000)+'%';b.style.background=l<8000?'#A33B3B':'#5C7A54';document.getElementById('tnum').textContent=Math.ceil(l/1000);};f();if(!tInt)tInt=setInterval(f,200);}
+const eT=document.getElementById('eT'),eS=document.getElementById('eS'),rT=document.getElementById('rT'),rS=document.getElementById('rS');
+conecta();
+</script></body></html>
