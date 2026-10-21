@@ -1,11 +1,12 @@
 // Juegos de clase · servidor para Render
 // Ejecuta el mismo código de los servidores de Google Apps Script (Guerra de Titulares,
-// Juego de SEO, Carrera de la Redacción, La Vuelta de Deportes, La Liguilla y El Ahorcado de los Medios), pero en memoria, sin las esperas de Google.
+// Juego de SEO, Carrera de la Redacción, La Vuelta de Deportes, La Liguilla El Ahorcado de los Medios y Serpientes y escaleras), pero en memoria, sin las esperas de Google.
 "use strict";
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const serpientes = require("./serpientes.js");
 
 const PORT = process.env.PORT || 3000;
 const PUB = __dirname;
@@ -70,6 +71,7 @@ function cors(res) {
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, "http://x");
+  if (serpientes.handle(req, res, url)) return;
   const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla|ahorcado|microfono)\/?$/);
   if (m) {
     cors(res);

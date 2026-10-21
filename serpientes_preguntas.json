@@ -1,0 +1,1391 @@
+{
+ "mc": [
+  {
+   "c": "G",
+   "q": "¿Qué es el techo de cristal?",
+   "o": [
+    "Una barrera invisible que frena a las mujeres para llegar a los puestos más altos",
+    "Una norma escrita que impide a las mujeres ocupar cargos directivos",
+    "La diferencia de sueldo entre hombres y mujeres en el mismo puesto",
+    "El momento en que una mujer deja su empleo para cuidar de su familia"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es el ángulo de un reportaje?",
+   "o": [
+    "La pregunta concreta que el reportaje quiere responder sobre el tema",
+    "El tema general del que trata el reportaje",
+    "El motivo por el que se publica hoy",
+    "La persona protagonista de la escena inicial"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué significa cosificar a una persona?",
+   "o": [
+    "Tratar a una persona como un objeto, sobre todo a su cuerpo",
+    "Reducir a una persona a su profesión",
+    "Exigirle que se ocupe de las tareas de la casa",
+    "Impedir que hable en público"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Con qué nunca debe empezar el primer párrafo de un reportaje?",
+   "o": [
+    "Con una biografía del protagonista o con una cifra",
+    "Con una escena de alguien haciendo algo",
+    "Con un lugar y una hora concretos",
+    "Con un gesto o un detalle de la protagonista"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la brecha salarial?",
+   "o": [
+    "La diferencia entre lo que cobran de media hombres y mujeres",
+    "El porcentaje de mujeres en paro",
+    "La diferencia entre el sueldo de directivos y becarios",
+    "Lo que cuesta de más un producto pensado para mujeres"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es la percha de un reportaje?",
+   "o": [
+    "El motivo por el que se publica hoy y no hace tres meses",
+    "La pregunta que responde el reportaje",
+    "El primer párrafo que engancha al lector",
+    "La frase que une dos bloques del texto"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es un estereotipo de género?",
+   "o": [
+    "Una idea fija y repetida sobre cómo debe ser o comportarse una mujer o un hombre",
+    "Una estadística que compara a hombres y mujeres",
+    "Una ley que reparte los roles en la familia",
+    "Una opinión argumentada sobre la igualdad"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "Un dato sin una cosa al lado no sirve. ¿Cuál?",
+   "o": [
+    "La fuente y el año",
+    "El nombre del periodista que lo consiguió",
+    "Un gráfico que lo acompañe",
+    "Una opinión de un experto"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es el patriarcado?",
+   "o": [
+    "El sistema social en el que los hombres tienen el poder y las mujeres quedan subordinadas",
+    "Un sistema de gobierno dirigido por los ancianos",
+    "La herencia de bienes por línea paterna únicamente",
+    "El reparto del trabajo entre el campo y la ciudad"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es una frase-puente?",
+   "o": [
+    "La frase que recoge el bloque anterior y abre el siguiente sin que se note la costura",
+    "La frase final que cierra el reportaje",
+    "La primera frase, la que contiene la escena",
+    "La frase que resume el titular"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué son los micromachismos?",
+   "o": [
+    "Prácticas cotidianas casi imperceptibles que sostienen la desigualdad",
+    "Agresiones físicas graves dentro de la pareja",
+    "Leyes que dan ventaja a los hombres en el trabajo",
+    "Bromas que se hacen entre mujeres"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué diferencia hay entre noticia y reportaje?",
+   "o": [
+    "La noticia cuenta qué ha pasado y el reportaje explica por qué pasa y a quién",
+    "La noticia es más larga que el reportaje",
+    "El reportaje no necesita fuentes y la noticia sí",
+    "La noticia lleva opinión y el reportaje solo datos"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la sororidad?",
+   "o": [
+    "La solidaridad y la alianza entre mujeres a partir de una situación compartida",
+    "La rivalidad entre mujeres por los mismos puestos",
+    "El cuidado que las mujeres dedican a sus mayores",
+    "El apoyo de los hombres a las reivindicaciones feministas"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es la hemeroteca y para qué sirve antes de escribir?",
+   "o": [
+    "El archivo de lo ya publicado, que sirve para no repetir y encontrar el hueco",
+    "La lista de contactos de un periodista",
+    "El archivo de las fotografías de la agencia",
+    "La colección de leyes que afectan al asunto"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la doble jornada?",
+   "o": [
+    "Trabajar fuera de casa y, al volver, seguir asumiendo el trabajo doméstico y los cuidados",
+    "Tener dos empleos a la vez",
+    "Trabajar en turno de mañana y de tarde",
+    "Hacer el trabajo del hogar y el de la oficina el mismo día de la semana"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "En una entrevista, ¿por qué es mala una pregunta que se responde con sí o con no?",
+   "o": [
+    "Porque te contestarán sí o no y te quedarás sin material",
+    "Porque la fuente se enfada",
+    "Porque la entrevista dura menos de lo previsto",
+    "Porque no se pueden entrecomillar"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la carga mental?",
+   "o": [
+    "El trabajo invisible de planificar, recordar y organizar la casa y los cuidados",
+    "El cansancio acumulado tras una larga jornada laboral",
+    "La presión por ser perfecta ante los demás",
+    "La falta de memoria por exceso de trabajo"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué debe hacer un buen titular?",
+   "o": [
+    "Tener ángulo, presentar a un personaje y plantear un conflicto de un solo golpe de vista",
+    "Resumir todo el reportaje en una sola frase",
+    "Incluir la cifra más llamativa y la fuente",
+    "Formular una pregunta al lector"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué quiere decir que un sector está feminizado?",
+   "o": [
+    "Que la gran mayoría de quienes trabajan en él son mujeres",
+    "Que está protegido por leyes específicas para mujeres",
+    "Que lo dirige una mujer",
+    "Que cobra más que el resto de sectores"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es contrastar una información?",
+   "o": [
+    "Comprobarla con al menos otra fuente independiente antes de publicarla",
+    "Repetirla con otras palabras",
+    "Pedir a la fuente que la confirme por escrito",
+    "Publicarla y esperar posibles rectificaciones"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué son las gafas moradas?",
+   "o": [
+    "La perspectiva de género, que permite ver desigualdades que de otro modo pasan inadvertidas",
+    "Un símbolo de las manifestaciones del 8M",
+    "La mirada de quien solo se fija en lo negativo",
+    "Un lente especial para ver desigualdades en los datos"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué aporta el subtítulo que no aporta el titular?",
+   "o": [
+    "El contexto que en el titular no cabía",
+    "La repetición del titular con otras palabras",
+    "El nombre del autor y el lugar",
+    "El resumen de la última parte"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la violencia vicaria?",
+   "o": [
+    "La que se ejerce contra los hijos u otras personas queridas para hacer daño a la madre",
+    "La que se sufre en el entorno de trabajo",
+    "La que se ejerce por personas ajenas a la familia",
+    "La que ocurre entre menores en el colegio"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué significa que una fuente hable «off the record»?",
+   "o": [
+    "Que la información sirve para orientarse, pero no se puede publicar ni atribuir",
+    "Que la fuente no quiere que se publique su nombre pero sí lo dicho",
+    "Que la fuente habla solo con micrófono apagado, pero se puede publicar",
+    "Que la información se publica sin hacer ninguna comprobación"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es el androcentrismo?",
+   "o": [
+    "Poner al hombre en el centro y tomarlo como medida de todo",
+    "Dar más importancia a la mujer que al hombre",
+    "Creer que los hombres y las mujeres son iguales",
+    "Estudiar la historia desde las clases más bajas"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es la EPA y para qué sirve en un reportaje?",
+   "o": [
+    "La Encuesta de Población Activa del INE, con datos de empleo desglosados por sexo",
+    "El estudio de la Unión Europea sobre igualdad salarial",
+    "La estadística de violencia de género del Ministerio",
+    "El censo electoral por género"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es el manspreading?",
+   "o": [
+    "Abrir exageradamente las piernas en el transporte público ocupando el espacio de al lado",
+    "Explicar con condescendencia algo que ya se sabe",
+    "Interrumpir constantemente a una mujer cuando habla",
+    "Ocupar los asientos reservados"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es el mapa de bloques de un reportaje?",
+   "o": [
+    "El esquema de qué hace cada parte del texto y en qué orden, hecho antes de escribir",
+    "El índice que se pone al final",
+    "La lista de fuentes consultadas",
+    "El boceto de las fotos del reportaje"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es el mansplaining?",
+   "o": [
+    "Que un hombre explique con condescendencia a una mujer algo que ella ya sabe",
+    "Que un hombre se niegue a explicar nada a una mujer",
+    "Que un hombre dé la razón a una mujer sin escucharla",
+    "Que una mujer corrija en público a un compañero"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es una fuente institucional?",
+   "o": [
+    "La que habla en nombre de un organismo o una administración",
+    "La que tiene algo que ganar con lo que cuenta",
+    "La que vive el asunto en primera persona",
+    "La que aporta un documento"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué significa que un dato esté desagregado por sexo?",
+   "o": [
+    "Que la cifra aparece separada para hombres y para mujeres",
+    "Que los datos se han recogido solo entre hombres",
+    "Que se ha eliminado el sexo para proteger a las personas",
+    "Que el dato es menos fiable"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Por qué es mejor una cifra por frase que cuatro seguidas?",
+   "o": [
+    "Porque amontonadas no se retiene ninguna y repartidas cada una significa algo",
+    "Porque se tarda menos en escribirlas",
+    "Porque los lectores desconfían de las cifras",
+    "Porque el editor limita el número de datos"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la corresponsabilidad?",
+   "o": [
+    "Que el trabajo doméstico y los cuidados se repartan de verdad entre las dos personas",
+    "Que uno ayude al otro cuando tiene tiempo",
+    "Que las tareas se paguen con un salario",
+    "Que la familia contrate a una persona externa"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es un gabinete de prensa y por qué conviene llamarlo?",
+   "o": [
+    "El servicio de comunicación de una institución, que contesta cuando la persona no coge el teléfono",
+    "El departamento que decide qué se publica en un periódico",
+    "La oficina que archiva las notas de prensa",
+    "El servicio que verifica los datos de las empresas"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la hipersexualización?",
+   "o": [
+    "Presentar a una persona, sobre todo mujeres y niñas, centrando su valor en el atractivo sexual",
+    "Vestir a las niñas como mayores",
+    "Ocultar el cuerpo de las mujeres en los medios",
+    "Dar prioridad a las mujeres en los anuncios"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué hay que anotar cuando una fuente no contesta?",
+   "o": [
+    "A quién se llamó, qué día, a qué hora y cuántas veces",
+    "Solo el nombre de la fuente",
+    "Una opinión sobre su falta de respuesta",
+    "El número de teléfono de la fuente"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es el suelo pegajoso?",
+   "o": [
+    "Lo que retiene a muchas mujeres en los empleos peor pagados y sin promoción",
+    "La diferencia de sueldos entre hombres y mujeres",
+    "Lo que impide a las mujeres llegar a la cúpula",
+    "El reparto desigual de tareas en casa"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es la noticiabilidad?",
+   "o": [
+    "Lo que hace que algo merezca ser contado: novedad, interés público, afectados, actualidad",
+    "La probabilidad de que una noticia sea falsa",
+    "La cantidad de lectores que tiene",
+    "El nivel de detalle de una información"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la brecha digital de género?",
+   "o": [
+    "La diferencia entre hombres y mujeres en el acceso, el uso y la formación en tecnología",
+    "La cantidad de mujeres que usan redes sociales",
+    "La brecha entre ciudad y campo en internet",
+    "La desigualdad de sueldos en el sector tecnológico"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "Dos fuentes usan el mismo dato para decir cosas opuestas. ¿Qué hace el periodista?",
+   "o": [
+    "Contarlo, porque ese choque es la prueba de que el asunto está en disputa",
+    "Elegir la fuente más fiable e ignorar la otra",
+    "Publicar solo la versión de la fuente oficial",
+    "Descartar el dato y buscar otro"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué quiere decir heteronormativo?",
+   "o": [
+    "Que se da por supuesto que la heterosexualidad es la norma y se excluye todo lo demás",
+    "Que se defiende la igualdad entre sexos",
+    "Que se respeta a todas las orientaciones",
+    "Que se habla solo de hombres"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es una fuente testimonial?",
+   "o": [
+    "La persona que vive el asunto en primera persona y lo cuenta desde su experiencia",
+    "La persona que lo estudia y lo explica",
+    "La que representa a una institución",
+    "La que firma un documento"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es el síndrome de la impostora?",
+   "o": [
+    "La sensación persistente de no merecer el puesto propio y de que te van a descubrir",
+    "El miedo a hablar en público",
+    "La competitividad excesiva con las compañeras",
+    "La falta de ambición para ascender"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué información mínima hay que dar al presentarse por teléfono a una fuente?",
+   "o": [
+    "Quién eres, para qué medio trabajas, de qué va el reportaje y cuánto tiempo le vas a robar",
+    "Tu nombre, tu edad y tu formación",
+    "El nombre de tu jefe y el medio",
+    "Las preguntas que vas a hacerle"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es el feminicidio?",
+   "o": [
+    "El asesinato de una mujer por el hecho de serlo",
+    "Cualquier delito violento contra una mujer",
+    "El asesinato de una mujer mayor",
+    "La muerte de una mujer en un accidente doméstico"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Por qué «se han recortado los turnos» es una frase tramposa?",
+   "o": [
+    "Porque esconde al responsable y convierte una decisión en un accidente",
+    "Porque está en pasiva y es poco elegante",
+    "Porque no incluye ninguna cifra",
+    "Porque es demasiado larga"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es el trabajo de cuidados?",
+   "o": [
+    "Atender a menores, mayores o personas dependientes, casi siempre sin pagar y realizado sobre todo por mujeres",
+    "Trabajar en el sector sanitario",
+    "Atender a los clientes en el comercio",
+    "Cuidar de la imagen y del cuerpo"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Cuántas fuentes como mínimo debería tener un reportaje?",
+   "o": [
+    "Al menos dos que se respondan entre sí, además de los datos",
+    "Una sola, pero muy importante",
+    "Cuatro, todas ellas institucionales",
+    "Ninguna, si los datos son buenos"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es el consentimiento?",
+   "o": [
+    "El acuerdo libre, informado y revocable en cualquier momento",
+    "La ausencia de un no explícito",
+    "El silencio de la otra persona",
+    "Un acuerdo previo que dura toda la relación"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es una pregunta incómoda y por qué hay que hacerla?",
+   "o": [
+    "La que la fuente preferiría no oír, y se hace al final",
+    "La que se hace en primer lugar para romper el hielo",
+    "La que no tiene respuesta posible",
+    "La que se hace con el micrófono apagado"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la división sexual del trabajo?",
+   "o": [
+    "El reparto de tareas y profesiones según el sexo, que asigna a las mujeres lo doméstico y los cuidados",
+    "Que cada empleo se reparta por sorteo",
+    "El reparto igualitario de los ingresos del hogar",
+    "Las diferencias biológicas entre sexos"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es citar literalmente y cuándo hay que hacerlo?",
+   "o": [
+    "Reproducir las palabras exactas entre comillas cuando la forma de decirlo importa tanto como lo dicho",
+    "Resumir lo que dijo la fuente con tus palabras",
+    "Citar de memoria",
+    "Citar siempre todas las frases de la entrevista"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué son los silencios de la agenda?",
+   "o": [
+    "Lo que un medio decide no contar, que también informa",
+    "Las noticias que la agencia no distribuye",
+    "Las noticias que se publican en horario nocturno",
+    "Los asuntos que no interesan a nadie"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es el lead o entradilla?",
+   "o": [
+    "El primer párrafo, el que decide si el lector sigue",
+    "El resumen de las fuentes",
+    "El cierre del reportaje",
+    "El nombre de la sección"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es el rol tradicional de género?",
+   "o": [
+    "La idea de que la mujer existe para gustar, cuidar o conquistar, y el hombre para proveer y mandar",
+    "La división de tareas que cada pareja pacta",
+    "La ley que reparte funciones en la familia",
+    "Una teoría sobre el origen de la familia"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué se hace cuando los datos contradicen tu hipótesis?",
+   "o": [
+    "Se cambia la hipótesis",
+    "Se buscan otros datos hasta que encajen",
+    "Se omite el dato incómodo",
+    "Se pregunta a una fuente amiga"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es el modelo hegemónico?",
+   "o": [
+    "Aquello que se da por normal sin discutirlo",
+    "El modelo defendido por la mayoría parlamentaria",
+    "Lo que dice la ley",
+    "El sistema que se enseña en la escuela"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es el GMMP?",
+   "o": [
+    "El Proyecto de Monitoreo Global de Medios, que mide cada cinco años la presencia de las mujeres en la información",
+    "Un informe anual sobre sueldos en redacciones",
+    "Una guía para el lenguaje inclusivo",
+    "Un premio internacional de periodismo"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Por qué se dice «interna» y no «sirvienta»?",
+   "o": [
+    "Porque nombra el tipo de contrato y no rebaja a la persona",
+    "Porque lo exige la Real Academia",
+    "Porque suena más antiguo",
+    "Porque es una palabra poco usada"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es una fuente interesada?",
+   "o": [
+    "La que tiene algo que ganar con lo que cuenta",
+    "La que habla en nombre de una institución",
+    "La que ha vivido el asunto",
+    "La que conoce el asunto por sus estudios"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la violencia económica?",
+   "o": [
+    "Controlar el dinero, impedir trabajar o dejar sin recursos a la mujer para dominarla",
+    "Pagar menos a las mujeres por el mismo trabajo",
+    "Negarse a comprar lo que pide la pareja",
+    "Perder el empleo por una crisis"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es el cierre de un reportaje y qué no debe hacer?",
+   "o": [
+    "La última frase, la que se queda: no debe resumir y suele volver a la persona del principio",
+    "El resumen de todos los datos utilizados",
+    "Una frase con la opinión del autor",
+    "La lista de fuentes consultadas"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es el techo de cemento?",
+   "o": [
+    "Cuando la propia mujer renuncia a promocionar por la carga de cuidados o por el coste personal",
+    "Cuando la empresa bloquea los ascensos de las mujeres",
+    "Cuando una mujer asciende gracias a una cuota",
+    "Cuando una mujer deja la empresa por mala relación con sus compañeros"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué diferencia hay entre un dato y una interpretación?",
+   "o": [
+    "El dato se puede comprobar y la interpretación es la lectura que alguien hace de él",
+    "El dato es un número y la interpretación es una palabra",
+    "El dato lo da el periodista y la interpretación la fuente",
+    "No hay diferencia, son lo mismo"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es el acoso callejero?",
+   "o": [
+    "Los comentarios, silbidos o persecuciones a mujeres en el espacio público por parte de desconocidos",
+    "Los robos en la calle",
+    "Las discusiones entre vecinas",
+    "Las bromas entre amigos en el bar"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es un teletipo?",
+   "o": [
+    "El despacho que envían las agencias a los medios, que es materia prima",
+    "El teléfono directo con las fuentes",
+    "El informe completo de un reportaje",
+    "La nota de prensa de una empresa"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Por qué se dice «persona dependiente» y no «discapacitada»?",
+   "o": [
+    "Porque nombra primero a la persona y después su situación, que puede ser temporal",
+    "Porque es una expresión más antigua",
+    "Porque la define por lo que no puede hacer",
+    "Porque son sinónimos exactos"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Para qué sirve grabar una entrevista si además tomas notas?",
+   "o": [
+    "Para poder citar literalmente sin inventar y demostrar lo que la fuente dijo",
+    "Para ahorrar tiempo al escribir",
+    "Para no tener que tomar notas",
+    "Para publicar el audio completo"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la publicidad sexista?",
+   "o": [
+    "La que usa el cuerpo de la mujer como reclamo o la asocia solo a la limpieza, la belleza o el cuidado",
+    "La que se dirige solo a mujeres",
+    "La que tiene una protagonista femenina",
+    "La que no incluye ninguna mujer"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es el enfoque de un reportaje?",
+   "o": [
+    "Desde dónde se mira el asunto: a quién se pone en el centro y a quién se deja fuera",
+    "El tema general del reportaje",
+    "El número de fuentes que se usan",
+    "El orden de los bloques"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la mochila invisible?",
+   "o": [
+    "Todo lo que una mujer carga sin que se vea ni se pague: recordar, organizar, prever y sostener",
+    "El bolso que llevan las mujeres a diario",
+    "El peso de las bolsas de la compra",
+    "La responsabilidad de los puestos directivos"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué hay que preguntar a una protagonista para que se abra: su opinión o su día?",
+   "o": [
+    "Su día, porque \"¿a qué hora sale de casa?\" rinde mucho más que \"¿qué le parece?\"",
+    "Su opinión sobre el tema",
+    "Su valoración de la situación política",
+    "Su biografía completa"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la desigualdad estructural?",
+   "o": [
+    "La que depende de cómo están organizadas las leyes, el trabajo y las costumbres",
+    "La que resulta de decisiones de una persona concreta",
+    "La que se da solo en edificios y obras",
+    "La que se produce de forma puntual"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es una crónica y en qué se diferencia del reportaje?",
+   "o": [
+    "La crónica narra hechos presenciados siguiendo el tiempo y el reportaje investiga y estructura",
+    "La crónica es más corta",
+    "La crónica no lleva citas",
+    "La crónica es siempre de deportes"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué significa invisibilizar?",
+   "o": [
+    "Hacer desaparecer del relato a quien sí estaba: no nombrarla, no citarla, no contarla",
+    "Darle más protagonismo del que tiene",
+    "Contar su historia sin su permiso",
+    "Tratarla con lástima"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es verificar un dato?",
+   "o": [
+    "Ir a la fuente original y comprobarlo ahí",
+    "Buscarlo en otro medio que lo publique",
+    "Preguntar a un compañero",
+    "Comprobar que sale en una red social"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la perspectiva de género en periodismo?",
+   "o": [
+    "Comprobar si un fenómeno afecta distinto a hombres y a mujeres y contarlo con datos",
+    "Escribir solo sobre temas de mujeres",
+    "Dar siempre más voz a las mujeres que a los hombres",
+    "Añadir una opinión feminista a la noticia"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es el off the record y en qué se diferencia del anonimato?",
+   "o": [
+    "El off the record no se publica y en el anonimato se publica lo dicho sin identificar a quien lo dijo",
+    "Son lo mismo con otro nombre",
+    "El off the record se publica con nombre y el anonimato no",
+    "El anonimato es solo para las fuentes institucionales"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la cultura de la violación?",
+   "o": [
+    "El conjunto de ideas y bromas que normalizan la agresión sexual y culpan a la víctima",
+    "Una ley que regula las agresiones sexuales",
+    "Un programa de prevención en colegios",
+    "Una campaña contra el acoso"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es una fuente documental?",
+   "o": [
+    "Un documento: una ley, una sentencia, un informe, una portada de hemeroteca",
+    "La persona que firma un texto",
+    "Una conversación grabada",
+    "La nota de prensa de una empresa"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es el empleo a tiempo parcial no deseado?",
+   "o": [
+    "Trabajar menos horas de las que se querría porque no hay otra opción",
+    "Trabajar menos horas por decisión propia",
+    "Trabajar solo los fines de semana",
+    "Trabajar sin contrato"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Por qué hay que contar las voces de un reportaje antes de entregarlo?",
+   "o": [
+    "Para ver cuántas mujeres y cuántos hombres hablan y de qué tipo son",
+    "Para saber cuántas citas caben en el texto",
+    "Para ver si la longitud es la adecuada",
+    "Para comprobar que hay una fuente institucional"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la maternidad penalizada en el empleo?",
+   "o": [
+    "La pérdida de salario, ascensos y oportunidades que sufren las mujeres tras tener hijos",
+    "La baja que se concede al tener un hijo",
+    "El gasto que supone criar a un hijo",
+    "La dificultad de conciliar para ambos progenitores por igual"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Cuándo se pasa del caso particular al dato general?",
+   "o": [
+    "En el segundo o tercer párrafo, porque una sola persona no es un reportaje",
+    "En el último párrafo",
+    "Antes de la escena inicial",
+    "En el titular"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la segregación ocupacional?",
+   "o": [
+    "Que hombres y mujeres se concentren en profesiones distintas y que las de ellas estén peor pagadas",
+    "Que las mujeres no estudien carreras técnicas",
+    "Que todos los sectores estén igualados",
+    "Que las mujeres sean mayoría en las universidades"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué se hace si una fuente pide leer el texto antes de publicarlo?",
+   "o": [
+    "Se le pueden leer sus propias citas para comprobar exactitud, pero no se le entrega el reportaje para que lo apruebe",
+    "Se le entrega el texto completo para que lo corrija",
+    "Se publica sin avisarle",
+    "Se le promete cambiar lo que no le guste"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es el empoderamiento?",
+   "o": [
+    "El proceso por el que una persona o un grupo gana poder, autonomía y capacidad de decidir",
+    "El miedo a tomar decisiones",
+    "La capacidad de mandar sobre otras personas",
+    "El reparto de bienes en una pareja"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué significa que un reportaje tenga percha y ángulo a la vez?",
+   "o": [
+    "Que se publica ahora por un motivo y además responde a una pregunta propia que nadie ha respondido",
+    "Que tiene un buen titular y una buena foto",
+    "Que usa solo fuentes oficiales",
+    "Que tiene más de mil palabras"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la desigualdad en el uso del tiempo?",
+   "o": [
+    "Que mujeres y hombres dediquen horas muy distintas al trabajo no pagado",
+    "Que las mujeres trabajen más horas en la oficina",
+    "Que las mujeres tengan menos vacaciones",
+    "Que los hombres duerman menos que las mujeres"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es una fuente sindical y qué aporta que otras no aportan?",
+   "o": [
+    "La que representa a los trabajadores y aporta datos propios y acceso a quienes viven el asunto",
+    "La que representa a la patronal",
+    "La que habla en nombre del gobierno",
+    "La que ha estudiado el asunto en la universidad"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es el lenguaje inclusivo?",
+   "o": [
+    "El uso del idioma que evita que lo masculino se dé por universal y hace visibles a las mujeres",
+    "El uso de palabras más cultas",
+    "El abandono de las normas de la gramática",
+    "El uso exclusivo del femenino"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es un reportaje de datos?",
+   "o": [
+    "El que parte de una base de datos y encuentra en ella la historia",
+    "El que parte de un personaje y su escena",
+    "El que se escribe en pocas horas",
+    "El que solo contiene gráficos"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la violencia obstétrica?",
+   "o": [
+    "El trato irrespetuoso o las intervenciones sin consentimiento durante el embarazo y el parto",
+    "La violencia entre mujeres embarazadas",
+    "La falta de médicos en los hospitales",
+    "El maltrato del padre durante el parto"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es la atribución de una información?",
+   "o": [
+    "Decir de quién procede una información: con nombre, con cargo o al menos con la categoría de la fuente",
+    "Poner el nombre del periodista en la firma",
+    "Citar el medio donde se publicó antes",
+    "Atribuirla siempre a una fuente anónima"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la representación en los medios?",
+   "o": [
+    "Quién aparece, cómo aparece y en calidad de qué",
+    "El número de páginas dedicadas a un tema",
+    "La cantidad de fotos de mujeres",
+    "El número de periodistas mujeres en la redacción"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Por qué «por otro lado» o «cabe destacar» no son buenas transiciones?",
+   "o": [
+    "Porque anuncian el cambio de tema en vez de disimularlo",
+    "Porque son demasiado largas",
+    "Porque son palabras demasiado cultas",
+    "Porque no existen en español"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la interseccionalidad?",
+   "o": [
+    "Que las desigualdades se suman: no es lo mismo ser mujer que ser mujer, migrante y pobre",
+    "Que hay desigualdades solo entre países",
+    "Que se cruzan las calles de dos barrios",
+    "Que todas las mujeres sufren lo mismo"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es una escena en un reportaje?",
+   "o": [
+    "Una persona haciendo algo, a una hora concreta y en un lugar concreto",
+    "Un resumen de lo ocurrido",
+    "Un párrafo de datos",
+    "Una opinión del autor"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la brecha de cuidados?",
+   "o": [
+    "La diferencia de horas que dedican mujeres y hombres a cuidar de otras personas sin cobrar",
+    "La diferencia de salario en trabajos de cuidado",
+    "El número de residencias que hay por habitante",
+    "La diferencia de esperanza de vida entre sexos"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué se hace con un dato que no puedes verificar?",
+   "o": [
+    "No se publica y, si es imprescindible, se dice quién lo afirma y que no ha podido comprobarse",
+    "Se publica con la mejor fuente disponible",
+    "Se publica sin decir nada",
+    "Se pregunta a otro medio si lo ha publicado"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es el pinkwashing?",
+   "o": [
+    "Que una empresa se presente comprometida con la igualdad para vender, sin cambiar nada dentro",
+    "Una campaña que dona dinero a asociaciones de mujeres",
+    "Un anuncio que usa el color rosa",
+    "Una empresa dirigida por una mujer"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es el interés público y en qué se diferencia de lo que interesa al público?",
+   "o": [
+    "Interés público es lo que la gente necesita saber y lo que interesa al público es lo que le apetece leer",
+    "Son sinónimos",
+    "El interés público es lo que más se lee",
+    "Lo que interesa al público es lo que dice la ley"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es una cuota y para qué se usa?",
+   "o": [
+    "Un porcentaje mínimo obligatorio de mujeres en un ámbito, usado para corregir una desigualdad",
+    "Un precio máximo para un servicio",
+    "Una aportación mensual a una asociación",
+    "Un número fijo de horas de trabajo"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué hay que hacer antes de llamar por teléfono a una fuente?",
+   "o": [
+    "Escribirle antes, para que aunque hoy no conteste pueda haber respuesta mañana",
+    "Llamarle sin avisar para que no prepare nada",
+    "Preguntar a otra fuente sobre él",
+    "Pedir a un compañero que le llame"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué fue el 8M y por qué importa en la agenda de los medios?",
+   "o": [
+    "El Día Internacional de la Mujer, que convirtió en noticia anual asuntos que el resto del año no se cubren",
+    "Una manifestación puntual de 2018",
+    "Una campaña de redes sobre el acoso",
+    "Un premio de periodismo"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es una exclusiva y qué obligación añade?",
+   "o": [
+    "Una información que nadie más tiene, y obliga a verificarla mejor porque nadie la ha contrastado antes",
+    "Una información que se publica la primera",
+    "Una información de una fuente oficial",
+    "Una entrevista con un personaje famoso"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es el edadismo y cómo se cruza con el género?",
+   "o": [
+    "La discriminación por edad, que en las mujeres se suma antes y se nota sobre todo en la televisión y el empleo",
+    "La discriminación por el nivel de estudios",
+    "El rechazo a las nuevas tecnologías",
+    "La exclusión de las personas con discapacidad"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es una fuente experta?",
+   "o": [
+    "Quien tiene conocimiento acreditado del asunto y puede explicarlo",
+    "Quien más opina sobre el asunto",
+    "Quien más sale en televisión",
+    "Quien trabaja en la institución implicada"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la violencia digital contra las mujeres?",
+   "o": [
+    "El acoso, las amenazas y la difusión de imágenes sin permiso a través de redes y mensajería",
+    "Los fallos de seguridad de las empresas",
+    "Los insultos en una conversación presencial",
+    "El robo de datos bancarios"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué significa que un reportaje esté bien estructurado?",
+   "o": [
+    "Que cada bloque hace una cosa distinta y el lector nunca se pregunta por qué está leyendo eso",
+    "Que tiene muchos párrafos",
+    "Que cada bloque repite la idea anterior",
+    "Que empieza por la conclusión"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es la conciliación y por qué la palabra es discutida?",
+   "o": [
+    "Compatibilizar empleo y vida familiar, y se critica porque en la práctica se les pide solo a las mujeres",
+    "Dividir las tareas del hogar a partes iguales",
+    "Dejar el empleo para criar a los hijos",
+    "Un permiso retribuido para los padres"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué es el periodismo de servicio?",
+   "o": [
+    "El que además de contar explica al lector qué puede hacer: dónde acudir, qué derechos tiene, cómo reclamar",
+    "El que se publica los fines de semana",
+    "El que cuenta noticias del tiempo y del tráfico",
+    "El que se escribe para una sola persona"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Qué es el periodismo con perspectiva de género?",
+   "o": [
+    "Comprobar si un fenómeno afecta distinto a mujeres y a hombres, con datos desagregados y voces de ambos",
+    "Escribir solo sobre temas de mujeres",
+    "Añadir una columna de opinión feminista a cada noticia",
+    "Evitar los temas que afectan a las mujeres para no tomar partido"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Cuáles son los cuatro bloques de un reportaje breve, en orden?",
+   "o": [
+    "El gancho, por qué importa, la prueba y el cierre-venta",
+    "Titular, entradilla, cuerpo y firma",
+    "Presentación, nudo, desenlace y moraleja",
+    "Cifra, declaración, valoración y despedida"
+   ]
+  },
+  {
+   "c": "G",
+   "q": "¿Por qué se dice «situación de irregularidad» y no «sin papeles»?",
+   "o": [
+    "Porque describe una situación administrativa y temporal, en vez de definir a la persona por lo que le falta",
+    "Porque es una expresión más corta",
+    "Porque es lo que dice la ley siempre",
+    "Porque son palabras sinónimas"
+   ]
+  },
+  {
+   "c": "R",
+   "q": "¿Qué tres cosas debe tener cualquier dato publicado?",
+   "o": [
+    "Cifra, fuente y año",
+    "Cifra, titular y autor",
+    "Cifra, gráfico y enlace",
+    "Fuente, opinión y año"
+   ]
+  }
+ ],
+ "p": [
+  {
+   "q": "Fue corresponsal de TVE en Pekín, Nueva York y París, y ha informado desde Jerusalén. ¿Quién es?",
+   "name": "Almudena Ariza",
+   "ap": [
+    "ariza"
+   ],
+   "wiki": "Almudena_Ariza"
+  },
+  {
+   "q": "Dirige y presenta «Julia en la onda», en Onda Cero. ¿Quién es?",
+   "name": "Julia Otero",
+   "ap": [
+    "otero"
+   ],
+   "wiki": "Julia_Otero"
+  },
+  {
+   "q": "Fundó Newtral, la plataforma de verificación, y presentó «El Objetivo». ¿Quién es?",
+   "name": "Ana Pastor",
+   "ap": [
+    "pastor"
+   ],
+   "wiki": "Ana_Pastor_(periodista)"
+  },
+  {
+   "q": "Es la primera mujer que ha dirigido el diario El País. ¿Quién es?",
+   "name": "Pepa Bueno",
+   "ap": [
+    "bueno"
+   ],
+   "wiki": "Pepa_Bueno"
+  },
+  {
+   "q": "Presenta los informativos del fin de semana de la Cadena SER y llegó a la radio desde Galicia. ¿Quién es?",
+   "name": "Aida Bao",
+   "ap": [
+    "bao"
+   ],
+   "wiki": "Aida_Bao"
+  },
+  {
+   "q": "Presentó «Más vale tarde» en laSexta y trabaja el periodismo de investigación y el true crime. ¿Quién es?",
+   "name": "Mamen Mendizábal",
+   "ap": [
+    "mendizabal"
+   ],
+   "wiki": "Mamen_Mendizábal"
+  },
+  {
+   "q": "Presenta «Espejo Público» en Antena 3. ¿Quién es?",
+   "name": "Susanna Griso",
+   "ap": [
+    "griso"
+   ],
+   "wiki": "Susanna_Griso"
+  },
+  {
+   "q": "Presenta «La hora de La 1» en Televisión Española. ¿Quién es?",
+   "name": "Silvia Intxaurrondo",
+   "ap": [
+    "intxaurrondo"
+   ],
+   "wiki": "Silvia_Intxaurrondo"
+  },
+  {
+   "q": "Presenta los informativos de Antena 3 y escribe poesía y novela. ¿Quién es?",
+   "name": "Mónica Carrillo",
+   "ap": [
+    "carrillo"
+   ],
+   "wiki": "Mónica_Carrillo"
+  },
+  {
+   "q": "Presenta laSexta Noticias desde hace años. ¿Quién es?",
+   "name": "Helena Resano",
+   "ap": [
+    "resano"
+   ],
+   "wiki": "Helena_Resano"
+  },
+  {
+   "q": "Presenta la sección de noticias de «El Intermedio». ¿Quién es?",
+   "name": "Sandra Sabatés",
+   "ap": [
+    "sabates"
+   ],
+   "wiki": "Sandra_Sabatés"
+  },
+  {
+   "q": "Fue durante décadas corresponsal de TVE en Asia-Pacífico y es una de las reporteras más veteranas del periodismo español. ¿Quién es?",
+   "name": "Rosa María Calaf",
+   "ap": [
+    "calaf"
+   ],
+   "wiki": "Rosa_María_Calaf"
+  },
+  {
+   "q": "Periodista especializada en violencia machista y desigualdad, muy activa en la divulgación feminista. ¿Quién es?",
+   "name": "Ana Bernal-Triviño",
+   "ap": [
+    "bernal",
+    "trivino"
+   ],
+   "wiki": "Ana_Bernal-Triviño"
+  },
+  {
+   "q": "Dirige la sección de Género de elDiario.es y puso en marcha el blog «Micromachismos». ¿Quién es?",
+   "name": "Ana Requena Aguilar",
+   "ap": [
+    "requena"
+   ],
+   "wiki": "Ana_Requena"
+  },
+  {
+   "q": "Firma análisis político en El Mundo y es una de las columnistas más leídas del país. ¿Quién es?",
+   "name": "Lucía Méndez",
+   "ap": [
+    "mendez"
+   ],
+   "wiki": "Lucía_Méndez_(periodista)"
+  },
+  {
+   "q": "Presentó los Informativos de Telecinco y hoy es también novelista de éxito. ¿Quién es?",
+   "name": "Carme Chaparro",
+   "ap": [
+    "chaparro"
+   ],
+   "wiki": "Carme_Chaparro"
+  },
+  {
+   "q": "Condujo «La Ventana» en la Cadena SER durante muchos años. ¿Quién es?",
+   "name": "Gemma Nierga",
+   "ap": [
+    "nierga"
+   ],
+   "wiki": "Gemma_Nierga"
+  },
+  {
+   "q": "Fue corresponsal en Afganistán durante años, en solitario, cubriendo la vida de las mujeres afganas. ¿Quién es?",
+   "name": "Mónica Bernabé",
+   "ap": [
+    "bernabe"
+   ],
+   "wiki": "Mònica_Bernabé"
+  },
+  {
+   "q": "Escritora y columnista de El País, autora de reportajes y entrevistas legendarias, define el feminismo como una revolución plural. ¿Quién es?",
+   "name": "Rosa Montero",
+   "ap": [
+    "montero"
+   ],
+   "wiki": "Rosa_Montero"
+  },
+  {
+   "q": "Fue corresponsal de TVE en Londres y Washington. ¿Quién es?",
+   "name": "Anna Bosch",
+   "ap": [
+    "bosch"
+   ],
+   "wiki": "Anna_Bosch"
+  },
+  {
+   "q": "Corresponsal de El País en Oriente Próximo, ha informado desde Irán e Irak durante décadas. ¿Quién es?",
+   "name": "Ángeles Espinosa",
+   "ap": [
+    "espinosa"
+   ],
+   "wiki": "Ángeles_Espinosa"
+  },
+  {
+   "q": "Reportera y columnista de El País, cubrió Beirut y ganó el Premio Nadal de novela. ¿Quién es?",
+   "name": "Maruja Torres",
+   "ap": [
+    "torres"
+   ],
+   "wiki": "Maruja_Torres"
+  },
+  {
+   "q": "Impulsó en redes la campaña #Cuéntalo, que recogió miles de relatos de violencia machista. ¿Quién es?",
+   "name": "Cristina Fallarás",
+   "ap": [
+    "fallaras"
+   ],
+   "wiki": "Cristina_Fallarás"
+  },
+  {
+   "q": "Dirige «Hora 25» en la Cadena SER. ¿Quién es?",
+   "name": "Àngels Barceló",
+   "ap": [
+    "barcelo"
+   ],
+   "wiki": "Àngels_Barceló"
+  },
+  {
+   "q": "Es una de las caras de laSexta, donde ha presentado programas de actualidad política. ¿Quién es?",
+   "name": "Cristina Pardo",
+   "ap": [
+    "pardo"
+   ],
+   "wiki": "Cristina_Pardo"
+  },
+  {
+   "q": "Periodista y escritora de El País, autora de novela negra y firma habitual de opinión. ¿Quién es?",
+   "name": "Berna González Harbour",
+   "ap": [
+    "harbour"
+   ],
+   "wiki": "Berna_González_Harbour"
+  },
+  {
+   "q": "Fue pionera en la información deportiva en televisión en España, en una redacción de hombres. ¿Quién es?",
+   "name": "Olga Viza",
+   "ap": [
+    "viza"
+   ],
+   "wiki": "Olga_Viza"
+  },
+  {
+   "q": "Es escritora y periodista, pionera del reportaje en la Transición, y una de las voces más reconocidas de la profesión. ¿Quién es?",
+   "name": "Nativel Preciado",
+   "ap": [
+    "preciado"
+   ],
+   "wiki": "Nativel_Preciado"
+  }
+ ]
+}
