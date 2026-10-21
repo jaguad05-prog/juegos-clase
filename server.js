@@ -1,6 +1,6 @@
 // Juegos de clase · servidor para Render
 // Ejecuta el mismo código de los servidores de Google Apps Script (Guerra de Titulares,
-// Juego de SEO, Carrera de la Redacción, La Vuelta de Deportes, La Liguilla El Ahorcado de los Medios y Serpientes y escaleras), pero en memoria, sin las esperas de Google.
+// Juego de SEO, Carrera de la Redacción, La Vuelta de Deportes, La Liguilla El Ahorcado de los Medios, Serpientes y escaleras y La Liguilla de la Mujer Invisible), pero en memoria, sin las esperas de Google.
 "use strict";
 const http = require("http");
 const fs = require("fs");
@@ -55,6 +55,7 @@ const JUEGOS = {
   liguilla: cargarJuego("liguilla"),
   ahorcado: cargarJuego("ahorcado"),
   microfono: cargarJuego("microfono"),
+  mujer: cargarJuego("mujer"),
 };
 
 const TIPOS = {
@@ -72,7 +73,7 @@ function cors(res) {
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, "http://x");
   if (serpientes.handle(req, res, url)) return;
-  const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla|ahorcado|microfono)\/?$/);
+  const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla|ahorcado|microfono|mujer)\/?$/);
   if (m) {
     cors(res);
     if (req.method === "OPTIONS") { res.writeHead(204); return res.end(); }
