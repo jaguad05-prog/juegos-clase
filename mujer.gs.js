@@ -140,15 +140,37 @@ function todas() {
 }
 function barajar(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
 
-// Plan de preguntas: con 9 jornadas, un bloque por jornada; con menos, todos los bloques mezclados.
+// Preguntas ya usadas en partidas anteriores. No vuelven a salir hasta que se acaba el banco.
+function cicloLeer() { try { return JSON.parse(P.getProperty("CICLO") || "[]"); } catch (x) { return []; } }
+function cicloSumar(lista) {
+  var total = todas().length, c = cicloLeer();
+  (lista || []).forEach(function (r) {
+    var k = Array.isArray(r) ? r[0] + "_" + r[1] : String(r);
+    var bq = k.split("_");
+    if (BLOQUES[+bq[0]] && BLOQUES[+bq[0]].q[+bq[1]] && c.indexOf(k) < 0) c.push(k);
+  });
+  if (c.length >= total) c = [];
+  P.setProperty("CICLO", JSON.stringify(c));
+}
+
+// Plan de preguntas: con 9 jornadas, un bloque por jornada; con menos, todos los bloques mezclados,
+// primero las que no han salido en otras partidas.
 function plan(nJornadas) {
   if (nJornadas >= BLOQUES.length) {
     return BLOQUES.map(function (b, bi) { return b.q.map(function (x, qi) { return [bi, qi]; }); });
   }
+  var ciclo = cicloLeer(), need = nJornadas * N_PREG;
   var orden = barajar(BLOQUES.map(function (b, bi) { return bi; }));
-  var perm = BLOQUES.map(function (b) { return barajar(b.q.map(function (x, qi) { return qi; })); });
+  var nuevas = BLOQUES.map(function (b, bi) { return barajar(b.q.map(function (x, qi) { return qi; }).filter(function (qi) { return ciclo.indexOf(bi + "_" + qi) < 0; })); });
+  var viejas = BLOQUES.map(function (b, bi) { return barajar(b.q.map(function (x, qi) { return qi; }).filter(function (qi) { return ciclo.indexOf(bi + "_" + qi) >= 0; })); });
   var lista = [];
-  for (var i = 0; i < N_PREG; i++) orden.forEach(function (bi) { lista.push([bi, perm[bi][i]]); });
+  [nuevas, viejas].forEach(function (fuente) {
+    var hay = true;
+    while (lista.length < need && hay) {
+      hay = false;
+      orden.forEach(function (bi) { if (lista.length < need && fuente[bi].length) { lista.push([bi, fuente[bi].shift()]); hay = true; } });
+    }
+  });
   var out = [];
   for (var r = 0; r < nJornadas; r++) out.push(lista.slice(r * N_PREG, (r + 1) * N_PREG));
   return out;
@@ -204,7 +226,7 @@ function siguiente(g) {
       if (lideres.length === 1) { g.champ = lideres[0]; g.phase = "jfin"; g.status = "over"; return; }
       // siguen empatados: solo juegan los que van primeros, una pregunta más a muerte súbita
       F.vivos = lideres;
-      g.jq.push(extra(g));
+      var ex = extra(g); g.jq.push(ex); cicloSumar([ex]);
       g.sudden = true;
     }
   } else if (g.q + 1 >= g.jq.length) {
@@ -253,6 +275,7 @@ function vista(g, t) {
     if (g.phase === "rev") { c.pregunta.c = q.c; c.pregunta.e = q.e; }
   }
   c.respondidos = Object.keys(g.ans || {});
+  c.ciclo = cicloLeer();
   if (g.phase === "q") {
     c.ans = {};
     if (t && g.ans[t]) c.ans[t] = g.ans[t];
@@ -262,8 +285,10 @@ function vista(g, t) {
 }
 
 var ACCIONES = {
-  "new": function () {
+  "new": function (p) {
     limpiarViejas();
+    // la pantalla del proyector manda las preguntas que recuerda de otras partidas
+    if (p && p.prev && p.prev.length) cicloSumar(p.prev);
     var letras = "ABCDEFGHJKLMNPQRSTUVWXYZ", code;
     do {
       code = "";
@@ -327,6 +352,7 @@ var ACCIONES = {
     });
     g.jq = g.plan[r].slice();
     g.usadas = (g.usadas || []).concat(g.jq);
+    cicloSumar(g.jq);
     g.q = 0; g.ans = {}; g.phase = "q"; g.qStart = Date.now(); g.paused = false;
     guardar(g);
     return { ok: true };
@@ -379,6 +405,7 @@ var ACCIONES = {
     var libres = barajar(todas().filter(function (r) { return !usadas[r[0] + "_" + r[1]]; }));
     var resto = barajar(todas().filter(function (r) { return usadas[r[0] + "_" + r[1]]; }));
     g.jq = libres.concat(resto).slice(0, N_PREG);
+    cicloSumar(g.jq);
     g.q = 0; g.ans = {}; g.phase = "q"; g.qStart = Date.now(); g.paused = false; g.sudden = false;
     guardar(g);
     return { ok: true };

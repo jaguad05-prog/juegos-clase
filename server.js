@@ -53,6 +53,7 @@ const JUEGOS = {
   carrera: cargarJuego("carrera"),
   vuelta: cargarJuego("vuelta", "carrera"),   // la Vuelta usa el mismo servidor que la Carrera, con sus propias partidas
   liguilla: cargarJuego("liguilla"),
+  liguilla2: cargarJuego("liguilla2"),   // La Liguilla sin pruebas v2: gana el gol quien acierta antes
   ahorcado: cargarJuego("ahorcado"),
   microfono: cargarJuego("microfono"),
   mujer: cargarJuego("mujer"),
@@ -73,7 +74,7 @@ function cors(res) {
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, "http://x");
   if (serpientes.handle(req, res, url)) return;
-  const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla|ahorcado|microfono|mujer)\/?$/);
+  const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla2|liguilla|ahorcado|microfono|mujer)\/?$/);
   if (m) {
     cors(res);
     if (req.method === "OPTIONS") { res.writeHead(204); return res.end(); }
