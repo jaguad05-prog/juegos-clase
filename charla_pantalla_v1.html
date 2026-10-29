@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Titular de la Charla · Proyector</title>
+<style>
+:root{--red:#C8102E;--ink:#1B1B1F;--paper:#fff;--bg:#F3F1EC;--muted:#6B6B72;--border:#D8D8DC;--green:#1E7A45;--gold:#E8B54A}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);height:100%}
+body{font-family:Arial,Helvetica,sans-serif;color:var(--ink);display:flex;flex-direction:column;min-height:100vh}
+header{background:var(--ink);color:#fff;padding:14px 26px;display:flex;align-items:center;gap:22px}
+.brand .t1{font-family:Georgia,"Times New Roman",serif;font-size:30px;font-weight:700;letter-spacing:.01em}
+.brand .t2{font-size:12px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;margin-top:2px}
+.topic{flex:1;font-size:22px;font-weight:700;border-left:4px solid var(--red);padding-left:16px;line-height:1.25}
+.stats{display:flex;gap:18px;text-align:center}
+.stats b{display:block;font-size:30px;color:var(--gold)}
+.stats span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#bbb}
+main{flex:1;display:flex;gap:20px;padding:20px 26px}
+aside{width:250px;flex:none;display:flex;flex-direction:column;gap:12px}
+.box{background:var(--paper);border:1px solid var(--border);border-radius:14px;padding:16px}
+#qr svg{width:100%;height:auto;display:block}
+.code{font-size:46px;font-weight:900;letter-spacing:.14em;text-align:center;color:var(--red);margin-top:6px}
+.link{font-size:11px;color:var(--muted);text-align:center;word-break:break-all;margin-top:4px}
+.btn{display:block;width:100%;border:none;border-radius:10px;padding:13px;font-size:16px;font-weight:800;font-family:inherit;color:#fff;background:var(--red);cursor:pointer}
+.btn.dark{background:var(--ink)}
+.btn.out{background:#fff;color:var(--ink);border:2px solid var(--border);font-size:14px;padding:10px}
+.btn:disabled{opacity:.45}
+.hint{font-size:12px;color:var(--muted);line-height:1.4}
+.wall{flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--w,330px),1fr));gap:14px 10px;padding:8px 0 0 8px;align-content:start}
+.h{background:var(--paper);border:1px solid var(--border);border-left:6px solid var(--red);border-radius:10px;padding:var(--pd,14px 16px);font-family:Georgia,"Times New Roman",serif;font-weight:700;font-size:var(--fs,22px);line-height:1.22;position:relative;animation:entra .5s ease-out;cursor:pointer}
+.h:nth-child(4n+2){border-left-color:#1565C0}.h:nth-child(4n+3){border-left-color:#2E7D32}.h:nth-child(4n+4){border-left-color:#B7791F}
+.h .n{position:absolute;top:-10px;left:-10px;background:var(--ink);color:var(--gold);font-family:Arial,sans-serif;font-size:15px;font-weight:900;min-width:30px;height:30px;border-radius:15px;display:flex;align-items:center;justify-content:center;padding:0 6px}
+.h.off{opacity:.3;text-decoration:line-through}
+.h .v{position:absolute;bottom:6px;right:10px;font-family:Arial,sans-serif;font-size:14px;font-weight:900;color:var(--red)}
+.vac{grid-column:1/-1;text-align:center;color:var(--muted);font-size:24px;padding:60px 0}
+@keyframes entra{from{opacity:0;transform:translateY(14px) scale(.96)}to{opacity:1;transform:none}}
+.setup{max-width:620px;margin:60px auto;width:100%}
+.setup h1{font-family:Georgia,serif;font-size:34px;margin-bottom:10px}
+.setup p{color:var(--muted);line-height:1.5;margin-bottom:16px}
+.setup input{width:100%;border:2px solid var(--border);border-radius:10px;padding:14px;font-size:18px;font-family:inherit;margin-bottom:14px}
+.err{color:var(--red);font-weight:700;margin-top:10px;min-height:20px}
+.podio{flex:1;display:flex;flex-direction:column;gap:14px}
+.top3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:end}
+.p{background:var(--paper);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center;animation:entra .7s ease-out both}
+.p .m{font-size:52px}
+.p .who{font-size:22px;font-weight:900;margin:6px 0;color:var(--red)}
+.p .tx{font-family:Georgia,serif;font-weight:700;font-size:22px;line-height:1.25}
+.p .vv{margin-top:10px;font-size:15px;font-weight:800;color:var(--muted)}
+.p.p1{order:2;border:3px solid var(--gold);padding:28px 20px}.p.p1 .tx{font-size:28px}
+.p.p2{order:1;animation-delay:.6s}.p.p3{order:3;animation-delay:1.2s}.p.p1{animation-delay:1.8s}
+.rest{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
+.r{background:var(--paper);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:15px;display:flex;gap:10px}
+.r b{color:var(--red);flex:none}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 20px;border-radius:10px;font-weight:700;opacity:0;transition:opacity .3s}
+#toast.on{opacity:1}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="t1">El Titular de la Charla</div><div class="t2">Escribe · Vota · Gana</div></div>
+  <div class="topic" id="topic"></div>
+  <div class="stats" id="stats"></div>
+</header>
+<main id="main"></main>
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+const API = location.origin + "/api/charla";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const lsGet = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch(e){ return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch(e){} };
+const lsDel = k => { try { localStorage.removeItem(k); } catch(e){} };
+
+let CODE = lsGet("charla_p_code", ""), KEY = lsGet("charla_p_key", "");
+let S = null, vista = "", verVotos = false;
+
+function toast(m){ const t = $("toast"); t.textContent = m; t.className = "on"; clearTimeout(t._h); t._h = setTimeout(() => t.className = "", 3500); }
+async function api(params){
+  const r = await fetch(API, { method:"POST", body: JSON.stringify(Object.assign({ c: CODE, k: KEY }, params)) });
+  const j = await r.json();
+  if (j.error) throw new Error(j.error);
+  return j;
+}
+const urlAlumno = () => location.origin + "/charla_alumno_v1.html?c=" + CODE;
+
+function pintarInicio(msg){
+  $("topic").textContent = ""; $("stats").innerHTML = "";
+  $("main").innerHTML = `<div class="setup box">
+    <h1>Nueva sesión</h1>
+    <p>Escribe quién da la charla o de qué va. Sale arriba en la pantalla y en los móviles, y puedes cambiarlo después.</p>
+    <input id="inTopic" maxlength="140" placeholder="Ej: Charla de ... sobre periodismo de datos">
+    <button class="btn" id="btnNew">Crear sesión</button>
+    <div class="err">${esc(msg || "")}</div></div>`;
+  $("btnNew").onclick = async () => {
+    $("btnNew").disabled = true;
+    try {
+      const j = await api({ a:"new", topic: $("inTopic").value });
+      CODE = j.code; KEY = j.admin; lsSet("charla_p_code", CODE); lsSet("charla_p_key", KEY);
+      vista = ""; refrescar();
+    } catch(e){ toast(e.message); $("btnNew").disabled = false; }
+  };
+}
+
+let pidiendo = false;
+async function refrescar(){
+  if (!CODE || pidiendo) return;
+  pidiendo = true;
+  try { S = await api({ a:"state" }); pintar(); }
+  catch(e){ if (/No existe/.test(e.message)){ CODE = ""; lsDel("charla_p_code"); pintarInicio(e.message); } }
+  finally { pidiendo = false; }
+}
+setInterval(refrescar, 1500);
+
+function tam(n){
+  // cuantos más titulares, letra más pequeña para que quepan todos
+  const fs = n <= 8 ? 28 : n <= 16 ? 22 : n <= 28 ? 17 : n <= 45 ? 14 : 12.5;
+  const w = n <= 8 ? 420 : n <= 16 ? 330 : n <= 28 ? 240 : n <= 45 ? 175 : 155;
+  const pd = n <= 16 ? "14px 16px" : n <= 28 ? "11px 13px" : "8px 10px";
+  document.documentElement.style.setProperty("--pd", pd);
+  document.documentElement.style.setProperty("--fs", fs + "px");
+  document.documentElement.style.setProperty("--w", w + "px");
+}
+
+function pintar(){
+  const g = S.game;
+  $("topic").innerHTML = esc(g.topic) + ` <a href="#" onclick="cambiarTema();return false" style="font-size:12px;color:#888;font-weight:400">cambiar</a>`;
+  $("stats").innerHTML = `<div><b>${S.people}</b><span>en la sala</span></div><div><b>${S.sent}</b><span>titulares</span></div>` +
+    (g.status === "vote" ? `<div><b>${S.votesCast}</b><span>votos</span></div>` : "");
+
+  const clave = JSON.stringify([g.status, g.round, verVotos, S.heads && S.heads.map(h => h.id + h.text + h.hidden + h.n), S.votesBy, S.last && S.last.round]);
+  if (clave === vista) return;
+  vista = clave;
+
+  if (g.status === "results") return pintarResultados();
+
+  const lado = `<aside>
+    <div class="box"><div id="qr"></div><div class="code">${esc(CODE)}</div><div class="link">${esc(urlAlumno())}</div></div>
+    ${g.status === "write"
+      ? `<button class="btn" onclick="accion('vote_open')">Abrir la votación</button><div class="hint">Pincha en un titular para ocultarlo si no vale. Los alumnos pueden corregir el suyo hasta que abras la votación.</div>`
+      : `<button class="btn dark" onclick="accion('close')">Cerrar y ver resultados</button>
+         <button class="btn out" onclick="verVotos=!verVotos;vista='';pintar()">${verVotos ? "Ocultar votos" : "Ver votos en directo"}</button>
+         <div class="hint">Cada alumno vota un titular desde el móvil, nunca el suyo, y puede cambiar el voto hasta que cierres.</div>`}
+    <button class="btn out" onclick="nueva()">Nueva sesión</button>
+  </aside>`;
+
+  const hs = S.heads || [];
+  tam(hs.length);
+  const muro = hs.length ? hs.map(h => {
+    const v = g.status === "vote" && verVotos ? `<span class="v">${(S.votesBy && S.votesBy[h.id]) || 0}</span>` : "";
+    return `<div class="h ${h.hidden ? "off" : ""}" onclick="ocultar('${h.id}')">${h.n ? `<span class="n">${h.n}</span>` : ""}${esc(h.text)}${v}</div>`;
+  }).join("") : `<div class="vac">Esperando titulares…<br><small>Entrad con el QR o con el código</small></div>`;
+
+  $("main").innerHTML = lado + `<div class="wall">${muro}</div>`;
+  try { const q = qrcode(0, "L"); q.addData(urlAlumno()); q.make(); $("qr").innerHTML = q.createSvgTag({ cellSize:4, margin:1, scalable:true }); } catch(e){}
+}
+
+function pintarResultados(){
+  const L = S.last, R = L.results;
+  const med = ["🥇","🥈","🥉"];
+  const top = R.slice(0, 3).filter(r => r.votes > 0).map((r, i) => `<div class="p p${i+1}"><div class="m">${med[i]}</div><div class="who">${esc(r.name)}</div><div class="tx">${esc(r.text)}</div><div class="vv">${r.votes} ${r.votes === 1 ? "voto" : "votos"}</div></div>`).join("");
+  const resto = R.slice(R.slice(0,3).filter(r => r.votes > 0).length).map(r => `<div class="r"><b>${r.votes}</b><span>${esc(r.text)}</span></div>`).join("");
+  $("main").innerHTML = `<div class="podio">
+    <div class="top3">${top}</div>
+    ${resto ? `<div class="rest">${resto}</div>` : ""}
+    <div style="display:flex;gap:12px;max-width:520px"><button class="btn" onclick="otra()">Otra ronda</button><button class="btn out" onclick="nueva()">Nueva sesión</button></div>
+  </div>`;
+}
+
+async function accion(a){ try { await api({ a }); vista = ""; refrescar(); } catch(e){ toast(e.message); } }
+async function ocultar(id){ try { await api({ a:"hide", id }); vista = ""; refrescar(); } catch(e){ toast(e.message); } }
+async function cambiarTema(){
+  const t = prompt("Tema de la charla", S.game.topic || ""); if (t === null) return;
+  try { await api({ a:"topic", topic: t }); refrescar(); } catch(e){ toast(e.message); }
+}
+async function otra(){
+  const t = prompt("Tema de la nueva ronda (déjalo igual si es la misma charla)", S.game.topic || ""); if (t === null) return;
+  try { await api({ a:"again", topic: t }); vista = ""; refrescar(); } catch(e){ toast(e.message); }
+}
+function nueva(){
+  if (!confirm("¿Empezar una sesión nueva? Los alumnos tendrán que entrar con el código nuevo.")) return;
+  CODE = ""; lsDel("charla_p_code"); vista = ""; pintarInicio();
+}
+
+if (CODE) refrescar(); else pintarInicio();
+</script>
+</body>
+</html>

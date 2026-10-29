@@ -57,6 +57,7 @@ const JUEGOS = {
   ahorcado: cargarJuego("ahorcado"),
   microfono: cargarJuego("microfono"),
   mujer: cargarJuego("mujer"),
+  charla: cargarJuego("charla"),   // El Titular de la Charla: cada alumno escribe un titular y vota toda la clase
 };
 
 const TIPOS = {
@@ -74,7 +75,7 @@ function cors(res) {
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, "http://x");
   if (serpientes.handle(req, res, url)) return;
-  const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla2|liguilla|ahorcado|microfono|mujer)\/?$/);
+  const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla2|liguilla|ahorcado|microfono|mujer|charla)\/?$/);
   if (m) {
     cors(res);
     if (req.method === "OPTIONS") { res.writeHead(204); return res.end(); }
