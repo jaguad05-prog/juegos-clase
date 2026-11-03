@@ -175,11 +175,16 @@ function escenaPregunta(e){
 }
 
 function escenaMimica(e){
-  const m = G.mim;
-  if (m.t !== ME.id) return `<div class="card"><span class="tag">Mímica</span><h1>Mímica de ${esc(eq(m.t).name)}</h1><p>Mirad la pantalla. El equipo que va último intenta adivinar un libro.</p>${m.res ? `<div class="res ${m.res === "ok" ? "ok" : "nn"}">${m.res === "ok" ? "¡Lo han adivinado!" : "No lo han adivinado"}</div>` : ""}</div>`;
-  if (m.res) return `<div class="card"><div class="res ${m.res === "ok" ? "ok" : "ko"}">${m.res === "ok" ? "¡Adivinado! Avanzáis una casilla" : "Esta vez no"}</div><p>Era «${esc(m.libro[0])}», de ${esc(m.libro[1])}.</p></div>`;
-  return `<div class="card"><span class="tag">Mímica · vais los últimos</span><h1>Os toca la mímica</h1>
-    <p>Solo mira el libro <b>quien vaya a hacer la mímica</b>. Los demás, no miréis el móvil. Tenéis 60 segundos cuando la profesora dé la salida.</p>
+  const m = G.mim, quien = esc(eq(m.t).name);
+  if (m.t === ME.id) {
+    if (m.res) return `<div class="card"><div class="res ${m.res === "ok" ? "ok" : "ko"}">${m.res === "ok" ? "¡Adivinado! Avanzáis una casilla" : "Esta vez no"}</div><p>Era «${esc(m.libro[0])}», de ${esc(m.libro[1])}.</p></div>`;
+    return `<div class="card"><span class="tag">Mímica · vais los últimos</span><h1>Os toca la mímica</h1>
+      <p>Elegid quién la hace. Esa persona va a <b>leer el libro en el móvil de otro equipo</b> y vuelve a representarlo. Las demás, a adivinar.</p>
+      <p style="margin-top:8px">Tenéis 60 segundos cuando la profesora dé la salida.</p>${m.start ? `<div class="big" id="mimclock"></div>` : ""}</div>`;
+  }
+  if (m.res) return `<div class="card"><span class="tag">Mímica</span><h1>Mímica de ${quien}</h1><div class="res ${m.res === "ok" ? "ok" : "nn"}">${m.res === "ok" ? "¡Lo han adivinado!" : "No lo han adivinado"}</div><p>Era «${esc(m.libro[0])}», de ${esc(m.libro[1])}.</p></div>`;
+  return `<div class="card"><span class="tag">Mímica</span><h1>Mímica de ${quien}</h1>
+    <p>Quien hace la mímica de <b>${quien}</b> puede venir a leer el libro en vuestro móvil. Enseñádselo solo a esa persona y no lo digáis en voz alta.</p>
     <div class="reveal" id="reveal" style="margin-top:14px">Mantén pulsado para ver el libro</div>${m.start ? `<div class="big" id="mimclock"></div>` : ""}</div>`;
 }
 

@@ -100,12 +100,6 @@ textarea{min-height:110px;resize:vertical}
         <div>
           <label for="fMeta">Meta (casilla de llegada)</label><input id="fMeta" type="number" min="10" max="120" value="60">
           <label for="fPeriodico">Periódico para «La columnista»</label><input id="fPeriodico" placeholder="Por ejemplo, El País de hoy">
-          <label for="fEncuesta">Pregunta de la encuesta a pie de calle</label>
-          <select id="fEncuesta">
-            <option>¿Sabrías decir el nombre de alguna candidata a las elecciones del 29 de noviembre?</option>
-            <option>¿Crees que España tendrá pronto una presidenta del Gobierno?</option>
-            <option>¿Vas a votar el 29N pensando en lo que proponen los partidos para las mujeres?</option>
-          </select>
           <label for="fExperta">Tema de «Busca la experta»</label>
           <select id="fExperta"><option>Vivienda</option><option>Inteligencia artificial</option><option>Defensa</option><option>Energía</option></select>
         </div>
@@ -164,7 +158,6 @@ const TELETIPO = "URGENTE. Madrid, 30 oct (Agencias). El BOE publica las candida
 const cfg = lsGet("moncloa_cfg", {});
 $("fMeta").value = cfg.meta || 60;
 $("fPeriodico").value = cfg.periodico || "";
-if (cfg.encuesta) $("fEncuesta").value = cfg.encuesta;
 if (cfg.experta) $("fExperta").value = cfg.experta;
 $("fTeletipo").value = cfg.teletipo || TELETIPO;
 const fotosCfg = lsGet("moncloa_fotos", {});
@@ -181,7 +174,7 @@ $("bResume").onclick = () => { mostrar(); bucle(); };
 
 $("bNew").onclick = async () => {
   $("setupErr").textContent = "";
-  const c = { meta: parseInt($("fMeta").value, 10) || 60, periodico: $("fPeriodico").value.trim(), encuesta: $("fEncuesta").value,
+  const c = { meta: parseInt($("fMeta").value, 10) || 60, periodico: $("fPeriodico").value.trim(),
               experta: $("fExperta").value, teletipo: $("fTeletipo").value.trim() };
   const fotos = {}; FOTOS.forEach(([id]) => { const u = $("ft_" + id).value.trim(); if (u) fotos[id] = u; });
   lsSet("moncloa_cfg", c); lsSet("moncloa_fotos", fotos);
@@ -317,7 +310,7 @@ function escenaPregunta(){
 function escenaMimica(){
   const m = G.mim, e = eq(m.t);
   let h = `<span class="tag red">Mímica del farolillo rojo</span><div class="mimbox"><p style="font-size:24px">Le toca al equipo que va último</p><div class="who" style="background:${e.color}">${esc(e.name)}</div>`;
-  h += `<p style="font-size:22px">Uno del equipo mira el libro en el móvil y lo representa. Sus compañeros tienen 60 segundos.</p>`;
+  h += `<p style="font-size:22px">Quien hace la mímica va a leer el libro en el móvil de otro equipo. Sus compañeras tienen 60 segundos para adivinarlo.</p>`;
   if (!m.start) h += `<div class="ctrl" style="justify-content:center"><button class="btn big" onclick="act('mim_go')">Empezar los 60 segundos</button><button class="btn sec" onclick="act('skip')">Saltar la mímica</button></div>`;
   else if (!m.res) h += `<div class="big1" id="mimclock"></div><div class="ctrl" style="justify-content:center"><button class="btn big ok" onclick="act('mim_res',{v:1})">Lo han adivinado</button><button class="btn big ko" onclick="act('mim_res',{v:0})">No lo han adivinado</button></div>`;
   else h += `<div class="sol" style="${m.res === "ok" ? "" : "background:#fde7ea;color:#C8102E"}">${m.res === "ok" ? "¡Adivinado! Avanzan una casilla" : "No lo han adivinado"}</div><p style="font-size:26px">Era <b>«${esc(m.libro[0])}»</b>, de ${esc(m.libro[1])}</p><div class="ctrl" style="justify-content:center"><button class="btn big" onclick="act('next')">Seguir</button></div>`;

@@ -449,7 +449,8 @@ function vista(g, t, k) {
   }
   if (g.phase === "mim" && g.mim) {
     v.mim = { t: g.mim.t, start: g.mim.start, res: g.mim.res };
-    if (prof || t === g.mim.t) v.mim.libro = LIBROS[g.mim.libro];
+    // el libro lo ven los demás equipos (allí va a leerlo quien hace la mímica), nunca el equipo que adivina
+    if (prof || g.mim.res || (t && t !== g.mim.t && equipo(g, t))) v.mim.libro = LIBROS[g.mim.libro];
   }
   if ((g.phase === "pr" || g.phase === "prfin") && g.pr) v.pr = vistaPrueba(g, t, prof);
   if (prof) v.away = g.away || {};
