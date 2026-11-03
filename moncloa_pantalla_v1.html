@@ -150,7 +150,7 @@ function lsSet(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e)
 function esc(s){ return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 async function api(p){ const r = await fetch(API, { method:"POST", body: JSON.stringify(p) }); const j = await r.json(); if (j.error) throw new Error(j.error); return j; }
 
-const FOTOS = [["saiz","Elma Saiz"],["cuerpo","Carlos Cuerpo"],["espana","Arcadi España"],["barbero","Verónica Martínez Barbero"],["belarra","Ione Belarra"],
+const FOTOS = [["saiz","Elma Saiz"],["cuerpo","Carlos Cuerpo"],["espana","Arcadi España"],["diaz","Yolanda Díaz"],["belarra","Ione Belarra"],
   ["campoamor","Clara Campoamor"],["redondo","Ana Redondo"],["calaf","Rosa María Calaf"],["ayuso","Isabel Díaz Ayuso"],["garcia","Mónica García"],["armengol","Francina Armengol"]];
 const TELETIPO = "URGENTE. Madrid, 30 oct (Agencias). El BOE publica las candidaturas al Congreso y al Senado para las elecciones generales del 29 de noviembre. Seis de cada diez cabezas de lista son nuevas y aumenta el número de mujeres al frente de una candidatura. Las juntas electorales deben validar todavía los avales y las listas cremallera antes de que sean definitivas.";
 
