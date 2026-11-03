@@ -1,6 +1,6 @@
 // Juegos de clase · servidor para Render
 // Ejecuta el mismo código de los servidores de Google Apps Script (Guerra de Titulares,
-// Juego de SEO, Carrera de la Redacción, La Vuelta de Deportes, La Liguilla El Ahorcado de los Medios, Serpientes y escaleras y La Liguilla de la Mujer Invisible), pero en memoria, sin las esperas de Google.
+// Juego de SEO, Carrera de la Redacción, La Vuelta de Deportes, La Liguilla El Ahorcado de los Medios, Serpientes y escaleras, La Liguilla de la Mujer Invisible, El Titular de la Charla y La carrera a la Moncloa), pero en memoria, sin las esperas de Google.
 "use strict";
 const http = require("http");
 const fs = require("fs");
@@ -58,6 +58,7 @@ const JUEGOS = {
   microfono: cargarJuego("microfono"),
   mujer: cargarJuego("mujer"),
   charla: cargarJuego("charla"),   // El Titular de la Charla: cada alumno escribe un titular y vota toda la clase
+  moncloa: cargarJuego("moncloa"),   // Mujeres y poder: la carrera a la Moncloa (preguntas, mímica y pruebas)
 };
 
 const TIPOS = {
@@ -75,7 +76,7 @@ function cors(res) {
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, "http://x");
   if (serpientes.handle(req, res, url)) return;
-  const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla2|liguilla|ahorcado|microfono|mujer|charla)\/?$/);
+  const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla2|liguilla|ahorcado|microfono|mujer|charla|moncloa)\/?$/);
   if (m) {
     cors(res);
     if (req.method === "OPTIONS") { res.writeHead(204); return res.end(); }

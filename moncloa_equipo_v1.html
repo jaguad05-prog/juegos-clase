@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>La carrera a la Moncloa · Equipo</title>
+<style>
+:root{--ink:#1f1830;--pur:#5b2a86;--pur2:#2a1546;--lila:#efe7f6;--gold:#f0b429;--red:#C8102E;--green:#1e8a4c;--bg:#f6f3f8;--muted:#6f6879;--border:#ddd5e4}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+.top{background:var(--pur2);color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.top .t1{font-size:13px;font-weight:900;letter-spacing:.04em}.top .t2{font-size:11px;color:var(--gold)}
+.me{font-weight:900;font-size:14px;display:flex;align-items:center;gap:6px;text-align:right}
+.wrap{max-width:640px;margin:0 auto;padding:14px}
+.card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+h1{font-size:23px;margin-bottom:8px}h2{font-size:19px;margin-bottom:8px}
+p{line-height:1.45}.muted{color:var(--muted);font-size:14px}
+label{display:block;font-weight:700;font-size:13px;margin:12px 0 6px}
+input,textarea{width:100%;border:2px solid var(--border);border-radius:10px;padding:12px;font-size:17px;font-family:inherit}
+textarea{min-height:90px}
+.btn{border:none;border-radius:12px;padding:14px 20px;font-size:17px;font-weight:800;font-family:inherit;color:#fff;background:var(--pur);cursor:pointer;width:100%;margin-top:12px}
+.btn:disabled{opacity:.4}.btn.sec{background:#fff;color:var(--ink);border:2px solid var(--border)}
+.err{color:var(--red);font-weight:700;margin-top:10px;min-height:18px}
+.hidden{display:none!important}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block;flex:none}
+.tag{display:inline-block;background:var(--lila);color:var(--pur);font-weight:800;border-radius:20px;padding:4px 12px;font-size:13px;margin:0 6px 8px 0}
+.tag.gold{background:#fff4d6;color:#8a5a00}
+.qtext{font-size:20px;font-weight:800;line-height:1.3;margin:6px 0 14px}
+.qimg{max-width:100%;max-height:240px;border-radius:12px;display:block;margin:0 auto 12px}
+.opt{display:flex;gap:12px;align-items:center;width:100%;border:none;border-radius:12px;padding:15px;font-size:17px;font-weight:700;color:#fff;margin-bottom:10px;text-align:left;font-family:inherit;cursor:pointer}
+.opt .l{font-weight:900;background:rgba(255,255,255,.25);border-radius:7px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex:none}
+.o0{background:#c8102e}.o1{background:#1565c0}.o2{background:#d39200}.o3{background:#2e7d32}
+.opt:disabled{cursor:default}.opt.dim{opacity:.25}.opt.sel{outline:5px solid #1b1b1b;outline-offset:-5px}
+.clock{font-size:32px;font-weight:900;color:var(--pur)}.clock.low{color:var(--red)}
+.qhead{display:flex;justify-content:space-between;align-items:center}
+.bar{height:8px;background:#ece8f0;border-radius:6px;overflow:hidden;margin:6px 0 4px}.bar i{display:block;height:100%;background:var(--pur);transition:width .25s linear}
+.res{border-radius:12px;padding:14px;font-size:19px;font-weight:800;text-align:center;margin-bottom:12px}
+.res.ok{background:#e3f5ea;color:var(--green)}.res.ko{background:#fde7ea;color:var(--red)}.res.nn{background:#f1eef4;color:var(--muted)}
+.expl{background:#fff8e5;border-left:6px solid var(--gold);border-radius:8px;padding:12px 14px;font-size:16px;line-height:1.4;margin-top:6px}
+.big{font-size:22px;font-weight:800;text-align:center;margin:8px 0}
+.mini .r{display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:5px 0;font-size:13px;font-weight:700}
+.mini .tr{grid-column:1/3;height:7px;background:#ece8f0;border-radius:5px;overflow:hidden}.mini .tr i{display:block;height:100%}
+.mini .r.yo{color:var(--pur)}
+.ordrow{display:flex;gap:8px;align-items:center;border:2px solid var(--border);border-radius:10px;padding:10px;margin:8px 0;font-size:16px;font-weight:700}
+.ordrow .n{background:var(--pur);color:#fff;border-radius:7px;min-width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex:none}
+.ordrow .mv{margin-left:auto;display:flex;gap:4px}.ordrow .mv button{border:none;background:var(--lila);color:var(--pur);font-weight:900;border-radius:8px;width:38px;height:38px;font-size:18px}
+.sopa{display:grid;gap:2px;margin:8px auto;touch-action:manipulation}
+.sopa button{aspect-ratio:1;border:none;border-radius:4px;background:#f1edf5;font-weight:800;font-size:15px;font-family:inherit;padding:0;color:var(--ink)}
+.sopa button.a{background:var(--pur);color:#fff}.sopa button.f{background:var(--gold)}
+.words{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.words span{border-radius:14px;padding:4px 10px;background:#f1edf5;font-weight:800;font-size:13px}.words span.f{background:var(--green);color:#fff;text-decoration:line-through}
+.mask{font-family:"Courier New",monospace;font-size:30px;font-weight:900;letter-spacing:.18em;text-align:center;margin:10px 0;word-break:break-word;line-height:1.5}
+.kb{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:10px}
+.kb button{border:none;border-radius:8px;padding:12px 0;font-size:18px;font-weight:900;background:var(--pur);color:#fff;font-family:inherit}.kb button:disabled{background:#d8d2de;color:#8b8494}
+.lives{display:flex;gap:6px;justify-content:center;margin:6px 0}.lives span{width:22px;height:22px;border-radius:50%;background:var(--green)}.lives span.x{background:var(--red)}
+.pista{background:#fff8e5;border-radius:10px;padding:10px;font-weight:700;text-align:center;margin-top:6px}
+.frag{display:block;width:100%;text-align:left;border:2px solid var(--border);background:#fff;border-radius:10px;padding:12px;margin:8px 0;font-size:16px;font-family:inherit;line-height:1.4}
+.frag.on{border-color:var(--red);background:#fde7ea}
+.teletipo{background:#202020;color:#f1f1f1;font-family:"Courier New",monospace;border-radius:10px;padding:12px;font-size:14px;line-height:1.5;white-space:pre-wrap}
+.vote{display:block;width:100%;text-align:left;border:2px solid var(--border);background:#fff;border-radius:10px;padding:12px;margin:8px 0;font-size:16px;font-weight:700;font-family:inherit}
+.vote.on{border-color:var(--pur);background:var(--lila)}.vote:disabled{opacity:.5}
+.reveal{background:var(--pur2);color:#fff;border-radius:14px;padding:26px 14px;text-align:center;font-size:24px;font-weight:900;user-select:none;-webkit-user-select:none}
+</style>
+</head>
+<body>
+<div class="top"><div><div class="t1">LA CARRERA A LA MONCLOA</div><div class="t2">MUJERES Y PODER</div></div><div class="me hidden" id="me"></div></div>
+<div class="wrap">
+  <section id="sJoin" class="card">
+    <h1>Entrar en la carrera</h1>
+    <label for="cCode">Código de la partida</label><input id="cCode" maxlength="6" autocomplete="off" style="text-transform:uppercase;letter-spacing:.2em;font-weight:800">
+    <label for="cName">Nombre del equipo</label><input id="cName" maxlength="24" autocomplete="off">
+    <button class="btn" id="bJoin">Entrar</button>
+    <div class="err" id="joinErr"></div>
+  </section>
+  <section id="sGame" class="hidden"><div id="game"></div><div class="err" id="gameErr"></div><div class="card mini" id="mini"></div></section>
+</div>
+<script>
+const API = location.origin + "/api/moncloa";
+const LETRAS = ["A","B","C","D"];
+const $ = id => document.getElementById(id);
+function lsGet(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } }
+function lsSet(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+function esc(s){ return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+async function api(p){ const r = await fetch(API, { method:"POST", body: JSON.stringify(p) }); const j = await r.json(); if (j.error) throw new Error(j.error); return j; }
+
+const qs = new URLSearchParams(location.search);
+let CODE = (qs.get("c") || lsGet("moncloa_eq_code", "") || "").toUpperCase();
+let ME = CODE ? lsGet("moncloa_eq_" + CODE, null) : null;
+let G = null, desfase = 0, firma = "", local = {};
+$("cCode").value = CODE;
+function ahora(){ return Date.now() + desfase; }
+function yo(){ return (G && G.teams.find(x => x.id === ME.id)) || ME; }
+function eq(id){ return (G && G.teams.find(x => x.id === id)) || { name:"?", color:"#999" }; }
+
+$("bJoin").onclick = async () => {
+  $("joinErr").textContent = "";
+  const c = $("cCode").value.trim().toUpperCase(), n = $("cName").value.trim();
+  try{
+    const r = await api({ a:"join", c, name:n });
+    CODE = c; ME = r.team; lsSet("moncloa_eq_code", CODE); lsSet("moncloa_eq_" + CODE, ME);
+    entrar();
+  }catch(e){ $("joinErr").textContent = e.message === "Failed to fetch" ? "No se puede conectar con el servidor." : e.message; }
+};
+function entrar(){ $("sJoin").classList.add("hidden"); $("sGame").classList.remove("hidden"); bucle(); }
+if (ME) entrar();
+
+async function refrescar(){
+  try{
+    const r = await fetch(API, { method:"POST", body: JSON.stringify({ a:"state", c:CODE, t:ME.id }) });
+    const j = await r.json();
+    if (j.error) { $("gameErr").textContent = j.error; return; }
+    desfase = j.now - Date.now(); G = j; $("gameErr").textContent = "";
+    if (!G.teams.find(x => x.id === ME.id)) { lsSet("moncloa_eq_" + CODE, null); location.reload(); return; }
+    pintar();
+  }catch(e){ $("gameErr").textContent = "Sin conexión, reintentando…"; }
+}
+let activo = false;
+function bucle(){ if (activo) return; activo = true; (async function v(){ await refrescar(); setTimeout(v, G && G.status === "running" ? 700 : 2000); })(); }
+async function enviar(p){ try{ await api(Object.assign({ c:CODE, t:ME.id }, p)); }catch(e){ $("gameErr").textContent = e.message; } firma = ""; await refrescar(); }
+
+// aviso a la profesora si se sale del juego durante una pregunta
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden" && G && G.status === "running" && ME) {
+    try{ navigator.sendBeacon ? navigator.sendBeacon(API, JSON.stringify({ a:"away", c:CODE, t:ME.id })) : api({ a:"away", c:CODE, t:ME.id }); }catch(e){}
+  }
+});
+
+function pintar(){
+  const e = yo();
+  $("me").classList.remove("hidden");
+  $("me").innerHTML = `<span class="dot" style="background:${e.color}"></span><span>${esc(e.name)}<br><small style="color:var(--gold)">casilla ${e.pos || 0} de ${G.meta}</small></span>`;
+  pintarMini();
+  const f = clave();
+  if (f !== firma) { firma = f; $("game").innerHTML = escena(); despues(); }
+  reloj();
+}
+function clave(){
+  const pr = G.pr, e = yo();
+  return [G.status, G.phase, G.step, e.ban, e.place, !!G.mine, G.mim && G.mim.start, G.mim && G.mim.res,
+    pr && pr.sub, pr && pr.closed, pr && JSON.stringify(pr.mio || ""), pr && pr.mask, pr && JSON.stringify(pr.found || ""),
+    pr && JSON.stringify(pr.heads || ""), pr && pr.myvote].join("|");
+}
+function pintarMini(){
+  const orden = G.teams.slice().sort((a, b) => (a.place || 99) - (b.place || 99) || b.pos - a.pos);
+  $("mini").innerHTML = `<h2>Cómo va la carrera</h2>` + orden.map(t => `<div class="r ${t.id === ME.id ? "yo" : ""}"><span><span class="dot" style="background:${t.color}"></span> ${esc(t.name)}${t.place ? " · " + t.place + ".º en llegar" : ""}</span><b>${t.pos}</b><div class="tr"><i style="width:${Math.min(100, t.pos / G.meta * 100)}%;background:${t.color}"></i></div></div>`).join("");
+}
+
+function escena(){
+  const e = yo();
+  if (G.status === "lobby") return `<div class="card"><h1>¡Dentro!</h1><p>Esperad a que la profesora empiece la carrera. La meta está en la casilla ${G.meta}.</p></div>`;
+  if (G.status === "over") {
+    return `<div class="card"><h1>Fin de la carrera</h1>${e.place ? `<div class="res ok">Habéis llegado los ${e.place}.º a la Moncloa</div>` : `<p>Habéis terminado en la casilla ${e.pos}.</p>`}</div>`;
+  }
+  if (e.place) return `<div class="card"><div class="res ok">¡Habéis llegado a la Moncloa, los ${e.place}.º!</div><p>Esperad a que lleguen los demás.</p></div>`;
+  if (G.phase === "q" || G.phase === "rev") return escenaPregunta(e);
+  if (G.phase === "mim") return escenaMimica(e);
+  if (G.phase === "pr" || G.phase === "prfin") return escenaPrueba(e);
+  return "";
+}
+
+function escenaPregunta(e){
+  const q = G.q, rev = G.phase === "rev";
+  let h = `<div class="card"><div class="qhead"><div><span class="tag">Pregunta ${q.n}</span><span class="tag gold">${esc(q.tema)}</span></div><div class="clock" id="clock"></div></div><div class="bar"><i id="tbar"></i></div>`;
+  if (q.img) h += `<img class="qimg" src="${esc(q.img)}" alt="">`;
+  h += `<div class="qtext">${esc(q.p)}</div>`;
+  if (!rev && e.ban > 0) return h + `<div class="res ko">Estáis sancionados. Os quedan ${e.ban} ${e.ban === 1 ? "pregunta" : "preguntas"} sin jugar.</div></div>`;
+  if (!rev) {
+    if (G.mine) return h + `<div class="res nn">Respuesta enviada${q.tipo !== "o" ? ", «" + esc(G.mine.v) + "»" : ""}. Esperad a los demás.</div></div>`;
+    if (q.tipo === "o") return h + q.o.map((o, i) => `<button class="opt o${i}" onclick="enviar({a:'ans',n:${q.n},o:${i}})"><span class="l">${LETRAS[i]}</span>${esc(o)}</button>`).join("") + `</div>`;
+    return h + `<input id="resp" autocomplete="off" placeholder="${q.img ? "Vale con el apellido" : "Vuestra respuesta"}"><button class="btn" id="bResp">Enviar</button></div>`;
+  }
+  const mine = G.last.mine, ok = G.last.ok.indexOf(ME.id) >= 0;
+  if (q.tipo === "o") h += q.o.map((o, i) => `<button class="opt o${i} ${i === q.c ? "sel" : "dim"}" disabled><span class="l">${LETRAS[i]}</span>${esc(o)}</button>`).join("");
+  h += e.ban > 0 && !mine ? `<div class="res nn">Sancionados en esta pregunta</div>` : ok ? `<div class="res ok">¡Bien! Avanzáis una casilla</div>` : mine ? `<div class="res ko">No es correcto${q.tipo !== "o" ? ", la respuesta era «" + esc(q.sol) + "»" : ""}</div>` : `<div class="res nn">No habéis respondido a tiempo</div>`;
+  return h + `<div class="expl">${esc(q.e)}</div></div>`;
+}
+
+function escenaMimica(e){
+  const m = G.mim;
+  if (m.t !== ME.id) return `<div class="card"><span class="tag">Mímica</span><h1>Mímica de ${esc(eq(m.t).name)}</h1><p>Mirad la pantalla. El equipo que va último intenta adivinar un libro.</p>${m.res ? `<div class="res ${m.res === "ok" ? "ok" : "nn"}">${m.res === "ok" ? "¡Lo han adivinado!" : "No lo han adivinado"}</div>` : ""}</div>`;
+  if (m.res) return `<div class="card"><div class="res ${m.res === "ok" ? "ok" : "ko"}">${m.res === "ok" ? "¡Adivinado! Avanzáis una casilla" : "Esta vez no"}</div><p>Era «${esc(m.libro[0])}», de ${esc(m.libro[1])}.</p></div>`;
+  return `<div class="card"><span class="tag">Mímica · vais los últimos</span><h1>Os toca la mímica</h1>
+    <p>Solo mira el libro <b>quien vaya a hacer la mímica</b>. Los demás, no miréis el móvil. Tenéis 60 segundos cuando la profesora dé la salida.</p>
+    <div class="reveal" id="reveal" style="margin-top:14px">Mantén pulsado para ver el libro</div>${m.start ? `<div class="big" id="mimclock"></div>` : ""}</div>`;
+}
+
+function escenaPrueba(e){
+  const pr = G.pr, fin = pr.closed, mio = pr.mio || {};
+  let h = `<div class="card"><span class="tag gold">Prueba para todos</span><h1>${esc(pr.titulo)}</h1><p class="muted">${esc(pr.txt)}</p>`;
+  if (fin) {
+    const gano = pr.winners.indexOf(ME.id) >= 0;
+    h += `<div class="res ${gano ? "ok" : "nn"}" style="margin-top:12px">${gano ? "¡Avanzáis una casilla!" : "Esta vez no avanzáis"}</div>`;
+    if (pr.tipo === "bulo") h += `<div class="expl">${esc(pr.e)}</div>`;
+    if (pr.tipo === "ahorcado") h += `<p>Soluciones, <b>${pr.sols.map(esc).join(" · ")}</b></p>`;
+    if (pr.tipo === "columnista") h += `<p>Firmaban ${pr.cifra} mujeres.</p>`;
+    if (pr.tipo === "ordena") h += `<ol style="margin:8px 0 0 22px">${pr.sol.map(x => `<li>${esc(x)}</li>`).join("")}</ol>`;
+    return h + `<p class="muted" style="margin-top:10px">Mirad la pantalla.</p></div>`;
+  }
+  switch (pr.tipo) {
+    case "ordena": {
+      if (mio.fin) return h + `<div class="res nn">Enviado. Esperad al resultado.</div></div>`;
+      if (!local.orden || local.orden.length !== pr.items.length || local.step !== G.step) { local.orden = pr.items.map((x, i) => i); local.step = G.step; }
+      return h + local.orden.map((i, k) => `<div class="ordrow"><span class="n">${k + 1}</span>${esc(pr.items[i])}<span class="mv"><button onclick="mover(${k},-1)">▲</button><button onclick="mover(${k},1)">▼</button></span></div>`).join("") +
+        `<button class="btn" onclick="enviar({a:'pr',orden:local.orden})">Enviar el orden</button></div>`;
+    }
+    case "sopa": {
+      if (mio.fin) return h + `<div class="res ok">¡Las tenéis todas! Esperad al resultado.</div></div>`;
+      const N = pr.grid.length, fnd = pr.found || [], hl = {};
+      (pr.foundPos || []).forEach(q => { const dr = Math.sign(q[2]-q[0]), dc = Math.sign(q[3]-q[1]), L = Math.max(Math.abs(q[2]-q[0]), Math.abs(q[3]-q[1])); for (let i = 0; i <= L; i++) hl[(q[0]+dr*i)+"_"+(q[1]+dc*i)] = 1; });
+      h += `<div class="sopa" style="grid-template-columns:repeat(${N},1fr)">` + pr.grid.map((row, r) => row.split("").map((ch, c) => `<button id="s_${r}_${c}" class="${hl[r+"_"+c] ? "f" : ""}" onclick="tocar(${r},${c})">${ch}</button>`).join("")).join("") + `</div>`;
+      return h + `<div class="words">${pr.words.map(w => `<span class="${fnd.indexOf(w) >= 0 ? "f" : ""}">${w}</span>`).join("")}</div><p class="muted" id="sopamsg" style="margin-top:8px">Toca la primera letra de una palabra y después la última.</p></div>`;
+    }
+    case "ahorcado": {
+      if (mio.fin) return h + (mio.ok ? `<div class="res ok">¡Las cuatro resueltas! Esperad al resultado.</div>` : `<div class="res ko">Os habéis quedado fuera${pr.perdida ? ", era «" + esc(pr.perdida) + "»" : ""}.</div>`) + `</div>`;
+      const usadas = pr.used || [], abc = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ".split("");
+      h += `<p style="text-align:center;font-weight:800">Palabra ${pr.w + 1} de ${pr.n}</p><div class="mask">${esc(pr.mask).replace(/ /g, "&nbsp;&nbsp;")}</div>`;
+      h += `<div class="lives">${[0,1,2,3,4].map(i => `<span class="${i < pr.fails ? "x" : ""}"></span>`).join("")}</div>`;
+      if (pr.pista) h += `<div class="pista">Pista · ${esc(pr.pista)}</div>`;
+      return h + `<div class="kb">${abc.map(l => `<button ${usadas.indexOf(l.toLowerCase()) >= 0 ? "disabled" : ""} onclick="enviar({a:'pr',l:'${l}'})">${l}</button>`).join("")}</div></div>`;
+    }
+    case "bulo":
+      h += `<div class="qtext">«${esc(pr.frase)}»</div>`;
+      if (mio.fin) return h + `<div class="res nn">Enviado. Esperad al resultado.</div></div>`;
+      return h + `<button class="opt o3" onclick="enviar({a:'pr',v:1})">Verdadero</button><button class="opt o0" onclick="enviar({a:'pr',v:0})">Bulo</button></div>`;
+    case "caza":
+      if (mio.fin) return h + `<div class="res nn">Enviado. Esperad al resultado.</div></div>`;
+      if (local.step !== G.step) { local.marcas = []; local.step = G.step; }
+      return h + pr.frag.map((f, i) => `<button class="frag ${local.marcas.indexOf(i) >= 0 ? "on" : ""}" onclick="marcar(${i})"><b>${i + 1}.</b> ${esc(f)}</button>`).join("") +
+        `<button class="btn" onclick="enviar({a:'pr',marcas:local.marcas})">Enviar las marcadas</button></div>`;
+    case "encuesta":
+      return h + `<div class="qtext">«${esc(pr.pregunta)}»</div><p>Grabad al menos a tres personas. Al volver, enseñadle el vídeo a la profesora.</p>${mio.ok ? `<div class="res ok">Vídeo recibido</div>` : ""}</div>`;
+    case "teletipo":
+      h += `<div class="teletipo">${esc(pr.texto)}</div>`;
+      if (pr.sub === "write") return h + `<label for="tit">Vuestro titular</label><textarea id="tit" maxlength="160">${esc(mio.text || local.tit || "")}</textarea><button class="btn" id="bTit">${mio.sent ? "Corregir el titular" : "Enviar el titular"}</button>${mio.sent ? `<p class="muted">Enviado. Podéis corregirlo hasta que se abra la votación.</p>` : ""}</div>`;
+      return h + `<h2 style="margin-top:12px">Votad el mejor titular</h2>` + (pr.heads || []).map((x, i) => `<button class="vote ${pr.myvote === x.id ? "on" : ""}" ${x.mine ? "disabled" : ""} onclick="enviar({a:'pr',v:'${x.id}'})"><b>${i + 1}.</b> ${esc(x.text)}${x.mine ? " · vuestro" : ""}</button>`).join("") + `</div>`;
+    case "experta":
+      h += `<span class="tag">Tema</span><div class="qtext">${esc(pr.tema)}</div>`;
+      if (mio.ok === true) return h + `<div class="res ok">¡Aprobada! Esperad al resultado.</div></div>`;
+      if (mio.sent) return h + `<div class="res nn">Enviada. La profesora la está revisando.</div></div>`;
+      return h + (mio.rej ? `<div class="res ko">La profesora no la ha dado por buena. Buscad otra.</div>` : "") +
+        `<label for="exN">Nombre de la experta</label><input id="exN"><label for="exC">Cargo</label><input id="exC"><label for="exL">Enlace</label><input id="exL" placeholder="https://…"><button class="btn" id="bExp">Enviar</button></div>`;
+    case "columnista":
+      return h + (pr.periodico ? `<div class="qtext">${esc(pr.periodico)}</div>` : "") + `<label for="colN">¿Cuántas mujeres firman en Opinión?</label><input id="colN" type="number" min="0" inputmode="numeric" value="${mio.sent ? mio.n : ""}"><button class="btn" id="bCol">${mio.sent ? "Cambiar la cifra" : "Enviar"}</button>${mio.sent ? `<p class="muted">Enviado, ${mio.n}. Podéis cambiarlo hasta que se cierre.</p>` : ""}</div>`;
+  }
+  return h + `</div>`;
+}
+
+function despues(){
+  if ($("bResp")) { const go = () => { const v = $("resp").value.trim(); if (v) enviar({ a:"ans", n:G.q.n, v }); }; $("bResp").onclick = go; $("resp").onkeydown = ev => { if (ev.key === "Enter") go(); }; $("resp").focus(); }
+  if ($("bTit")) { $("tit").oninput = () => { local.tit = $("tit").value; }; $("bTit").onclick = () => enviar({ a:"pr", text:$("tit").value }); }
+  if ($("bExp")) $("bExp").onclick = () => enviar({ a:"pr", nombre:$("exN").value, cargo:$("exC").value, link:$("exL").value });
+  if ($("bCol")) $("bCol").onclick = () => enviar({ a:"pr", n:$("colN").value });
+  const rv = $("reveal");
+  if (rv) {
+    const ver = ev => { ev.preventDefault(); rv.textContent = "«" + G.mim.libro[0] + "», " + G.mim.libro[1]; };
+    const tapar = () => { rv.textContent = "Mantén pulsado para ver el libro"; };
+    rv.addEventListener("pointerdown", ver); rv.addEventListener("pointerup", tapar); rv.addEventListener("pointerleave", tapar); rv.addEventListener("pointercancel", tapar);
+  }
+}
+function mover(k, d){ const o = local.orden, j = k + d; if (j < 0 || j >= o.length) return; [o[k], o[j]] = [o[j], o[k]]; firma = ""; pintar(); }
+function marcar(i){ const m = local.marcas, p = m.indexOf(i); if (p >= 0) m.splice(p, 1); else m.push(i); firma = ""; pintar(); }
+let sel = null;
+async function tocar(r, c){
+  if (!sel) { sel = [r, c]; $("s_" + r + "_" + c).classList.add("a"); return; }
+  const a = sel; sel = null;
+  if (a[0] === r && a[1] === c) { firma = ""; pintar(); return; }
+  try{
+    const j = await api({ a:"pr", c:CODE, t:ME.id, r1:a[0], c1:a[1], r2:r, c2:c });
+    firma = ""; await refrescar();
+    if (j.miss && $("sopamsg")) $("sopamsg").textContent = "Esa no es. Probad otra vez.";
+  }catch(e){ $("gameErr").textContent = e.message; }
+}
+
+function reloj(){
+  if (!G || G.status !== "running") return;
+  if (G.phase === "q" && $("clock")) {
+    const q = G.q, quedan = Math.max(0, q.start + q.dur - ahora());
+    $("clock").textContent = Math.ceil(quedan / 1000);
+    $("clock").classList.toggle("low", quedan < 5000);
+    if ($("tbar")) $("tbar").style.width = (quedan / q.dur * 100) + "%";
+  }
+  if (G.phase === "rev" && $("tbar")) { $("tbar").style.width = "0%"; if ($("clock")) $("clock").textContent = ""; }
+  if (G.phase === "mim" && $("mimclock") && G.mim.start) $("mimclock").textContent = Math.max(0, Math.ceil((G.mim.start + G.T_MIMICA - ahora()) / 1000)) + " s";
+}
+setInterval(reloj, 250);
+</script>
+</body>
+</html>
