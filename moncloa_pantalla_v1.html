@@ -161,6 +161,9 @@ $("fPeriodico").value = cfg.periodico || "";
 if (cfg.experta) $("fExperta").value = cfg.experta;
 $("fTeletipo").value = cfg.teletipo || TELETIPO;
 const fotosCfg = lsGet("moncloa_fotos", {});
+// fotos que ya están en el servidor (las de la profesora); se pueden cambiar pegando otro enlace
+const FOTOS_SERVIDOR = { saiz:1, cuerpo:1, espana:1, belarra:1, campoamor:1, redondo:1, calaf:1, ayuso:1 };
+FOTOS.forEach(([id]) => { if (fotosCfg[id] === undefined && FOTOS_SERVIDOR[id]) fotosCfg[id] = "/moncloa_fotos/" + id + ".jpg"; });
 $("fotos").innerHTML = FOTOS.map(([id, nom]) => `<div class="foto"><div id="pv_${id}" class="ph"></div><div><b>${esc(nom)}</b><input id="ft_${id}" placeholder="https://…" value="${esc(fotosCfg[id] || "")}"></div></div>`).join("");
 function preview(id){
   const u = $("ft_" + id).value.trim(), box = $("pv_" + id);

@@ -520,7 +520,7 @@ var ACCIONES = {
     do { code = ""; for (var i = 0; i < 4; i++) code += letras.charAt(Math.floor(Math.random() * letras.length)); }
     while (P.getProperty("M_" + code));
     var fotos = {};
-    FOTOS.forEach(function (id) { var u = String((p.fotos || {})[id] || "").trim(); if (/^https?:\/\//i.test(u)) fotos[id] = u.slice(0, 600); });
+    FOTOS.forEach(function (id) { var u = String((p.fotos || {})[id] || "").trim(); if (/^(https?:\/\/|\/moncloa_fotos\/)/i.test(u)) fotos[id] = u.slice(0, 600); });
     var cfg = p.cfg || {};
     var g = {
       code: code, admin: String(Math.random()).slice(2) + String(Date.now()),
