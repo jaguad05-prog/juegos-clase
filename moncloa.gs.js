@@ -39,7 +39,7 @@ var BANCO = {
     { t: "o", p: "¿Quién dejó Hacienda en marzo de 2026 para ser candidata en Andalucía?", o: ["María Jesús Montero", "Teresa Ribera", "María Luisa Carcedo", "Pilar Alegría"], c: 0, e: "Le pasó la cartera a Arcadi España." },
     { t: "o", p: "¿Quién es la candidata de Podemos al 29N?", o: ["Ione Belarra", "Irene Montero", "Mónica García", "Yolanda Díaz"], c: 1, e: "Lo hizo oficial en septiembre de 2026." },
     { t: "o", p: "¿Cómo se llama la nueva coalición de Sumar y sus aliados?", o: ["Sumar Más", "Unidas", "Frente Amplio", "Nueva Izquierda"], c: 2, e: "Reúne a IU, Más Madrid, Comuns y Movimiento Sumar, sin Podemos." },
-    { t: "f", id: "diaz", a: ["yolanda diaz", "yolanda", "diaz"], alt: "¿Quién fue la candidata de Sumar en las generales de 2023?", e: "Yolanda Díaz, candidata de Sumar en 2023, que no repite en el 29N." },
+    { t: "f", id: "diaz", a: ["yolanda diaz", "yolanda", "diaz"], alt: "¿Quién es la vicepresidenta del Gobierno y ministra de Trabajo?", e: "Yolanda Díaz, vicepresidenta del Gobierno y ministra de Trabajo." },
     { t: "f", id: "belarra", a: ["belarra", "ione belarra"], alt: "¿Quién es la secretaria general de Podemos?", e: "Ione Belarra, secretaria general de Podemos." },
     { t: "o", p: "¿Quién anunció en febrero de 2026 que no repetiría como candidata?", o: ["Irene Montero", "Ada Colau", "Mónica García", "Yolanda Díaz"], c: 3, e: "Lo comunicó con una carta y un vídeo en redes." },
     { t: "o", p: "¿Qué partido encabeza la media de encuestas de finales de octubre?", o: ["PP", "PSOE", "Vox", "Sumar"], c: 0, e: "Media del 26 de octubre, PP 31 %, PSOE 27,3 % y Vox 18,9 %." }
