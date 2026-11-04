@@ -105,8 +105,7 @@ var FOTOS = ["saiz", "cuerpo", "espana", "diaz", "belarra", "campoamor", "redond
 // La mímica: el profesor tiene la lista de libros y se la pasa al equipo que va último.
 
 // ── pruebas ──
-// La foto de portada está hecha pero fuera de la partida hasta que el profesor elija la prueba de salir.
-var ORDEN_PRUEBAS = ["ordena", "sopa1", "ahorc1", "bulo", "encuesta", "teletipo", "caza", "ahorc2", "sopa2", "experta", "columnista"];
+var ORDEN_PRUEBAS = ["ordena", "sopa1", "ahorc1", "bulo", "encuesta", "teletipo", "caza", "ahorc2", "foto", "sopa2", "experta", "columnista"];
 var PRUEBAS = {
   ordena: { tipo: "ordena", titulo: "Ordena la historia", txt: "Ordenad los hitos del más antiguo al más reciente. Solo hay un intento.",
     items: ["Las Cortes aprueban el voto femenino", "Federica Montseny, primera ministra", "Luisa Fernanda Rudi, primera presidenta del Congreso", "Primer Gobierno paritario, con Zapatero", "La ley de paridad obliga a las listas cremallera"] },

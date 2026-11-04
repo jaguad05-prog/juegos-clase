@@ -64,7 +64,7 @@ const JUEGOS = {
 const TIPOS = {
   ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8",
   ".json": "application/json", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
-  ".svg": "image/svg+xml", ".ico": "image/x-icon", ".webp": "image/webp",
+  ".svg": "image/svg+xml", ".ico": "image/x-icon", ".webp": "image/webp", ".mp4": "video/mp4",
 };
 
 function cors(res) {
@@ -97,7 +97,21 @@ const server = http.createServer((req, res) => {
   let p = decodeURIComponent(url.pathname);
   if (p === "/" || p === "") p = "/index.html";
   const file = path.normalize(path.join(PUB, p));
-  if (!file.startsWith(PUB) || !/\.(html|jpg|jpeg|png|svg|ico|webp)$/i.test(file)) { res.writeHead(404); return res.end("No encontrado"); }
+  if (!file.startsWith(PUB) || !/\.(html|jpg|jpeg|png|svg|ico|webp|mp4)$/i.test(file)) { res.writeHead(404); return res.end("No encontrado"); }
+  // vídeos: se sirven por trozos para que el navegador pueda avanzar y retroceder
+  if (/\.mp4$/i.test(file)) {
+    return fs.stat(file, (err, st) => {
+      if (err) { res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }); return res.end("No encontrado"); }
+      const r = /bytes=(\d*)-(\d*)/.exec(req.headers.range || "");
+      if (r) {
+        const ini = r[1] ? parseInt(r[1], 10) : 0, fin = r[2] ? Math.min(parseInt(r[2], 10), st.size - 1) : st.size - 1;
+        res.writeHead(206, { "Content-Type": "video/mp4", "Content-Range": "bytes " + ini + "-" + fin + "/" + st.size, "Accept-Ranges": "bytes", "Content-Length": fin - ini + 1 });
+        return fs.createReadStream(file, { start: ini, end: fin }).pipe(res);
+      }
+      res.writeHead(200, { "Content-Type": "video/mp4", "Content-Length": st.size, "Accept-Ranges": "bytes" });
+      fs.createReadStream(file).pipe(res);
+    });
+  }
   fs.readFile(file, (err, data) => {
     if (err) { res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }); return res.end("No encontrado"); }
     const ext = path.extname(file).toLowerCase();
