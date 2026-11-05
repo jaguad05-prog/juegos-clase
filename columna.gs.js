@@ -116,6 +116,13 @@ function solucion(qi) {
   return DATOS.preg[qi].cas.map(function (c) { return { ok: c.ok, neg: c.neg || [], porque: c.porque }; });
 }
 
+// minutos para contestar: los que elija el profesor (de medio minuto a 15), o los de la pregunta
+function minutos(p, qi) {
+  var m = Number(p.min);
+  if (!(m >= 0.5 && m <= 15)) m = DATOS.preg[qi].min;
+  return m;
+}
+
 function llena(v) {
   if (Array.isArray(v)) return v.some(function (x) { return x !== null && x !== undefined; });
   return v !== null && v !== undefined;
@@ -223,7 +230,7 @@ var ACCIONES = {
     }
     g.q = qi; g.sel[qi] = {}; g.done[qi] = {};
     if (DATOS.preg[qi].col !== null) { g.status = "l"; g.deadline = 0; }   // lectura sin reloj, la cierra el profesor
-    else { g.status = "q"; g.deadline = Date.now() + DATOS.preg[qi].min * 60000; }
+    else { g.status = "q"; g.deadline = Date.now() + minutos(p, qi) * 60000; }
     guardar(g);
     return { ok: true };
   },
@@ -232,7 +239,7 @@ var ACCIONES = {
   "go": function (p) {
     var g = partida(p.c); admin(g, p.k);
     if (g.status !== "l") throw new Error("No hay ninguna lectura en marcha");
-    g.status = "q"; g.deadline = Date.now() + DATOS.preg[g.q].min * 60000;
+    g.status = "q"; g.deadline = Date.now() + minutos(p, g.q) * 60000;
     guardar(g);
     return { ok: true };
   },

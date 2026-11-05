@@ -65,6 +65,8 @@ h2{font-size:24px}
 .pd .pn{font-size:26px;font-weight:900;margin-top:6px}
 .pd .pt{font-size:18px;color:var(--muted);margin-top:4px}
 .pd.g1{border-color:var(--gold);padding-bottom:50px}
+.mins{display:inline-flex;align-items:center;gap:10px;font-size:17px;font-weight:700;margin-top:18px}
+.mins input{width:84px;font-size:20px;font-weight:800;padding:8px;border:2px solid var(--border);border-radius:10px;text-align:center;font-family:inherit}
 .err{color:var(--red);font-weight:700;margin-top:10px}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 20px;border-radius:24px;font-size:16px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
 #toast.on{opacity:1}
@@ -84,6 +86,9 @@ const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch(e){} };
 const LET = "ABCDEFGH";
 
 let CODE = lsGet("columna_p_code", ""), KEY = lsGet("columna_p_key", "");
+let MIN = Number(lsGet("columna_p_min", "3")) || 3;
+const minsHTML = () => `<div class="mins">Minutos para contestar <input type="number" id="imin" min="0.5" max="15" step="0.5" value="${MIN}" onchange="ponMin(this.value)"></div>`;
+function ponMin(v){ const n = Number(String(v).replace(",", ".")); if (n >= 0.5 && n <= 15){ MIN = n; lsSet("columna_p_min", String(n)); } else { toast("Pon entre 0,5 y 15 minutos"); const i = $("imin"); if (i) i.value = MIN; } }
 let D = null, S = null, offset = 0, vista = "", solCas = 0, solQ = -1;
 
 function toast(m){ const t = $("toast"); t.textContent = m; t.className = "on"; clearTimeout(t._h); t._h = setTimeout(() => t.className = "", 3500); }
@@ -117,7 +122,8 @@ function pintarLobby(){
       <p class="muted" style="font-size:18px;margin-top:8px">Escanead el QR o entrad en la dirección con el código.</p>
       <h2 style="margin-top:22px">${S.teams.length} ${S.teams.length === 1 ? "equipo dentro" : "equipos dentro"}</h2>
       <div class="teams">${S.teams.map(t => `<div class="tm">${esc(t.name)}</div>`).join("") || `<p class="muted">Todavía no ha entrado nadie</p>`}</div>
-      <div class="btns"><button class="btn" onclick="accion('start',{q:0})">Empezar la pregunta 1</button><button class="btn out" onclick="nueva()">Nueva partida</button></div></div></div>`;
+      ${minsHTML()}
+      <div class="btns"><button class="btn" onclick="accion('start',{q:0,min:MIN})">Empezar la pregunta 1</button><button class="btn out" onclick="nueva()">Nueva partida</button></div></div></div>`;
   try { const q = qrcode(0, "M"); q.addData(urlEquipo()); q.make(); $("qr").innerHTML = q.createSvgTag({ cellSize:6, margin:1, scalable:true }); } catch(e){}
 }
 
@@ -132,9 +138,10 @@ function pintarLectura(){
     vista = "l" + S.q;
     $("main").innerHTML = `<div class="box"><div class="qhead"><div class="info">${cabPregunta(q)}</div><div class="clock" style="font-size:44px">Lectura</div></div></div>
       <div class="box" style="margin-top:20px"><h2>Leed la columna en el móvil</h2>
-      <p class="muted" style="font-size:18px;margin-top:6px">Cuando hayan terminado, abre las casillas. Entonces empiezan los ${q.min} minutos para contestar.</p>
+      <p class="muted" style="font-size:18px;margin-top:6px">Cuando hayan terminado, abre las casillas. Entonces empieza el tiempo para contestar.</p>
       <div class="teams" id="lteams"></div>
-      <div class="btns"><button class="btn" onclick="accion('go')">Empezar a contestar (${q.min} minutos)</button></div></div>`;
+      ${minsHTML()}
+      <div class="btns"><button class="btn" onclick="accion('go',{min:MIN})">Empezar a contestar</button></div></div>`;
   }
   $("lteams").innerHTML = S.teams.map(t => `<div class="tm">${esc(t.name)}</div>`).join("");
 }
@@ -174,7 +181,8 @@ function pintarResultados(){
   $("main").innerHTML = `<div class="box" style="margin-bottom:18px">${cabPregunta(q)}</div>
     <div class="rgrid"><div class="box"><h2>Clasificación</h2><p class="muted" style="margin:4px 0 8px">En verde, lo ganado en esta pregunta (máximo ${maxPreg(q)})</p>
       ${S.clas.map(x => `<div class="cl ${x.pos === 1 ? "top1" : ""}"><span class="p">${x.pos}º</span><span class="nm">${esc(x.name)}</span><span class="rd">+${x.ronda}</span><span class="tt">${x.total}</span></div>`).join("")}
-      <div class="btns">${ultima ? `<button class="btn" onclick="accion('final')">Clasificación final</button>` : `<button class="btn" onclick="accion('start')">Pregunta ${S.q + 2}</button>`}</div></div>
+      ${ultima ? "" : minsHTML()}
+      <div class="btns">${ultima ? `<button class="btn" onclick="accion('final')">Clasificación final</button>` : `<button class="btn" onclick="accion('start',{min:MIN})">Pregunta ${S.q + 2}</button>`}</div></div>
     <div class="box"><div class="soltabs">${q.cas.map((c, i) => `<button class="${i === solCas ? "on" : ""}" onclick="solCas=${i};vista='';pintarResultados()">Casilla ${i + 1}</button>`).join("")}</div>
       ${solucionHTML(q, solCas)}</div></div>`;
 }
