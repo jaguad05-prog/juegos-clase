@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Análisis de columna · Equipo</title>
+<style>
+:root{--red:#C8102E;--ink:#1B1B1F;--paper:#fff;--bg:#F3F1EC;--muted:#6B6B72;--border:#D8D8DC;--green:#1E7A45;--gold:#E8B54A;--lgreen:#E8F5EC;--lred:#FBE9EC}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg)}
+body{font-family:Arial,Helvetica,sans-serif;color:var(--ink);min-height:100vh;-webkit-tap-highlight-color:transparent}
+.top{background:var(--ink);color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:5}
+.t1{font-size:14px;font-weight:800;letter-spacing:.03em}
+.t2{font-size:11px;color:var(--gold);letter-spacing:.05em;margin-top:2px}
+.clock{font-weight:900;font-size:24px;font-variant-numeric:tabular-nums}
+.clock.low{color:#ff6b7d}
+.wrap{max-width:620px;margin:0 auto;padding:14px 14px 90px}
+.card{background:var(--paper);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px}
+h1{font-size:22px;line-height:1.2;margin-bottom:8px}
+h2{font-size:17px;line-height:1.3}
+p{line-height:1.45}
+.muted{color:var(--muted);font-size:14px}
+label{display:block;font-weight:700;font-size:13px;margin:14px 0 6px}
+input{width:100%;border:2px solid var(--border);border-radius:10px;padding:13px;font-size:17px;font-family:inherit;color:var(--ink);background:#fff}
+input:focus{outline:none;border-color:var(--red)}
+.btn{display:block;width:100%;border:none;border-radius:12px;padding:15px;font-size:17px;font-weight:800;font-family:inherit;color:#fff;background:var(--red);cursor:pointer;margin-top:12px}
+.btn.ok{background:var(--green)}
+.btn.out{background:#fff;color:var(--ink);border:2px solid var(--border);font-size:15px;padding:11px}
+.err{color:var(--red);font-weight:700;font-size:14px;margin-top:10px;min-height:18px}
+.colhead{border-left:5px solid var(--red);padding-left:12px}
+.colhead .a{font-weight:800;font-size:15px}
+.colhead .m{font-size:12px;color:var(--muted)}
+.colhead .ti{font-size:15px;font-style:italic;margin-top:4px}
+.cas{scroll-margin-top:72px;background:#fff;border:2px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.cas.open{border-color:var(--ink)}
+.cas .hd{display:flex;align-items:center;gap:10px;padding:13px 14px;cursor:pointer;width:100%;background:none;border:none;font-family:inherit;text-align:left;color:var(--ink)}
+.cas .n{min-width:30px;height:30px;border-radius:15px;background:var(--ink);color:var(--gold);font-weight:900;display:flex;align-items:center;justify-content:center;flex:none;font-size:14px}
+.cas .q{font-weight:800;font-size:15.5px;line-height:1.3;flex:1}
+.cas .tag{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.cas .cnt{font-size:12px;font-weight:800;color:#fff;background:var(--green);border-radius:10px;padding:3px 8px;flex:none}
+.cas .cnt.zero{background:#c9c9cf}
+.cas .bd{display:none;padding:0 12px 12px}
+.cas.open .bd{display:block}
+.fr{display:block;width:100%;text-align:left;font-family:inherit;font-size:15px;line-height:1.45;color:var(--ink);background:#fafaf8;border:1.5px solid var(--border);border-radius:10px;padding:9px 11px;margin-top:7px;cursor:pointer}
+.fr.sel{background:#fff6dc;border-color:#d9a21b;box-shadow:inset 4px 0 0 #d9a21b}
+.fr.sub{font-weight:800;background:none;border:none;padding:10px 2px 0;cursor:default;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.opt{display:flex;gap:11px;align-items:center;width:100%;text-align:left;border:2px solid var(--border);border-radius:12px;padding:12px;background:#fff;font-family:inherit;font-size:15.5px;font-weight:700;color:var(--ink);cursor:pointer;margin-top:8px;line-height:1.3}
+.opt .L{min-width:30px;height:30px;border-radius:15px;background:var(--ink);color:var(--gold);font-weight:900;display:flex;align-items:center;justify-content:center;flex:none;font-size:14px}
+.opt.sel{border-color:var(--green);background:var(--lgreen)}
+.opt.sel .L{background:var(--green);color:#fff}
+.row{margin-top:10px}
+.row .rl{font-weight:800;font-size:14px;margin-bottom:5px}
+.row select{width:100%;font-size:16px;padding:11px;border:2px solid var(--border);border-radius:10px;font-family:inherit;background:#fff;color:var(--ink)}
+.hint{font-size:13px;color:var(--muted);margin-top:4px}
+.donebar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--border);padding:10px 14px}
+.donebar .btn{margin:0 auto;max-width:620px}
+.big{font-size:46px;font-weight:900;text-align:center;line-height:1}
+.center{text-align:center}
+.fb{border-radius:12px;border:1.5px solid var(--border);padding:12px 13px;margin-bottom:10px;background:#fff}
+.fb .h{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.fb .h b{font-size:15px;line-height:1.3}
+.fb .h span{font-weight:900;font-size:16px;flex:none}
+.it{font-size:13.5px;line-height:1.4;margin-top:6px;padding:6px 8px;border-radius:8px}
+.it.g{background:var(--lgreen);color:#14532d}
+.it.b{background:var(--lred);color:#8a1022}
+.it.m{border:1.5px dashed #6fb58a;color:#355e45}
+.why{font-size:14px;line-height:1.45;margin-top:8px;color:#333}
+.small{font-size:12px;color:var(--muted);margin-top:16px;text-align:center}
+#toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:20px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90%;text-align:center;z-index:9}
+#toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="top"><div><div class="t1">ANÁLISIS DE COLUMNA</div><div class="t2" id="sub">PERIODISMO DEPORTIVO</div></div><div class="clock" id="clock"></div></div>
+<div class="wrap" id="app"><div class="card"><p class="muted">Cargando…</p></div></div>
+<div class="donebar" id="donebar" style="display:none"><button class="btn" id="donebtn">Hemos terminado</button></div>
+<div id="toast"></div>
+<script>
+const API = location.origin + "/api/columna";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const lsGet = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch(e){ return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch(e){} };
+const qs = new URLSearchParams(location.search);
+const LET = "ABCDEFGH";
+
+let CODE = (qs.get("c") || lsGet("columna_code", "")).toUpperCase();
+let DEV = lsGet("columna_dev", "");
+if (!DEV){ DEV = "d" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); lsSet("columna_dev", DEV); }
+let D = null, S = null, offset = 0, vista = "", abierta = 0, mine = {}, qLocal = -2, enviando = {};
+
+function toast(m){ const t = $("toast"); t.textContent = m; t.className = "on"; clearTimeout(t._h); t._h = setTimeout(() => t.className = "", 3000); }
+async function api(params){
+  const r = await fetch(API, { method:"POST", body: JSON.stringify(Object.assign({ c: CODE, dev: DEV }, params)) });
+  const j = await r.json(); if (j.error) throw new Error(j.error); return j;
+}
+const corta = (s, n=130) => s.length > n ? s.slice(0, n - 1).trim() + "…" : s;
+
+// ── entrada ──
+function pantallaEntrar(msg){
+  vista = "entrar"; $("donebar").style.display = "none"; $("clock").textContent = "";
+  $("app").innerHTML = `<div class="card"><h1>Entrad con vuestro equipo</h1>
+    <p class="muted">Un móvil por equipo. El código sale en el proyector.</p>
+    <label>Código de la partida</label><input id="ic" maxlength="6" autocapitalize="characters" value="${esc(CODE)}">
+    <label>Nombre del equipo</label><input id="in" maxlength="30" value="${esc(lsGet("columna_name",""))}">
+    <button class="btn" id="go">Entrar</button><div class="err" id="er">${esc(msg||"")}</div></div>`;
+  $("go").onclick = async () => {
+    CODE = $("ic").value.trim().toUpperCase(); const nm = $("in").value.trim();
+    if (!CODE){ $("er").textContent = "Escribe el código"; return; }
+    if (!nm){ $("er").textContent = "Escribe el nombre del equipo"; return; }
+    $("go").disabled = true;
+    try { await api({ a:"join", name:nm }); lsSet("columna_code", CODE); lsSet("columna_name", nm); vista = ""; refrescar(); }
+    catch(e){ $("er").textContent = e.message; $("go").disabled = false; }
+  };
+}
+
+// ── reloj ──
+function reloj(){
+  if (!S || S.status !== "q"){ $("clock").textContent = ""; return; }
+  const ms = Math.max(0, S.deadline - (Date.now() + offset)), s = Math.ceil(ms / 1000);
+  $("clock").textContent = Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+  $("clock").className = "clock" + (s <= 30 ? " low" : "");
+}
+setInterval(reloj, 250);
+
+// ── pregunta ──
+function cuenta(c, v){
+  if (c.tipo === "toca" || c.tipo === "varias") return (v || []).length;
+  if (c.tipo === "elige") return (v === null || v === undefined) ? 0 : 1;
+  if (c.tipo === "empareja") return (v || []).filter(x => x !== null && x !== undefined).length;
+  return 0;
+}
+function cntHTML(c, v){
+  const n = cuenta(c, v);
+  const txt = c.tipo === "toca" || c.tipo === "varias" ? (n + (n === 1 ? " marcada" : " marcadas")) : (c.tipo === "empareja" ? n + " de " + c.filas.length : (n ? "Elegida" : "Sin elegir"));
+  return `<span class="cnt ${n ? "" : "zero"}">${txt}</span>`;
+}
+function frasesHTML(ci, col, sel){
+  return D.cols[col].map((f, i) => {
+    const corto = f.length < 26 && !/[.!?…]$/.test(f);
+    if (corto) return `<div class="fr sub">${esc(f)}</div>`;
+    return `<button class="fr ${sel.includes(i) ? "sel" : ""}" data-ci="${ci}" data-i="${i}">${esc(f)}</button>`;
+  }).join("");
+}
+function casillaHTML(q, c, ci){
+  const v = mine[ci];
+  let body = "";
+  if (c.tipo === "toca"){
+    body = `<p class="hint">Tocad las frases. Cada acierto suma y cada frase que no toca resta.</p>` + frasesHTML(ci, q.col, v || []);
+  } else if (c.tipo === "elige"){
+    body = c.ops.map((o, i) => `<button class="opt ${v === i ? "sel" : ""}" data-ci="${ci}" data-o="${i}"><span class="L">${LET[i]}</span>${esc(o)}</button>`).join("");
+  } else if (c.tipo === "varias"){
+    body = `<p class="hint">Podéis marcar más de una. Cada una mal marcada resta.</p>` + c.ops.map((o, i) => `<button class="opt ${(v||[]).includes(i) ? "sel" : ""}" data-ci="${ci}" data-m="${i}"><span class="L">${LET[i]}</span>${esc(o)}</button>`).join("");
+  } else if (c.tipo === "empareja"){
+    body = c.filas.map((f, r) => `<div class="row"><div class="rl">${esc(f)}</div><select data-ci="${ci}" data-r="${r}"><option value="">Elegid…</option>${c.ops.map((o, i) => `<option value="${i}" ${(v||[])[r] === i ? "selected" : ""}>${esc(o)}</option>`).join("")}</select></div>`).join("");
+  }
+  const tipo = c.tipo === "toca" ? "Toca frases" : c.tipo === "empareja" ? "Empareja" : c.tipo === "varias" ? "Elige una o varias" : "Elige una";
+  return `<div class="cas ${abierta === ci ? "open" : ""}" id="cas${ci}">
+    <button class="hd" data-open="${ci}"><span class="n">${ci + 1}</span><span class="q"><span class="tag">${tipo}</span><br>${esc(c.t)}</span><span id="cnt${ci}">${cntHTML(c, v)}</span></button>
+    <div class="bd">${body}</div></div>`;
+}
+function pantallaPregunta(){
+  const q = D.preg[S.q];
+  vista = "q" + S.q;
+  $("sub").textContent = "PREGUNTA " + (S.q + 1) + " DE " + S.nq + " · " + S.me.name.toUpperCase();
+  let cab = "";
+  if (q.col !== null){
+    const m = D.meta[q.col];
+    cab = `<div class="card colhead"><div class="a">${esc(m.autor)}</div>${m.medio ? `<div class="m">${esc(m.medio)}</div>` : ""}<div class="ti">«${esc(m.titulo)}»</div></div>`;
+  } else cab = `<div class="card colhead"><div class="a">${esc(q.t)}</div><div class="m">Pensad en las cuatro columnas a la vez</div></div>`;
+  $("app").innerHTML = cab + q.cas.map((c, ci) => casillaHTML(q, c, ci)).join("") + `<p class="small">Todo se guarda al momento. Podéis cambiar lo que queráis hasta que se acabe el tiempo.</p>`;
+  $("donebar").style.display = "block";
+  pintarDone();
+}
+function pintarDone(){
+  const b = $("donebtn");
+  if (S && S.me && S.me.done){ b.textContent = "Terminado ✓ (tocad para seguir cambiando)"; b.className = "btn ok"; }
+  else { b.textContent = "Hemos terminado"; b.className = "btn"; }
+}
+$("donebtn").onclick = async () => {
+  if (!S || S.status !== "q") return;
+  const undo = !!S.me.done;
+  try { await api({ a:"done", undo }); S.me.done = !undo; pintarDone(); } catch(e){ toast(e.message); }
+};
+let timers = {};
+function guardar(ci){
+  const q = D.preg[S.q], c = q.cas[ci];
+  const el = $("cnt" + ci); if (el) el.innerHTML = cntHTML(c, mine[ci]);
+  clearTimeout(timers[ci]);
+  timers[ci] = setTimeout(async () => {
+    enviando[ci] = true;
+    try { await api({ a:"sel", q:S.q, ci, v: mine[ci] ?? null }); }
+    catch(e){ toast(e.message); }
+    enviando[ci] = false;
+  }, 250);
+}
+$("app").addEventListener("click", ev => {
+  const t = ev.target.closest("button"); if (!t || !S || S.status !== "q") return;
+  if (t.dataset.open !== undefined){
+    const ci = Number(t.dataset.open);
+    abierta = abierta === ci ? -1 : ci;
+    document.querySelectorAll(".cas").forEach((e, i) => e.classList.toggle("open", i === abierta));
+    if (abierta >= 0) $("cas" + abierta).scrollIntoView({ behavior:"smooth", block:"start" });
+    return;
+  }
+  const ci = Number(t.dataset.ci);
+  if (t.dataset.i !== undefined){
+    const i = Number(t.dataset.i), a = mine[ci] = (mine[ci] || []).slice();
+    const k = a.indexOf(i); if (k >= 0) a.splice(k, 1); else a.push(i);
+    t.classList.toggle("sel", k < 0); guardar(ci);
+  } else if (t.dataset.o !== undefined){
+    const o = Number(t.dataset.o); mine[ci] = mine[ci] === o ? null : o;
+    t.parentNode.querySelectorAll(".opt").forEach(b => b.classList.toggle("sel", Number(b.dataset.o) === mine[ci]));
+    guardar(ci);
+  } else if (t.dataset.m !== undefined){
+    const o = Number(t.dataset.m), a = mine[ci] = (mine[ci] || []).slice();
+    const k = a.indexOf(o); if (k >= 0) a.splice(k, 1); else a.push(o);
+    t.classList.toggle("sel", k < 0); guardar(ci);
+  }
+});
+$("app").addEventListener("change", ev => {
+  const s = ev.target; if (s.tagName !== "SELECT" || !S || S.status !== "q") return;
+  const ci = Number(s.dataset.ci), r = Number(s.dataset.r), n = D.preg[S.q].cas[ci].filas.length;
+  const a = mine[ci] = (mine[ci] || new Array(n).fill(null)).slice();
+  a[r] = s.value === "" ? null : Number(s.value); guardar(ci);
+});
+
+// ── resultados ──
+function itemsToca(col, idx, cls, pre){
+  return idx.map(i => `<div class="it ${cls}">${pre}«${esc(corta(D.cols[col][i]))}»</div>`).join("");
+}
+function fbCasilla(q, c, ci, r, sol){
+  const so = sol[ci];
+  let it = "";
+  if (c.tipo === "toca"){
+    it += itemsToca(q.col, r.good, "g", "✓ ");
+    it += itemsToca(q.col, r.bad, "b", "✗ Resta, no es lo que pedía la casilla · ");
+    const falta = Math.max(0, c.max - r.good.length);
+    if (falta) it += itemsToca(q.col, r.miss.slice(0, falta), "m", "Te faltó ");
+  } else if (c.tipo === "elige"){
+    if (r.pts) it = `<div class="it g">✓ ${esc(c.ops[so.ok])}</div>`;
+    else it = (r.sel >= 0 ? `<div class="it b">✗ Elegiste «${esc(c.ops[r.sel])}»</div>` : `<div class="it b">✗ No elegiste ninguna</div>`) + `<div class="it m">La correcta era «${esc(c.ops[so.ok])}»</div>`;
+  } else if (c.tipo === "varias"){
+    it += r.good.map(i => `<div class="it g">✓ ${esc(c.ops[i])}</div>`).join("");
+    it += r.bad.map(i => `<div class="it b">✗ Resta · ${esc(c.ops[i])}</div>`).join("");
+    it += r.miss.map(i => `<div class="it m">Te faltó · ${esc(c.ops[i])}</div>`).join("");
+  } else if (c.tipo === "empareja"){
+    it = c.filas.map((f, i) => r.sel[i] === so.ok[i]
+      ? `<div class="it g">✓ ${esc(f)} → ${esc(c.ops[so.ok[i]])}</div>`
+      : `<div class="it b">✗ ${esc(f)} → ${r.sel[i] >= 0 ? esc(c.ops[r.sel[i]]) : "sin emparejar"} · era ${esc(c.ops[so.ok[i]])}</div>`).join("");
+  }
+  return `<div class="fb"><div class="h"><b>${ci + 1}. ${esc(c.t)}</b><span>${r.pts} / ${c.max}</span></div>${it}<p class="why">${esc(so.porque)}</p></div>`;
+}
+function pantallaResultados(){
+  vista = "r" + S.q; $("donebar").style.display = "none";
+  const q = D.preg[S.q], r = S.me.res;
+  $("sub").textContent = "PREGUNTA " + (S.q + 1) + " · RESULTADOS";
+  if (!r){ $("app").innerHTML = `<div class="card center"><p>Esta pregunta empezó antes de que entrarais.</p></div>`; return; }
+  const max = q.cas.reduce((s, c) => s + c.max, 0);
+  $("app").innerHTML = `<div class="card center"><p class="muted">Esta pregunta</p><div class="big">${r.pts}</div><p class="muted">de ${max} posibles</p>
+    <p style="margin-top:10px;font-weight:800">Total ${S.me.total} puntos · vais en el puesto ${S.me.pos || "-"} de ${S.nteams}</p></div>`
+    + q.cas.map((c, ci) => fbCasilla(q, c, ci, r.cas[ci], S.sol)).join("")
+    + `<p class="small">Mirad el proyector, ahí se comenta la solución.</p>`;
+}
+
+function render(){
+  if (!S) return;
+  if (!S.me){ if (vista !== "entrar") pantallaEntrar(); return; }
+  if (S.status === "q"){
+    if (qLocal !== S.q){ qLocal = S.q; mine = JSON.parse(JSON.stringify(S.me.sel || {})); abierta = 0; }
+    if (vista !== "q" + S.q) pantallaPregunta(); else pintarDone();
+    return;
+  }
+  $("donebar").style.display = "none";
+  if (S.status === "lobby"){
+    if (vista !== "lobby"){ vista = "lobby"; $("sub").textContent = S.me.name.toUpperCase();
+      $("app").innerHTML = `<div class="card center"><h1>Dentro, ${esc(S.me.name)}</h1><p class="muted">En cuanto el profesor abra la primera pregunta, aparecerá aquí.</p></div>
+      <div class="card"><h2>Cómo se juega</h2><p class="muted" style="margin-top:8px">Cada pregunta tiene varias casillas. En las de «toca» señaláis frases de la columna y en las de «elige» marcáis una opción. Cada acierto suma un punto y cada frase marcada por error resta uno.</p></div>`; }
+  } else if (S.status === "r"){
+    if (vista !== "r" + S.q) pantallaResultados();
+  } else if (S.status === "fin"){
+    if (vista !== "fin"){ vista = "fin"; $("sub").textContent = "CLASIFICACIÓN FINAL";
+      $("app").innerHTML = `<div class="card center"><p class="muted">Habéis terminado en el puesto</p><div class="big">${S.me.pos || "-"}º</div><p class="muted">de ${S.nteams} equipos, con ${S.me.total} puntos</p></div>`; }
+  }
+}
+
+async function refrescar(){
+  if (!CODE){ if (vista !== "entrar") pantallaEntrar(); return; }
+  try {
+    const j = await api({ a:"state" });
+    offset = j.now - Date.now(); S = j; render(); reloj();
+  } catch(e){
+    if (/No existe/.test(e.message)){ if (vista !== "entrar") pantallaEntrar(e.message); }
+  }
+}
+(async () => {
+  try { const r = await fetch(API, { method:"POST", body: JSON.stringify({ a:"datos" }) }); D = await r.json(); }
+  catch(e){ $("app").innerHTML = `<div class="card"><p>No se puede conectar. Recarga la página.</p></div>`; return; }
+  await refrescar();
+  setInterval(refrescar, 1500);
+})();
+</script>
+</body>
+</html>
