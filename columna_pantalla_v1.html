@@ -126,6 +126,18 @@ function cabPregunta(q){
   return `<div class="num">PREGUNTA ${S.q + 1} DE ${S.nq}</div><h1>${esc(m ? m.autor : q.t)}</h1>
     <p class="muted" style="font-size:18px;margin-top:4px">${m ? "«" + esc(m.titulo) + "»" + (m.medio ? " · " + esc(m.medio) : "") : "Pensad en las cuatro columnas a la vez"}</p>`;
 }
+function pintarLectura(){
+  const q = D.preg[S.q];
+  if (vista !== "l" + S.q){
+    vista = "l" + S.q;
+    $("main").innerHTML = `<div class="box"><div class="qhead"><div class="info">${cabPregunta(q)}</div><div class="clock" style="font-size:44px">Lectura</div></div></div>
+      <div class="box" style="margin-top:20px"><h2>Leed la columna en el móvil</h2>
+      <p class="muted" style="font-size:18px;margin-top:6px">Cuando hayan terminado, abre las casillas. Entonces empiezan los ${q.min} minutos para contestar.</p>
+      <div class="teams" id="lteams"></div>
+      <div class="btns"><button class="btn" onclick="accion('go')">Empezar a contestar (${q.min} minutos)</button></div></div>`;
+  }
+  $("lteams").innerHTML = S.teams.map(t => `<div class="tm">${esc(t.name)}</div>`).join("");
+}
 function pintarPregunta(){
   const q = D.preg[S.q], nc = q.cas.length;
   if (vista !== "q" + S.q){
@@ -188,6 +200,7 @@ setInterval(reloj, 250);
 function render(){
   $("hcode").innerHTML = CODE ? `Código<b>${esc(CODE)}</b>` : "";
   if (S.status === "lobby") pintarLobby();
+  else if (S.status === "l") pintarLectura();
   else if (S.status === "q") pintarPregunta();
   else if (S.status === "r") pintarResultados();
   else if (S.status === "fin") pintarFinal();

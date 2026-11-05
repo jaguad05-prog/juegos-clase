@@ -66,6 +66,11 @@ input:focus{outline:none;border-color:var(--red)}
 .it.m{border:1.5px dashed #6fb58a;color:#355e45}
 .why{font-size:14px;line-height:1.45;margin-top:8px;color:#333}
 .small{font-size:12px;color:var(--muted);margin-top:16px;text-align:center}
+.leer{font-size:16px;line-height:1.6}
+.leer p{margin-top:10px}
+.leer h3{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-top:16px}
+details.colfull{background:#fff;border:2px solid var(--border);border-radius:14px;margin-bottom:10px;padding:12px 14px}
+details.colfull summary{font-weight:800;font-size:15px;cursor:pointer}
 #toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:20px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90%;text-align:center;z-index:9}
 #toast.on{opacity:1}
 </style>
@@ -123,6 +128,25 @@ function reloj(){
 }
 setInterval(reloj, 250);
 
+// ── la columna entera, para leer ──
+function columnaHTML(col){
+  let h = "", par = [];
+  const flush = () => { if (par.length){ h += `<p>${esc(par.join(" "))}</p>`; par = []; } };
+  D.cols[col].forEach(f => {
+    if (f.length < 26 && !/[.!?…]$/.test(f)){ flush(); h += `<h3>${esc(f)}</h3>`; }
+    else { par.push(f); if (par.length >= 4) flush(); }
+  });
+  flush();
+  return `<div class="leer">${h}</div>`;
+}
+function pantallaLectura(){
+  const q = D.preg[S.q], m = D.meta[q.col];
+  vista = "l" + S.q; $("donebar").style.display = "none";
+  $("sub").textContent = "PREGUNTA " + (S.q + 1) + " DE " + S.nq + " · LECTURA";
+  $("app").innerHTML = `<div class="card colhead"><div class="a">${esc(m.autor)}</div>${m.medio ? `<div class="m">${esc(m.medio)}</div>` : ""}<div class="ti">«${esc(m.titulo)}»</div></div>
+    <div class="card"><p class="muted">Leed la columna con calma. Cuando el profesor lo diga, se abren las casillas y empieza el tiempo para contestar.</p>${columnaHTML(q.col)}</div>`;
+}
+
 // ── pregunta ──
 function cuenta(c, v){
   if (c.tipo === "toca" || c.tipo === "varias") return (v || []).length;
@@ -168,7 +192,8 @@ function pantallaPregunta(){
     const m = D.meta[q.col];
     cab = `<div class="card colhead"><div class="a">${esc(m.autor)}</div>${m.medio ? `<div class="m">${esc(m.medio)}</div>` : ""}<div class="ti">«${esc(m.titulo)}»</div></div>`;
   } else cab = `<div class="card colhead"><div class="a">${esc(q.t)}</div><div class="m">Pensad en las cuatro columnas a la vez</div></div>`;
-  $("app").innerHTML = cab + q.cas.map((c, ci) => casillaHTML(q, c, ci)).join("") + `<p class="small">Todo se guarda al momento. Podéis cambiar lo que queráis hasta que se acabe el tiempo.</p>`;
+  const full = q.col !== null ? `<details class="colfull"><summary>Ver la columna entera</summary>${columnaHTML(q.col)}</details>` : "";
+  $("app").innerHTML = cab + full + q.cas.map((c, ci) => casillaHTML(q, c, ci)).join("") + `<p class="small">Todo se guarda al momento. Podéis cambiar lo que queráis hasta que se acabe el tiempo.</p>`;
   $("donebar").style.display = "block";
   pintarDone();
 }
@@ -272,6 +297,7 @@ function render(){
     return;
   }
   $("donebar").style.display = "none";
+  if (S.status === "l"){ if (vista !== "l" + S.q) pantallaLectura(); return; }
   if (S.status === "lobby"){
     if (vista !== "lobby"){ vista = "lobby"; $("sub").textContent = S.me.name.toUpperCase();
       $("app").innerHTML = `<div class="card center"><h1>Dentro, ${esc(S.me.name)}</h1><p class="muted">En cuanto el profesor abra la primera pregunta, aparecerá aquí.</p></div>
