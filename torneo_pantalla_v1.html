@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La clase contra ChatGPT · Proyector</title>
+<style>
+:root{--red:#C8102E;--ink:#1B1B1F;--paper:#fff;--bg:#F3F1EC;--muted:#6B6B72;--border:#D8D8DC;--green:#1E7A45;--gold:#E8B54A;--ia:#10A37F;--clase:#1565C0}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);min-height:100%}
+body{font-family:Arial,Helvetica,sans-serif;color:var(--ink);display:flex;flex-direction:column;min-height:100vh}
+header{background:var(--ink);color:#fff;padding:12px 24px;display:flex;align-items:center;gap:22px}
+.brand .t1{font-family:Georgia,"Times New Roman",serif;font-size:28px;font-weight:700}
+.brand .t2{font-size:12px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;margin-top:2px}
+.score{margin-left:auto;display:flex;align-items:center;gap:14px;font-weight:900}
+.score .lado{text-align:center;min-width:110px}
+.score .lado span{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.score .lado b{font-size:44px;line-height:1}
+.score .cl span{color:#90CAF9}.score .ia span{color:#7BE0C3}
+.score .sep{font-size:30px;color:#888}
+.juegos{display:flex;gap:6px}
+.jg{font-size:12px;padding:5px 9px;border-radius:12px;background:#333;color:#bbb;font-weight:700}
+.jg.on{background:var(--gold);color:var(--ink)}
+.jg.cl{background:var(--clase);color:#fff}.jg.ia{background:var(--ia);color:#fff}
+main{flex:1;display:flex;gap:20px;padding:18px 24px}
+aside{width:260px;flex:none;display:flex;flex-direction:column;gap:12px}
+.box{background:var(--paper);border:1px solid var(--border);border-radius:14px;padding:14px}
+#qr svg{width:100%;height:auto;display:block}
+.code{font-size:42px;font-weight:900;letter-spacing:.14em;text-align:center;color:var(--red);margin-top:4px}
+.link{font-size:11px;color:var(--muted);text-align:center;word-break:break-all;margin-top:4px}
+.btn{display:block;width:100%;border:none;border-radius:10px;padding:12px;font-size:16px;font-weight:800;font-family:inherit;color:#fff;background:var(--red);cursor:pointer}
+.btn.dark{background:var(--ink)}
+.btn.out{background:#fff;color:var(--ink);border:2px solid var(--border);font-size:14px;padding:9px}
+.btn.sm{font-size:13px;padding:7px}
+.btn:disabled{opacity:.45;cursor:default}
+.fila{display:flex;gap:8px}
+.hint{font-size:12px;color:var(--muted);line-height:1.4}
+.eq{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #eee;font-size:14px}
+.eq:last-child{border:none}
+.eq .dot{width:12px;height:12px;border-radius:6px;flex:none}
+.eq .nm{flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.eq .ok{color:var(--green);font-weight:900}
+.eq .pt{font-weight:900;min-width:28px;text-align:right}
+.eq button{border:none;background:#eee;border-radius:6px;width:22px;height:22px;cursor:pointer;font-weight:900}
+.stage{flex:1;display:flex;flex-direction:column;gap:14px;min-width:0}
+.tit{font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--red);font-weight:900}
+h2.big{font-family:Georgia,serif;font-size:36px;line-height:1.15}
+.reloj{font-size:64px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--ink)}
+.reloj.fin{color:var(--red)}
+.datos{background:var(--paper);border:1px solid var(--border);border-left:8px solid var(--red);border-radius:12px;padding:20px 24px;font-size:24px;line-height:1.45;white-space:pre-wrap}
+.ops{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--w,420px),1fr));gap:12px}
+.op{background:var(--paper);border:1px solid var(--border);border-radius:12px;padding:14px 16px 14px 54px;position:relative;font-size:var(--fs,19px);line-height:1.35}
+.op .L{position:absolute;left:12px;top:12px;width:32px;height:32px;border-radius:16px;background:var(--ink);color:var(--gold);font-weight:900;display:flex;align-items:center;justify-content:center}
+.op.ia{border:3px solid var(--ia);background:#E8F7F2}
+.op.ia .L{background:var(--ia);color:#fff}
+.op .who{margin-top:8px;font-size:14px;font-weight:900;color:var(--muted)}
+.op .nv{font-weight:900;color:var(--red);margin-left:10px}
+.titular{font-family:Georgia,serif;font-weight:700}
+.veredicto{border-radius:16px;padding:22px;text-align:center;color:#fff;font-size:34px;font-weight:900;animation:entra .6s ease-out}
+.veredicto small{display:block;font-size:18px;font-weight:700;opacity:.9;margin-top:6px}
+.veredicto.cl{background:var(--clase)}.veredicto.ia{background:var(--ia)}
+.rank{display:flex;flex-direction:column;gap:6px}
+.rk{display:flex;align-items:center;gap:12px;background:var(--paper);border:1px solid var(--border);border-radius:10px;padding:9px 14px;font-size:18px}
+.rk .pos{font-weight:900;font-size:22px;min-width:34px}
+.rk .tx{flex:1;font-family:Georgia,serif;font-weight:700}
+.rk .au{font-size:13px;color:var(--muted);font-weight:800;min-width:110px;text-align:right}
+.rk .pp{font-weight:900;color:var(--red);min-width:44px;text-align:right}
+.rk.ia{border:3px solid var(--ia);background:#E8F7F2}
+.rk.corte{border-bottom:4px dashed var(--red)}
+.texto3{background:var(--paper);border:1px solid var(--border);border-radius:12px;padding:18px 22px;font-size:20px;line-height:1.6}
+.texto3 p{margin-bottom:10px}
+.texto3 mark{background:#FFE58F;padding:0 2px;border-radius:3px}
+.texto3 mark.hit{background:#B7EB8F}
+.texto3 sup{font-weight:900;color:var(--red);font-size:12px}
+.obj{background:var(--paper);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+.obj h4{font-size:16px;margin-bottom:8px;display:flex;gap:8px;align-items:center}
+.obj h4 .n{background:var(--ink);color:var(--gold);border-radius:12px;min-width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.obj.ok{border:2px solid var(--green)}
+.mk{display:flex;gap:10px;align-items:flex-start;border-top:1px solid #eee;padding:8px 0;font-size:15px}
+.mk .tm{font-weight:900;min-width:110px}
+.mk .cn{flex:1}
+.mk .fr{font-style:italic;color:var(--muted)}
+.mk .bt{display:flex;gap:4px}
+.mk .bt button{border:2px solid var(--border);background:#fff;border-radius:8px;width:38px;height:34px;font-size:18px;cursor:pointer}
+.mk .bt button.si.on{background:var(--green);border-color:var(--green);color:#fff}
+.mk .bt button.no.on{background:var(--red);border-color:var(--red);color:#fff}
+.mk select{font-size:13px;padding:4px;border-radius:6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cuenta{font-size:22px;font-weight:900}
+.lobby{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.lobby .box h3{font-family:Georgia,serif;font-size:22px;margin-bottom:6px}
+.lobby .box p{font-size:16px;line-height:1.45;color:#333}
+.final{display:flex;flex-direction:column;align-items:center;gap:18px;padding-top:20px}
+.final .ganador{font-family:Georgia,serif;font-size:56px;font-weight:900;text-align:center}
+.podio{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.pd{background:var(--paper);border:1px solid var(--border);border-radius:12px;padding:12px 18px;text-align:center;min-width:150px}
+.pd b{display:block;font-size:22px}
+@keyframes entra{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+/* configuración */
+.setup{max-width:1000px;margin:24px auto;width:100%;padding:0 20px 60px}
+.setup h1{font-family:Georgia,serif;font-size:34px;margin-bottom:6px}
+.setup h2{font-family:Georgia,serif;font-size:24px;margin:26px 0 8px}
+.setup p{color:#444;line-height:1.5;margin-bottom:10px}
+.setup .item{background:var(--paper);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px}
+.setup label{display:block;font-weight:800;font-size:14px;margin:6px 0 4px}
+.setup textarea,.setup input{width:100%;border:2px solid var(--border);border-radius:8px;padding:10px;font-size:15px;font-family:inherit;line-height:1.4}
+.setup textarea{min-height:90px;resize:vertical}
+.copiar{border:none;background:var(--ia);color:#fff;border-radius:8px;padding:7px 12px;font-weight:800;cursor:pointer;margin-top:6px;font-size:13px}
+.err{color:var(--red);font-weight:700;margin-top:10px;min-height:20px;white-space:pre-wrap}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 20px;border-radius:10px;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9}
+#toast.on{opacity:1}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="t1">La clase contra ChatGPT</div><div class="t2">Torneo de escritura · gana quien se lleve dos juegos</div></div>
+  <div class="juegos" id="juegos"></div>
+  <div class="score" id="score"></div>
+</header>
+<div id="app"></div>
+<div id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+// Contenido por defecto del torneo «La clase contra ChatGPT».
+// Las noticias de los juegos 1 y 2 son inventadas para el juego y se pueden cambiar en la pantalla.
+window.TORNEO_DEFECTO = {
+  g1: [
+    { datos: "• La biblioteca municipal de Villanueva del Río abrirá las 24 horas en época de exámenes a partir del 1 de diciembre.\n• Tendrá 120 puestos de estudio y vigilancia por la noche.\n• La medida llega después de que los estudiantes reunieran 2.300 firmas.\n• Costará 45.000 euros al año.\n• Marta Ruiz, concejala de Cultura: «Era una reclamación justa y llevábamos tiempo estudiándola».", ia: "" },
+    { datos: "• Un senderista de 67 años fue rescatado ayer por la mañana en la sierra de Villanueva del Río tras pasar la noche perdido.\n• Se desvió del sendero por la niebla y no pudo volver.\n• Lo localizó un helicóptero de la Guardia Civil a las 8.40.\n• Pasó la noche a cuatro grados bajo cero.\n• Fue trasladado al hospital con hipotermia leve y está fuera de peligro.", ia: "" },
+    { datos: "• El CD Villanueva femenino ascendió el domingo a Primera Federación tras ganar 2-1 al Racing Sur.\n• Goles de Lucía Mora (minuto 23) y Ana Peña (minuto 81).\n• 3.000 espectadores, récord del estadio municipal en un partido femenino.\n• Es el primer ascenso del club en sus 40 años de historia.\n• La capitana, Ana Peña, marcó el gol decisivo en su último partido antes de retirarse.", ia: "" }
+  ],
+  g2: [
+    { noticia: "El precio del alquiler en Villanueva del Río ha subido un 18 % en el último año, según el informe anual del Observatorio de Vivienda de la comarca. Un piso de dos habitaciones cuesta ahora una media de 890 euros al mes. El informe señala que el 40 % de los inquilinos dedica más de la mitad de su sueldo al alquiler. El Ayuntamiento anunció ayer que construirá 200 viviendas públicas en los próximos cuatro años.", ia: "" },
+    { noticia: "El cine Avenida, el último cine de calle de Villanueva del Río, cerrará el 31 de diciembre después de 74 años abierto. Su propietario, Julián Ortega, de 71 años, se jubila y no ha encontrado a nadie que quiera seguir con el negocio. El cine vendió el año pasado 18.000 entradas, la mitad que hace una década. Un grupo de vecinos ha recogido 1.500 firmas para pedir al Ayuntamiento que lo compre.", ia: "" },
+    { noticia: "El Ayuntamiento de Villanueva del Río ha estrenado una aplicación para que los vecinos avisen de baches, farolas fundidas y contenedores desbordados. En su primera semana recibió 1.240 avisos, cuatro veces más de lo previsto. El 60 % fueron baches. El concejal de Obras, Luis Campos, reconoció que no tienen operarios suficientes para atenderlos todos y pidió «paciencia» a los vecinos.", ia: "" },
+    { noticia: "El instituto Miguel Hernández de Villanueva del Río prohibió los móviles en todo el centro, también en el recreo, al empezar el curso pasado. Un año después, el número de partes por acoso o peleas ha bajado de 46 a 19. Los profesores dicen que los alumnos hablan más entre ellos en los descansos. Una parte de las familias se queja de que no pueden localizar a sus hijos durante la jornada.", ia: "" },
+    { noticia: "Luna, una perra mestiza abandonada en una gasolinera de la autovía en agosto, se ha convertido en la mascota del parque de bomberos de Villanueva del Río. Los bomberos la encontraron atada a un poste durante una ola de calor y decidieron quedársela. Ahora los acompaña en las visitas a los colegios para enseñar a los niños cómo actuar en un incendio. El parque ha recibido desde entonces 30 peticiones de adopción de otros perros.", ia: "" }
+  ],
+  g3: {
+    texto: "Carlos Alcaraz ha vuelto a hacer historia. El tenista murciano se ha proclamado campeón del Masters 1000 de París tras derrotar al estadounidense Ben Shelton por 7-6(5) y 7-5 en una emocionante final disputada este domingo, 8 de noviembre de 2026. Una victoria que confirma su extraordinario momento de forma y le permite conquistar uno de los títulos que todavía se le resistían.\n\nEl encuentro estuvo marcado por la igualdad y la tensión desde los primeros intercambios. Shelton, potente con su servicio y agresivo desde el fondo de la pista, puso en dificultades al español, que tuvo que mostrar su mejor versión para mantenerse firme. Alcaraz supo resistir la presión, salvó importantes oportunidades de rotura y se llevó el primer set en un desempate muy disputado.\n\nEn la segunda manga, el estadounidense consiguió adelantarse y llegó a poner el marcador 4-2. Sin embargo, Carlos volvió a demostrar su capacidad de reacción. Con determinación, inteligencia táctica y una extraordinaria variedad de golpes, recuperó la desventaja y terminó cerrando el partido con un brillante golpe ganador de revés.\n\nEste triunfo tiene un significado especial para el español. Además de tomarse la revancha ante Shelton, que le había eliminado en los cuartos de final del último US Open, Alcaraz consigue su primer título en París y su noveno Masters 1000. También se convierte en el segundo español en levantar este trofeo, después de David Ferrer en 2012.\n\nCon esta conquista, el murciano suma su quinto título de 2026 y demuestra que sigue siendo uno de los grandes referentes del tenis internacional. París ya tiene nuevo rey: Carlos Alcaraz, un campeón que nunca deja de sorprender y que continúa escribiendo páginas inolvidables en la historia del deporte español.",
+    objetivos: [
+      "su extraordinario momento de forma",
+      "mostrar su mejor versión para mantenerse firme",
+      "supo resistir la presión, salvó importantes oportunidades de rotura",
+      "volvió a demostrar su capacidad de reacción",
+      "Con determinación, inteligencia táctica y una extraordinaria variedad de golpes",
+      "sigue siendo uno de los grandes referentes del tenis internacional",
+      "un campeón que nunca deja de sorprender",
+      "continúa escribiendo páginas inolvidables",
+      "un desempate muy disputado"
+    ],
+    meta: 6
+  }
+};
+
+const API = location.origin + "/api/torneo";
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const lsGet = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch(e){ return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch(e){} };
+let CODE = lsGet("torneo_code", ""), KEY = lsGet("torneo_key", "");
+let S = null, desfase = 0, ocupado = false, ultimaVista = "";
+let modoSetup = !(CODE && KEY);
+
+function toast(m){ const t = $("toast"); t.textContent = m; t.classList.add("on"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), 2600); }
+async function api(params){
+  const r = await fetch(API, { method:"POST", body: JSON.stringify(Object.assign({ c: CODE, k: KEY }, params)) });
+  const j = await r.json();
+  if (j.error) throw new Error(j.error);
+  return j;
+}
+async function hacer(params){
+  if (ocupado) return; ocupado = true;
+  try { await api(params); await refrescar(); }
+  catch(e){ toast(e.message); }
+  ocupado = false;
+}
+function urlEquipo(){ return location.origin + location.pathname.replace(/torneo_pantalla[^/]*$/, "torneo_equipo_v1.html") + "?c=" + CODE; }
+
+// ---------- configuración ----------
+function cargarCfg(){
+  try { const c = JSON.parse(lsGet("torneo_cfg_v1", "")); if (c && c.g1 && c.g2 && c.g3) return c; } catch(e){}
+  return JSON.parse(JSON.stringify(window.TORNEO_DEFECTO));
+}
+let CFG = cargarCfg();
+function guardarCfg(){ lsSet("torneo_cfg_v1", JSON.stringify(CFG)); }
+const promptG1 = (d) => "Escribe la entradilla de una noticia, de entre 40 y 60 palabras, con estos datos. Escribe solo la entradilla, sin título.\n\n" + d;
+const promptG2 = (n) => "Escribe un titular para esta noticia. Escribe solo el titular.\n\n" + n;
+async function copiar(t){
+  try { await navigator.clipboard.writeText(t); toast("Copiado. Pégalo en ChatGPT"); }
+  catch(e){ const a = document.createElement("textarea"); a.value = t; document.body.appendChild(a); a.select(); document.execCommand("copy"); a.remove(); toast("Copiado. Pégalo en ChatGPT"); }
+}
+function pintarSetup(msg){
+  $("score").innerHTML = ""; $("juegos").innerHTML = "";
+  const g1 = CFG.g1.map((x, i) => `<div class="item"><b>Noticia ${i+1}</b>
+    <label>Datos que verán los equipos</label><textarea data-k="g1.${i}.datos" style="min-height:130px">${esc(x.datos)}</textarea>
+    <button class="copiar" data-copia="g1.${i}">Copiar el encargo para ChatGPT</button>
+    <label>Entradilla que ha escrito ChatGPT (pégala aquí)</label><textarea data-k="g1.${i}.ia">${esc(x.ia)}</textarea></div>`).join("");
+  const g2 = CFG.g2.map((x, i) => `<div class="item"><b>Noticia ${i+1}</b>
+    <label>Noticia que verán los equipos</label><textarea data-k="g2.${i}.noticia" style="min-height:110px">${esc(x.noticia)}</textarea>
+    <button class="copiar" data-copia="g2.${i}">Copiar el encargo para ChatGPT</button>
+    <label>Titular que ha escrito ChatGPT (pégalo aquí)</label><input data-k="g2.${i}.ia" value="${esc(x.ia)}"></div>`).join("");
+  $("app").innerHTML = `<div class="setup">
+    <h1>Preparar el torneo</h1>
+    <p>Antes de clase, copia cada encargo, pégalo en ChatGPT y pega aquí lo que te conteste. Las noticias de los juegos 1 y 2 están inventadas para el juego y puedes cambiarlas. Todo se guarda solo en este navegador.</p>
+    <h2>Juego 1 · ¿Humano o máquina?</h2>
+    <p>Los equipos escriben una entradilla de cada noticia (5 minutos cada una) y después votan cuál es la de ChatGPT.</p>${g1}
+    <h2>Juego 2 · ChatGPT también juega</h2>
+    <p>Los equipos escriben un titular de cada noticia (2 minutos cada uno) y después votan los mejores. Si el de ChatGPT queda entre los cinco primeros, la noticia es para la máquina.</p>${g2}
+    <h2>Juego 3 · ¿Vale para cualquiera?</h2>
+    <p>Los equipos marcan seis expresiones que delatan que el texto es de ChatGPT y explican por qué. Escribe debajo las expresiones que das por buenas, una por línea y copiadas tal cual del texto.</p>
+    <div class="item"><label>Texto de ChatGPT</label><textarea data-k="g3.texto" style="min-height:260px">${esc(CFG.g3.texto)}</textarea>
+    <label>Expresiones que delatan a ChatGPT (una por línea)</label><textarea data-k="g3.objetivos" style="min-height:200px">${esc(CFG.g3.objetivos.join("\n"))}</textarea>
+    <label>La clase gana si encuentra al menos</label><input data-k="g3.meta" type="number" min="1" max="20" value="${esc(CFG.g3.meta)}" style="width:100px"></div>
+    <div class="fila" style="margin-top:18px"><button class="btn" id="crear" style="flex:2">Crear la partida</button><button class="btn out" id="restaurar" style="flex:1">Volver al contenido original</button></div>
+    ${CODE ? `<button class="btn dark" id="volver" style="margin-top:10px">Volver a la partida ${esc(CODE)}</button>` : ""}
+    <div class="err" id="err">${esc(msg || "")}</div></div>`;
+  document.querySelectorAll("[data-k]").forEach((el) => el.addEventListener("input", () => {
+    const [a, b, c] = el.dataset.k.split(".");
+    if (a === "g3") CFG.g3[b] = b === "objetivos" ? el.value.split("\n").map(s => s.trim()).filter(Boolean) : b === "meta" ? (parseInt(el.value, 10) || 6) : el.value;
+    else CFG[a][+b][c] = el.value;
+    guardarCfg();
+  }));
+  document.querySelectorAll("[data-copia]").forEach((b) => b.onclick = () => {
+    const [a, i] = b.dataset.copia.split(".");
+    copiar(a === "g1" ? promptG1(CFG.g1[+i].datos) : promptG2(CFG.g2[+i].noticia));
+  });
+  $("restaurar").onclick = () => { if (confirmar("¿Volver al contenido original? Perderás las entradillas y titulares pegados.")) { CFG = JSON.parse(JSON.stringify(window.TORNEO_DEFECTO)); guardarCfg(); pintarSetup(); } };
+  $("crear").onclick = crear;
+  if ($("volver")) $("volver").onclick = () => { modoSetup = false; ultimaVista = ""; refrescar(); };
+}
+function confirmar(t){ return window.confirm(t); }
+async function crear(){
+  $("err").textContent = "";
+  try {
+    const r = await fetch(API, { method:"POST", body: JSON.stringify({ a:"new", cfg: CFG }) }).then(r => r.json());
+    if (r.error) throw new Error(r.error);
+    CODE = r.code; KEY = r.admin; lsSet("torneo_code", CODE); lsSet("torneo_key", KEY);
+    modoSetup = false; ultimaVista = ""; await refrescar();
+  } catch(e){ $("err").textContent = e.message; }
+}
+
+// ---------- partida ----------
+async function refrescar(){
+  if (!CODE || !KEY || modoSetup) return;
+  try {
+    const t0 = Date.now();
+    S = await api({ a:"state" });
+    desfase = S.now - Math.round((t0 + Date.now()) / 2);
+    pintar();
+  } catch(e){
+    if (/No existe/.test(e.message)) { CODE = ""; KEY = ""; lsSet("torneo_code", ""); lsSet("torneo_key", ""); pintarSetup("La partida anterior ya no existe. Crea una nueva."); }
+  }
+}
+function restante(){ return S && S.deadline ? Math.max(0, Math.ceil((S.deadline - (Date.now() + desfase)) / 1000)) : 0; }
+function mmss(s){ return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+
+const NOMBRES = { 1:"¿Humano o máquina?", 2:"ChatGPT también juega", 3:"¿Vale para cualquiera?" };
+function juegoDe(st){ return /1$/.test(st) ? 1 : /2$/.test(st) ? 2 : /3$/.test(st) ? 3 : 0; }
+function cabecera(){
+  const m = S.marcador, j = juegoDe(S.stage);
+  $("score").innerHTML = `<div class="lado cl"><span>La clase</span><b>${m.clase}</b></div><div class="sep">–</div><div class="lado ia"><span>ChatGPT</span><b>${m.ia}</b></div>`;
+  $("juegos").innerHTML = [1,2,3].map(n => {
+    const g = S.games[n]; const cls = g ? (g.gana === "clase" ? "cl" : "ia") : (n === j ? "on" : "");
+    return `<span class="jg ${cls}">Juego ${n}</span>`;
+  }).join("");
+}
+function botonPrincipal(){
+  const st = S.stage, i = S.idx;
+  const L = {
+    lobby: "Empezar el juego 1",
+    w1: i < 2 ? "Pasar a la noticia " + (i + 2) : "Empezar las votaciones",
+    v1: "Ver quién era ChatGPT",
+    r1: i < 2 ? "Votar la noticia " + (i + 2) : "Resultado del juego 1",
+    end1: "Empezar el juego 2",
+    w2: i < S.cfgResumen.g2 - 1 ? "Pasar a la noticia " + (i + 2) : "Empezar las votaciones",
+    v2: "Ver la clasificación",
+    r2: i < S.cfgResumen.g2 - 1 ? "Votar la noticia " + (i + 2) : "Resultado del juego 2",
+    end2: "Empezar el juego 3",
+    w3: "Cerrar y revisar las marcas",
+    r3: "Ver el resultado final",
+    final: ""
+  };
+  return L[st];
+}
+function lateral(){
+  const enviados = S.teams.filter(t => t.sent).length;
+  const cuentaTxt = { w1:"han enviado", w2:"han enviado", v1:"han votado", v2:"han votado", w3:"han marcado" }[S.stage];
+  const lista = S.teams.map(t => `<div class="eq"><span class="dot" style="background:${t.color}"></span><span class="nm">${esc(t.name)}</span>${t.sent ? `<span class="ok">${S.stage === "w3" ? t.sent : "✓"}</span>` : ""}<span class="pt">${t.pts}</span><button data-adj="${t.id}|1" title="Sumar un punto">+</button><button data-adj="${t.id}|-1" title="Restar un punto">−</button></div>`).join("") || `<div class="hint">Todavía no hay equipos</div>`;
+  const bp = botonPrincipal();
+  return `<aside>
+    <div class="box"><div id="qr"></div><div class="code">${esc(CODE)}</div><div class="link">${esc(urlEquipo())}</div></div>
+    ${bp ? `<button class="btn" id="sig">${esc(bp)}</button>` : ""}
+    ${S.deadline ? `<div class="fila"><button class="btn out" id="mas">+1 minuto</button><button class="btn out" id="cortar">Acabar ya</button></div>` : ""}
+    <div class="box"><div style="font-weight:900;margin-bottom:6px">Equipos (${S.teams.length})${cuentaTxt ? ` · ${enviados} ${cuentaTxt}` : ""}</div>${lista}</div>
+    <div class="box"><div class="hint" style="margin-bottom:6px">Saltar a un juego (empieza de cero)</div><div class="fila"><button class="btn out sm" data-go="1">1</button><button class="btn out sm" data-go="2">2</button><button class="btn out sm" data-go="3">3</button></div>
+    <button class="btn out sm" id="nueva" style="margin-top:8px">Preparar otra partida</button></div>
+  </aside>`;
+}
+function relojHTML(){ const r = restante(); return `<div class="reloj ${r === 0 ? "fin" : ""}" id="reloj">${mmss(r)}</div>`; }
+function centro(){
+  const st = S.stage, i = S.idx;
+  if (st === "lobby") return `<div class="tit">Entrad con el QR y poned el nombre del equipo</div>
+    <h2 class="big">Tres juegos. Gana quien se lleve dos, la clase o ChatGPT.</h2>
+    <div class="lobby">
+      <div class="box"><h3>1 · ¿Humano o máquina?</h3><p>Escribís tres entradillas, una a una. Después las mezclamos con las de ChatGPT y votáis cuál es la suya. Si acierta más de la mitad de los equipos, la ronda es para la clase.</p></div>
+      <div class="box"><h3>2 · ChatGPT también juega</h3><p>Escribís cinco titulares, uno a uno. Después votáis vuestros tres favoritos de cada noticia. Si el de ChatGPT queda entre los cinco primeros, la noticia es para la máquina.</p></div>
+      <div class="box"><h3>3 · ¿Vale para cualquiera?</h3><p>Leéis una crónica escrita por ChatGPT y marcáis seis expresiones que la delatan, explicando por qué. Si entre toda la clase encontráis ${S.meta || 6}, gana la clase.</p></div>
+    </div>`;
+  if (st === "w1" || st === "w2") {
+    const j = st === "w1" ? 1 : 2, tot = j === 1 ? 3 : S.cfgResumen.g2;
+    return `<div class="tit">Juego ${j} · ${NOMBRES[j]} · Noticia ${i+1} de ${tot}</div>
+      <div style="display:flex;align-items:center;gap:20px"><h2 class="big" style="flex:1">${j === 1 ? "Escribid la entradilla con estos datos" : "Escribid el titular de esta noticia"}</h2>${relojHTML()}</div>
+      <div class="datos">${esc(j === 1 ? S.datos : S.noticia)}</div>`;
+  }
+  if (st === "v1" || st === "r1") {
+    const r = S.res, cuenta = r ? r.cuenta || {} : {};
+    const ops = S.opciones.map(o => {
+      const au = r ? r.autores.find(a => a.L === o.L) : null, esIA = r && r.ia === o.L;
+      return `<div class="op ${esIA ? "ia" : ""}"><span class="L">${o.L}</span>${esc(o.text)}${r ? `<div class="who">${esIA ? "🤖 ChatGPT" : esc(au ? au.who : "")}<span class="nv">${cuenta[o.L] || 0} ${(cuenta[o.L] || 0) === 1 ? "voto" : "votos"}</span></div>` : ""}</div>`;
+    }).join("");
+    const ver = r ? `<div class="veredicto ${r.clase ? "cl" : "ia"}">${r.clase ? "Ronda para la clase" : "Ronda para ChatGPT"}<small>${r.aciertos} de ${r.votantes} equipos descubrieron a ChatGPT</small></div>` : "";
+    return `<div class="tit">Juego 1 · ¿Humano o máquina? · Noticia ${i+1} de 3</div>
+      <h2 class="big">${r ? "Era la " + esc(r.ia) : "¿Cuál de estas entradillas ha escrito ChatGPT?"}</h2>${ver}
+      <div class="ops" style="--w:${S.opciones.length > 8 ? "340px" : "420px"};--fs:${S.opciones.length > 10 ? "16px" : "19px"}">${ops}</div>`;
+  }
+  if (st === "v2") {
+    const ops = S.opciones.map(o => `<div class="op"><span class="L">${o.L}</span><span class="titular">${esc(o.text)}</span></div>`).join("");
+    return `<div class="tit">Juego 2 · ChatGPT también juega · Noticia ${i+1} de ${S.cfgResumen.g2}</div>
+      <h2 class="big">Votad vuestros tres titulares favoritos</h2><div class="hint" style="font-size:15px">El primero vale 3 puntos, el segundo 2 y el tercero 1. No podéis votar el vuestro.</div>
+      <div class="ops" style="--w:380px;--fs:20px">${ops}</div>`;
+  }
+  if (st === "r2") {
+    const r = S.res;
+    const filas = r.lista.map((x, k) => {
+      const pos = 1 + r.lista.filter(y => y.pts > x.pts).length;
+      const corte = k < r.lista.length - 1 && pos <= 5 && (1 + r.lista.filter(y => y.pts > r.lista[k+1].pts).length) > 5;
+      return `<div class="rk ${x.ia ? "ia" : ""} ${corte ? "corte" : ""}"><span class="pos">${pos}º</span><span class="tx">${esc(x.text)}</span><span class="au">${x.ia ? "🤖 ChatGPT" : esc(x.who)}</span><span class="pp">${x.pts}</span></div>`;
+    }).join("");
+    return `<div class="tit">Juego 2 · ChatGPT también juega · Noticia ${i+1} de ${S.cfgResumen.g2}</div>
+      <div class="veredicto ${r.maquina ? "ia" : "cl"}">${r.maquina ? "Noticia para ChatGPT" : "Noticia para la clase"}<small>El titular de ChatGPT quedó en el puesto ${r.iaPos}</small></div>
+      <div class="rank">${filas}</div>`;
+  }
+  if (st === "end1" || st === "end2") {
+    const j = st === "end1" ? 1 : 2, g = S.games[j];
+    return `<div class="tit">Juego ${j} · ${NOMBRES[j]}</div>
+      <div class="veredicto ${g.gana === "clase" ? "cl" : "ia"}" style="font-size:52px;padding:40px">${g.gana === "clase" ? "¡Gana la clase!" : "Gana ChatGPT"}<small>${j === 1 ? "Rondas" : "Noticias"}: clase ${g.clase} · ChatGPT ${g.ia}</small></div>`;
+  }
+  if (st === "w3") {
+    return `<div class="tit">Juego 3 · ¿Vale para cualquiera?</div>
+      <div style="display:flex;align-items:center;gap:20px"><h2 class="big" style="flex:1">Marcad seis expresiones que delatan a ChatGPT y explicad por qué</h2>${relojHTML()}</div>
+      <div class="texto3">${parrafos(S.texto3)}</div>`;
+  }
+  if (st === "r3") return revision3();
+  if (st === "final") {
+    const m = S.marcador, gana = m.clase > m.ia ? "clase" : "ia", r = S.res3;
+    const top = S.teams.slice().sort((a, b) => b.pts - a.pts).slice(0, 3);
+    return `<div class="final">
+      ${r ? `<div class="veredicto ${r.clase ? "cl" : "ia"}" style="width:100%">Juego 3: ${r.clase ? "gana la clase" : "gana ChatGPT"}<small>La clase encontró ${r.n} de ${S.objetivos.length} (hacían falta ${r.meta})</small></div>` : ""}
+      <div class="ganador" style="color:${gana === "clase" ? "var(--clase)" : "var(--ia)"}">${gana === "clase" ? "🏆 ¡La clase gana a ChatGPT!" : "🤖 ChatGPT gana el torneo"}</div>
+      <div class="cuenta">${m.clase} – ${m.ia}</div>
+      <div class="hint" style="font-size:16px">Mejores equipos</div>
+      <div class="podio">${top.map((t, k) => `<div class="pd"><div style="font-size:34px">${["🥇","🥈","🥉"][k]}</div><b style="color:${t.color}">${esc(t.name)}</b>${t.pts} puntos</div>`).join("")}</div></div>`;
+  }
+  return "";
+}
+function parrafos(t, marcar){
+  // marcar: lista de {s,e,cls,n} por índice de palabra
+  let k = 0;
+  return String(t || "").split(/\n+/).map(p => {
+    const ws = p.split(/\s+/).filter(Boolean);
+    return "<p>" + ws.map(w => {
+      const idx = k++; let html = esc(w);
+      if (marcar) {
+        const m = marcar.find(x => idx >= x.s && idx <= x.e);
+        if (m) {
+          const ini = idx === m.s, fin = idx === m.e;
+          html = (ini ? `<mark class="${m.cls}">` + (m.n ? `<sup>${m.n}</sup>` : "") : "") + html + (fin ? "</mark>" : "");
+          if (!ini) html = html;
+        }
+      }
+      return html;
+    }).join(" ").replace(/<\/mark> <mark class="[^"]*">/g, " ") + "</p>";
+  }).join("");
+}
+function rangosLocales(){
+  const ws = String(S.texto3 || "").split(/\s+/).filter(Boolean).map(norm);
+  return S.objetivos.map(o => {
+    const ow = o.split(/\s+/).filter(Boolean).map(norm).filter(Boolean);
+    for (let i = 0; i + ow.length <= ws.length; i++) { if (ow.every((x, j) => ws[i+j] === x)) return { s:i, e:i + ow.length - 1 }; }
+    return { s:-1, e:-1 };
+  });
+}
+function norm(s){ return String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim(); }
+function revision3(){
+  const rs = rangosLocales();
+  const encontrados = new Set(S.marcas.filter(m => m.ok && m.target >= 0).map(m => m.target));
+  const marcarTexto = rs.map((r, n) => ({ s:r.s, e:r.e, cls: encontrados.has(n) ? "hit" : "", n: n + 1 })).filter(r => r.s >= 0);
+  const fila = (m) => `<div class="mk"><span class="tm" style="color:${m.color}">${esc(m.team)}</span><div class="cn"><div class="fr">«${esc(m.frag)}»</div><div>${esc(m.why) || "<i>Sin explicación</i>"}</div></div>
+    <select data-tg="${m.tid}|${m.mi}">${['<option value="-1">Ninguna</option>'].concat(S.objetivos.map((o, n) => `<option value="${n}" ${m.target === n ? "selected" : ""}>${n+1}</option>`)).join("")}</select>
+    <div class="bt"><button class="si ${m.ok === true ? "on" : ""}" data-ok="${m.tid}|${m.mi}|1" title="Vale">✓</button><button class="no ${m.ok === false ? "on" : ""}" data-ok="${m.tid}|${m.mi}|0" title="No vale">✗</button></div></div>`;
+  const bloques = S.objetivos.map((o, n) => {
+    const ms = S.marcas.filter(m => m.target === n);
+    return `<div class="obj ${encontrados.has(n) ? "ok" : ""}"><h4><span class="n">${n+1}</span>«${esc(o)}»</h4>${ms.map(fila).join("") || `<div class="hint">Ningún equipo la ha marcado</div>`}</div>`;
+  }).join("");
+  const sueltas = S.marcas.filter(m => m.target < 0);
+  return `<div class="tit">Juego 3 · ¿Vale para cualquiera? · Revisión</div>
+    <div style="display:flex;align-items:center;gap:16px"><h2 class="big" style="flex:1">La clase ha encontrado ${encontrados.size} de ${S.objetivos.length}</h2><div class="cuenta">Hacen falta ${S.meta}</div></div>
+    <div class="hint" style="font-size:15px">Da por buena (✓) o no (✗) cada explicación. Una expresión cuenta para la clase si al menos un equipo la ha encontrado con una explicación válida. Si una marca no se ha asignado bien, cámbiale el número.</div>
+    <div class="texto3" style="font-size:17px">${parrafos(S.texto3, marcarTexto)}</div>
+    <div class="grid2">${bloques}</div>
+    ${sueltas.length ? `<div class="obj"><h4>Marcas que no coinciden con ninguna expresión</h4>${sueltas.map(fila).join("")}</div>` : ""}`;
+}
+function pintar(){
+  cabecera();
+  const vista = S.stage + "|" + S.idx + "|" + (S.res ? 1 : 0) + "|" + JSON.stringify(S.teams) + "|" + (S.marcas ? JSON.stringify(S.marcas) : "") + "|" + JSON.stringify(S.games);
+  if (vista === ultimaVista && document.getElementById("main")) { actualizarReloj(); return; }
+  ultimaVista = vista;
+  const scroll = window.scrollY;
+  $("app").innerHTML = `<main id="main">${lateral()}<div class="stage">${centro()}</div></main>`;
+  window.scrollTo(0, scroll);
+  try { const q = qrcode(0, "L"); q.addData(urlEquipo()); q.make(); $("qr").innerHTML = q.createSvgTag({ cellSize:4, margin:1, scalable:true }); } catch(e){}
+  if ($("sig")) $("sig").onclick = () => {
+    if (S.stage === "lobby" && !S.teams.length) return toast("Todavía no ha entrado ningún equipo");
+    if ((S.stage === "w1" || S.stage === "w2" || S.stage === "w3") && restante() > 0 && !confirmar("Todavía queda tiempo. ¿Pasamos igualmente?")) return;
+    hacer({ a:"next" });
+  };
+  if ($("mas")) $("mas").onclick = () => hacer({ a:"more", s:60 });
+  if ($("cortar")) $("cortar").onclick = () => hacer({ a:"stop" });
+  document.querySelectorAll("[data-go]").forEach(b => b.onclick = () => { if (confirmar("¿Empezar de cero el juego " + b.dataset.go + "?")) hacer({ a:"go", j:+b.dataset.go }); });
+  document.querySelectorAll("[data-adj]").forEach(b => b.onclick = () => { const [t, d] = b.dataset.adj.split("|"); hacer({ a:"adjust", t, d:+d }); });
+  document.querySelectorAll("[data-ok]").forEach(b => b.onclick = () => {
+    const [t, mi, v] = b.dataset.ok.split("|"); const m = S.marcas.find(x => x.tid === t && x.mi === +mi);
+    const nuevo = v === "1" ? true : false;
+    hacer({ a:"check", t, mi:+mi, ok: m && m.ok === nuevo ? null : nuevo });
+  });
+  document.querySelectorAll("[data-tg]").forEach(s => s.onchange = () => {
+    const [t, mi] = s.dataset.tg.split("|"); const m = S.marcas.find(x => x.tid === t && x.mi === +mi);
+    hacer({ a:"check", t, mi:+mi, target: s.value, ok: m ? m.ok : null });
+  });
+  $("nueva").onclick = () => { modoSetup = true; pintarSetup(); };
+  actualizarReloj();
+}
+function actualizarReloj(){ const el = $("reloj"); if (el){ const r = restante(); el.textContent = mmss(r); el.classList.toggle("fin", r === 0); } }
+
+setInterval(actualizarReloj, 500);
+setInterval(refrescar, 2000);
+if (modoSetup) pintarSetup(); else refrescar();
+</script>
+</body>
+</html>
