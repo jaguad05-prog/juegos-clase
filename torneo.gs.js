@@ -177,6 +177,8 @@ function estado(p) {
       if (st === "v1") x.sent = !!(g.g1.votes[i] || {})[t];
       if (st === "v2") x.sent = !!(g.g2.votes[i] || {})[t];
       if (st === "w3") x.sent = (g.g3.marks[t] || []).length;
+      var aw = (g.away || {})[st + "_" + i];
+      if (aw && aw[t]) x.away = aw[t];
       return x;
     })
   };
@@ -305,6 +307,19 @@ var ACCIONES = {
     var bolsa = g["g" + j].texts;
     bolsa[g.idx] = bolsa[g.idx] || {};
     bolsa[g.idx][tid] = t;
+    guardar(g);
+    return { ok: true };
+  },
+
+  // El móvil de un equipo ha cambiado de pantalla mientras escribía
+  "away": function (p) {
+    var g = partida(p.c), tid = equipoDe(g, p.dev);
+    if (!tid) return { ok: true };
+    if (["w1", "w2", "w3"].indexOf(g.stage) < 0 || Number(p.idx) !== g.idx || !abierto(g)) return { ok: true };
+    g.away = g.away || {};
+    var k = g.stage + "_" + g.idx;
+    g.away[k] = g.away[k] || {};
+    g.away[k][tid] = (g.away[k][tid] || 0) + 1;
     guardar(g);
     return { ok: true };
   },

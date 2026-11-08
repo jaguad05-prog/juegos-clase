@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>La clase contra ChatGPT · Equipo</title>
+<style>
+:root{--red:#C8102E;--ink:#1B1B1F;--paper:#fff;--bg:#F3F1EC;--muted:#6B6B72;--border:#D8D8DC;--green:#1E7A45;--gold:#E8B54A;--ia:#10A37F;--clase:#1565C0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+header{background:var(--ink);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:5}
+header .t{font-family:Georgia,serif;font-weight:700;font-size:18px;flex:1}
+#chip{font-size:13px;font-weight:800;padding:4px 10px;border-radius:12px;background:#333;max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sc{font-size:13px;font-weight:900;white-space:nowrap}
+#app{padding:16px;max-width:720px;margin:0 auto}
+.card{background:var(--paper);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px}
+h1{font-family:Georgia,serif;font-size:24px;margin-bottom:8px}
+h2{font-family:Georgia,serif;font-size:20px;margin-bottom:8px}
+.tit{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--red);font-weight:900;margin-bottom:6px}
+p{line-height:1.5;margin-bottom:8px}
+label{display:block;font-weight:800;font-size:14px;margin:10px 0 4px}
+input,textarea{width:100%;border:2px solid var(--border);border-radius:10px;padding:12px;font-size:17px;font-family:inherit;line-height:1.4}
+textarea{min-height:130px;resize:vertical}
+.btn{display:block;width:100%;border:none;border-radius:10px;padding:14px;font-size:17px;font-weight:800;font-family:inherit;color:#fff;background:var(--red);margin-top:12px;cursor:pointer}
+.btn.dark{background:var(--ink)}
+.btn.out{background:#fff;color:var(--ink);border:2px solid var(--border)}
+.btn:disabled{opacity:.45}
+.err{color:var(--red);font-weight:700;margin-top:8px;min-height:18px}
+.ok{color:var(--green);font-weight:800;margin-top:8px}
+.datos{white-space:pre-wrap;font-size:16px;line-height:1.5;background:#FAFAF7;border-left:5px solid var(--red);padding:12px;border-radius:8px}
+.reloj{font-size:34px;font-weight:900;font-variant-numeric:tabular-nums;text-align:center}
+.reloj.fin{color:var(--red)}
+.cnt{font-size:13px;color:var(--muted);text-align:right;margin-top:4px}
+.op{border:2px solid var(--border);border-radius:12px;padding:12px 12px 12px 48px;position:relative;margin-bottom:10px;background:#fff;font-size:16px;line-height:1.4;cursor:pointer}
+.op .L{position:absolute;left:10px;top:10px;width:28px;height:28px;border-radius:14px;background:var(--ink);color:var(--gold);font-weight:900;display:flex;align-items:center;justify-content:center;font-size:14px}
+.op.sel{border-color:var(--red);background:#FFF1F1}
+.op.mia{opacity:.5;cursor:default}
+.op .tag{display:inline-block;margin-top:6px;font-size:12px;font-weight:900;color:var(--muted)}
+.op .badge{position:absolute;right:10px;top:10px;background:var(--red);color:#fff;border-radius:10px;padding:2px 8px;font-weight:900;font-size:13px}
+.op.ia{border-color:var(--ia);background:#E8F7F2}
+.titular{font-family:Georgia,serif;font-weight:700}
+.ver{border-radius:12px;padding:16px;text-align:center;color:#fff;font-weight:900;font-size:22px;margin-bottom:12px}
+.ver.cl{background:var(--clase)}.ver.ia{background:var(--ia)}
+.ver small{display:block;font-size:14px;font-weight:700;margin-top:4px;opacity:.95}
+.texto{font-size:17px;line-height:1.75;user-select:none;-webkit-user-select:none}
+.texto p{margin-bottom:12px}
+.w{padding:1px 0;border-radius:3px;cursor:pointer}
+.w.m{background:#FFE58F}
+.w.ini{background:#FFB3B3;outline:2px solid var(--red)}
+.w.rg{background:#FFD6D6}
+.mk{border-top:1px solid #eee;padding:10px 0;display:flex;gap:10px;align-items:flex-start}
+.mk .n{background:var(--ink);color:var(--gold);border-radius:12px;min-width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900}
+.mk .c{flex:1;font-size:15px}
+.mk .f{font-style:italic;color:#444}
+.mk button{border:none;background:#eee;border-radius:8px;width:34px;height:34px;font-size:16px;cursor:pointer}
+.mk .v{font-weight:900}
+.sel-box{position:sticky;bottom:0;background:var(--paper);border:2px solid var(--red);border-radius:14px;padding:12px;margin-top:10px;box-shadow:0 -4px 16px #0002}
+.sel-box .f{font-style:italic;margin-bottom:6px}
+.big{font-size:44px;font-weight:900;text-align:center}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9;max-width:90%}
+#toast.on{opacity:1}
+</style>
+</head>
+<body>
+<header><span class="t">La clase contra ChatGPT</span><span class="sc" id="sc"></span><span id="chip"></span></header>
+<div id="app"></div>
+<div id="toast"></div>
+<script>
+const API = location.origin + "/api/torneo";
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const lsGet = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch(e){ return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch(e){} };
+const qs = new URLSearchParams(location.search);
+let CODE = (qs.get("c") || lsGet("torneo_eq_code", "")).toUpperCase();
+let DEV = lsGet("torneo_dev", "");
+if (!DEV){ DEV = "d" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); lsSet("torneo_dev", DEV); }
+let unido = lsGet("torneo_eq_joined", "") === CODE && !!CODE;
+let S = null, desfase = 0, ocupado = false, vistaPintada = "";
+let borrador = {}, picks = [], selIni = null, selFin = null, porque = "", marcas = null;
+
+function toast(m){ const t = $("toast"); t.textContent = m; t.classList.add("on"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), 2600); }
+async function api(params){
+  const r = await fetch(API, { method:"POST", body: JSON.stringify(Object.assign({ c: CODE, dev: DEV }, params)) });
+  const j = await r.json();
+  if (j.error) throw new Error(j.error);
+  return j;
+}
+function pintarEntrada(msg){
+  $("chip").textContent = ""; $("sc").textContent = "";
+  $("app").innerHTML = `<div class="card"><h1>Entra con tu equipo</h1>
+    <p>Poned el código que veis en la pantalla y el nombre de vuestro equipo. Si sois varios móviles del mismo equipo, escribid el mismo nombre.</p>
+    <label>Código</label><input id="inCode" value="${esc(CODE)}" maxlength="6" autocapitalize="characters" placeholder="Lo ves en la pantalla">
+    <label>Nombre del equipo</label><input id="inName" value="${esc(lsGet("torneo_eq_name", ""))}" maxlength="30" placeholder="Por ejemplo, Los Verificadores">
+    <button class="btn" id="entrar">Entrar</button><div class="err">${esc(msg || "")}</div></div>`;
+  $("entrar").onclick = entrar;
+}
+async function entrar(){
+  CODE = $("inCode").value.trim().toUpperCase();
+  const name = $("inName").value.trim();
+  try {
+    await api({ a:"join", name });
+    lsSet("torneo_eq_code", CODE); lsSet("torneo_eq_name", name); lsSet("torneo_eq_joined", CODE);
+    unido = true; vistaPintada = ""; refrescar();
+  } catch(e){ pintarEntrada(e.message); }
+}
+function salir(){ unido = false; lsSet("torneo_eq_joined", ""); S = null; pintarEntrada(); }
+
+async function refrescar(){
+  if (!unido) return;
+  try {
+    const t0 = Date.now();
+    S = await api({ a:"state" });
+    desfase = S.now - Math.round((t0 + Date.now()) / 2);
+    if (!S.me) { unido = false; return pintarEntrada("Vuelve a entrar con el nombre de tu equipo"); }
+    pintar();
+  } catch(e){ if (/No existe/.test(e.message)) { unido = false; pintarEntrada(e.message); } }
+}
+function restante(){ return S && S.deadline ? Math.max(0, Math.ceil((S.deadline - (Date.now() + desfase)) / 1000)) : 0; }
+function mmss(s){ return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+function editando(){ const a = document.activeElement; return a && (a.tagName === "TEXTAREA" || a.tagName === "INPUT"); }
+
+function pintar(){
+  $("chip").textContent = S.me.name; $("chip").style.background = S.me.color;
+  $("sc").textContent = `Clase ${S.marcador.clase} – ${S.marcador.ia} ChatGPT`;
+  const st = S.stage, i = S.idx;
+  const clave = st + "|" + i + "|" + (st === "v1" ? S.me.voto : st === "v2" ? (S.me.votos || []).join("") : "") + "|" + (st === "w1" || st === "w2" ? S.me.texto : "") + "|" + (st === "r3" || st === "final" ? JSON.stringify(S.me.marcas) : "") + "|" + JSON.stringify(S.games);
+  if (clave === vistaPintada) { reloj(); return; }
+  if (editando() && (st === "w1" || st === "w2" || st === "w3") && vistaPintada.split("|")[0] === st && vistaPintada.split("|")[1] === String(i)) { reloj(); return; }
+  vistaPintada = clave;
+  if (st !== "w3") { marcas = null; selIni = selFin = null; }
+  if (st !== "v2") picks = [];
+  else if (!picks.length && (S.me.votos || []).length && vistaPintada.split("|")[1] !== "x") picks = S.me.votos.slice();
+  const f = VISTAS[st] || VISTAS.esperar;
+  $("app").innerHTML = f() + `<button class="btn out" id="salir" style="margin-top:24px">Cambiar de equipo</button>`;
+  $("salir").onclick = salir;
+  if (CONECTAR[st]) CONECTAR[st]();
+  reloj();
+}
+function reloj(){
+  const el = $("reloj"); if (!el) return;
+  const r = restante(); el.textContent = mmss(r); el.classList.toggle("fin", r === 0);
+  const b = $("enviar"); if (b && S.deadline && r === 0 && Date.now() + desfase > S.deadline + 15000) b.disabled = true;
+}
+
+const VISTAS = {
+  esperar: () => `<div class="card"><h2>Atentos a la pantalla</h2><p>En cuanto empiece el siguiente paso lo veréis aquí.</p></div>`,
+  lobby: () => `<div class="card"><h2>¡Dentro, ${esc(S.me.name)}!</h2><p>Esperad a que el profesor empiece el torneo. Son tres juegos y gana quien se lleve dos, la clase o ChatGPT.</p></div>`,
+  w1: () => escribir(1),
+  w2: () => escribir(2),
+  v1: () => {
+    const ops = S.opciones.map(o => `<div class="op ${o.mine ? "mia" : ""} ${S.me.voto === o.L ? "sel" : ""}" data-v1="${o.mine ? "" : o.L}"><span class="L">${o.L}</span>${esc(o.text)}${o.mine ? `<div class="tag">Vuestra entradilla</div>` : ""}</div>`).join("");
+    return `<div class="tit">Juego 1 · Noticia ${S.idx+1} de 3</div><div class="card"><h2>¿Cuál ha escrito ChatGPT?</h2><p>Tocad la que creáis que es de la máquina. Podéis cambiar el voto hasta que se cierre.</p>${S.me.voto ? `<div class="ok">Habéis votado la ${esc(S.me.voto)}</div>` : ""}</div>${ops}`;
+  },
+  r1: () => {
+    const r = S.res, acierto = S.me.voto && S.me.voto === r.ia;
+    return `<div class="tit">Juego 1 · Noticia ${S.idx+1} de 3</div>
+      <div class="ver ${r.clase ? "cl" : "ia"}">${r.clase ? "Ronda para la clase" : "Ronda para ChatGPT"}<small>${r.aciertos} de ${r.votantes} equipos acertaron</small></div>
+      <div class="card"><h2>ChatGPT era la ${esc(r.ia)}</h2><p>${!S.me.voto ? "No llegasteis a votar." : acierto ? "¡Lo descubristeis! Sumáis un punto." : "Votasteis la " + esc(S.me.voto) + ", no era esa."}</p></div>`;
+  },
+  end1: () => finJuego(1),
+  v2: () => {
+    const ops = S.opciones.map(o => { const k = picks.indexOf(o.L); return `<div class="op ${o.mine ? "mia" : ""} ${k >= 0 ? "sel" : ""}" data-v2="${o.mine ? "" : o.L}"><span class="L">${o.L}</span><span class="titular">${esc(o.text)}</span>${k >= 0 ? `<span class="badge">${k+1}º · ${3-k} pt</span>` : ""}${o.mine ? `<div class="tag">Vuestro titular</div>` : ""}</div>`; }).join("");
+    const ya = (S.me.votos || []).length;
+    return `<div class="tit">Juego 2 · Noticia ${S.idx+1}</div><div class="card"><h2>Elegid vuestros tres titulares favoritos</h2><p>Tocadlos en orden: el primero vale 3 puntos, el segundo 2 y el tercero 1. Tocad otra vez para quitar uno.</p>${ya ? `<div class="ok">Voto enviado: ${esc(S.me.votos.join(", "))}. Podéis cambiarlo.</div>` : ""}</div>${ops}<button class="btn" id="votar2">Enviar el voto</button>`;
+  },
+  r2: () => {
+    const r = S.res, mio = r.lista.find(x => !x.ia && x.who === S.me.name), pos = (x) => 1 + r.lista.filter(y => y.pts > x.pts).length;
+    return `<div class="tit">Juego 2 · Noticia ${S.idx+1}</div>
+      <div class="ver ${r.maquina ? "ia" : "cl"}">${r.maquina ? "Noticia para ChatGPT" : "Noticia para la clase"}<small>El titular de ChatGPT quedó en el puesto ${r.iaPos}</small></div>
+      <div class="card">${mio ? `<h2>Vuestro titular quedó ${pos(mio)}º</h2><p>Sumáis ${mio.pts} puntos.</p>` : `<p>Esta vez no enviasteis titular.</p>`}</div>`;
+  },
+  end2: () => finJuego(2),
+  w3: () => juego3(),
+  r3: () => resultado3(false),
+  final: () => {
+    const m = S.marcador, gana = m.clase > m.ia;
+    return `${resultado3(true)}<div class="ver ${gana ? "cl" : "ia"}" style="font-size:26px">${gana ? "🏆 ¡La clase gana a ChatGPT!" : "🤖 ChatGPT gana el torneo"}<small>${m.clase} – ${m.ia}</small></div><div class="card"><p>Vuestro equipo ha sumado <b>${S.me.pts}</b> puntos.</p></div>`;
+  }
+};
+function finJuego(j){
+  const g = S.games[j];
+  return `<div class="ver ${g.gana === "clase" ? "cl" : "ia"}">Juego ${j}: ${g.gana === "clase" ? "¡gana la clase!" : "gana ChatGPT"}<small>Clase ${g.clase} · ChatGPT ${g.ia}</small></div><div class="card"><p>Atentos a la pantalla para el siguiente juego.</p></div>`;
+}
+function escribir(j){
+  const k = S.stage + S.idx;
+  if (borrador[k] === undefined) borrador[k] = S.me.texto || "";
+  return `<div class="tit">Juego ${j} · ${j === 1 ? "¿Humano o máquina?" : "ChatGPT también juega"} · Noticia ${S.idx+1}</div>
+    <div class="reloj" id="reloj"></div>
+    <p class="err" style="text-align:center;margin:0 0 8px">Si salís de esta pantalla, el proyector lo avisa.</p>
+    <div class="card"><div class="datos">${esc(j === 1 ? S.datos : S.noticia)}</div>
+    <label>${j === 1 ? "Vuestra entradilla (entre 40 y 60 palabras)" : "Vuestro titular"}</label>
+    <textarea id="txt" ${j === 2 ? 'style="min-height:80px"' : ""} maxlength="${j === 1 ? 900 : 200}">${esc(borrador[k])}</textarea>
+    <div class="cnt" id="cnt"></div>
+    <button class="btn" id="enviar">${S.me.texto ? "Enviar de nuevo" : "Enviar"}</button>
+    <div id="estado">${S.me.texto ? `<div class="ok">Enviado. Podéis corregirlo hasta que se acabe el tiempo.</div>` : ""}</div></div>`;
+}
+const CONECTAR = {
+  w1: () => conectarEscribir(1),
+  w2: () => conectarEscribir(2),
+  v1: () => document.querySelectorAll("[data-v1]").forEach(el => el.onclick = async () => {
+    const L = el.dataset.v1; if (!L) return toast("No podéis votar vuestra entradilla");
+    try { await api({ a:"vote1", idx:S.idx, L }); vistaPintada = ""; refrescar(); } catch(e){ toast(e.message); }
+  }),
+  v2: () => {
+    document.querySelectorAll("[data-v2]").forEach(el => el.onclick = () => {
+      const L = el.dataset.v2; if (!L) return toast("No podéis votar vuestro titular");
+      const k = picks.indexOf(L);
+      if (k >= 0) picks.splice(k, 1); else if (picks.length < 3) picks.push(L); else return toast("Ya habéis elegido tres. Quitad uno antes.");
+      vistaPintada = ""; pintarSinReset();
+    });
+    $("votar2").onclick = async () => {
+      if (!picks.length) return toast("Elegid al menos un titular");
+      try { await api({ a:"vote2", idx:S.idx, picks }); toast("Voto enviado"); vistaPintada = ""; refrescar(); } catch(e){ toast(e.message); }
+    };
+  },
+  w3: () => conectar3()
+};
+function pintarSinReset(){ vistaPintada = ""; pintar(); }
+function conectarEscribir(j){
+  const k = S.stage + S.idx, ta = $("txt");
+  const contar = () => { const n = ta.value.trim() ? ta.value.trim().split(/\s+/).length : 0; $("cnt").textContent = n + " palabras"; };
+  ta.oninput = () => { borrador[k] = ta.value; contar(); }; contar();
+  $("enviar").onclick = async () => {
+    const t = ta.value.trim(); if (!t) return toast("Escribid algo antes de enviar");
+    $("enviar").disabled = true;
+    try { await api({ a:"write", idx:S.idx, text:t }); $("estado").innerHTML = `<div class="ok">Enviado. Podéis corregirlo hasta que se acabe el tiempo.</div>`; ta.blur(); vistaPintada = ""; refrescar(); }
+    catch(e){ toast(e.message); }
+    $("enviar").disabled = false;
+  };
+}
+
+// ---------- juego 3: marcar expresiones ----------
+function palabras(){ return String(S.texto3 || "").split(/\s+/).filter(Boolean); }
+function textoMarcable(lista, pendiente){
+  let k = 0;
+  return String(S.texto3 || "").split(/\n+/).map(p => "<p>" + p.split(/\s+/).filter(Boolean).map(w => {
+    const i = k++;
+    let cls = "w";
+    if (lista.some(m => i >= m.s && i <= m.e)) cls += " m";
+    if (pendiente && pendiente.s !== null) {
+      if (pendiente.e === null && i === pendiente.s) cls += " ini";
+      else if (pendiente.e !== null && i >= Math.min(pendiente.s, pendiente.e) && i <= Math.max(pendiente.s, pendiente.e)) cls += " rg";
+    }
+    return `<span class="${cls}" data-w="${i}">${esc(w)}</span>`;
+  }).join(" ") + "</p>").join("");
+}
+function juego3(){
+  if (marcas === null) marcas = (S.me.marcas || []).map(m => ({ s:m.s, e:m.e, why:m.why, frag:m.frag }));
+  const ws = palabras();
+  const frag = selIni !== null && selFin !== null ? ws.slice(Math.min(selIni, selFin), Math.max(selIni, selFin) + 1).join(" ") : "";
+  const lista = marcas.map((m, n) => `<div class="mk"><span class="n">${n+1}</span><div class="c"><div class="f">«${esc(m.frag)}»</div><div>${esc(m.why) || "<i>Falta explicar por qué</i>"}</div></div><button data-del="${n}" title="Quitar">✕</button></div>`).join("");
+  return `<div class="tit">Juego 3 · ¿Vale para cualquiera?</div>
+    <div class="reloj" id="reloj"></div>
+    <div class="card"><p class="err" style="margin:0 0 8px">Si salís de esta pantalla, el proyector lo avisa.</p><p><b>Buscad seis expresiones que delatan que este texto es de ChatGPT</b> y explicad por qué. Para marcar una, tocad su primera palabra y después la última.</p></div>
+    <div class="card texto" id="texto">${textoMarcable(marcas, { s:selIni, e:selFin })}</div>
+    ${frag ? `<div class="sel-box"><div class="f">«${esc(frag)}»</div><label>¿Por qué delata a ChatGPT?</label><textarea id="por" style="min-height:70px">${esc(porque)}</textarea>
+      <div style="display:flex;gap:8px"><button class="btn" id="anadir" style="flex:2">Añadir (${marcas.length}/6)</button><button class="btn out" id="cancelar" style="flex:1">Cancelar</button></div></div>`
+      : selIni !== null ? `<div class="sel-box"><div class="f">Ahora tocad la última palabra de la expresión</div><button class="btn out" id="cancelar">Cancelar</button></div>` : ""}
+    <div class="card"><h2>Vuestras marcas (${marcas.length}/6)</h2>${lista || `<p>Todavía no habéis marcado nada.</p>`}<div id="guardado"></div></div>`;
+}
+function repintar3(){
+  const y = window.scrollY;
+  $("app").innerHTML = juego3() + `<button class="btn out" id="salir" style="margin-top:24px">Cambiar de equipo</button>`;
+  $("salir").onclick = salir; conectar3(); reloj(); window.scrollTo(0, y);
+}
+function conectar3(){
+  document.querySelectorAll("[data-w]").forEach(el => el.onclick = () => {
+    const i = +el.dataset.w;
+    if (selIni === null || selFin !== null) { selIni = i; selFin = null; porque = ""; }
+    else selFin = i;
+    if (selFin !== null && Math.abs(selFin - selIni) > 40) { toast("Es demasiado largo. Marcad una expresión más corta."); selIni = selFin = null; }
+    repintar3();
+    if (selFin !== null && $("por")) $("por").focus();
+  });
+  if ($("cancelar")) $("cancelar").onclick = () => { selIni = selFin = null; porque = ""; repintar3(); };
+  if ($("por")) $("por").oninput = (e) => { porque = e.target.value; };
+  if ($("anadir")) $("anadir").onclick = async () => {
+    if (marcas.length >= 6) return toast("Ya tenéis seis. Quitad una para añadir otra.");
+    const why = $("por").value.trim(); if (!why) return toast("Explicad por qué delata a ChatGPT");
+    const s = Math.min(selIni, selFin), e = Math.max(selIni, selFin);
+    marcas.push({ s, e, why, frag: palabras().slice(s, e + 1).join(" ") });
+    selIni = selFin = null; porque = "";
+    await guardar3(); repintar3();
+  };
+  document.querySelectorAll("[data-del]").forEach(b => b.onclick = async () => { marcas.splice(+b.dataset.del, 1); await guardar3(); repintar3(); });
+}
+async function guardar3(){
+  try { await api({ a:"marks", marks: marcas.map(m => ({ s:m.s, e:m.e, why:m.why })) }); toast("Guardado"); }
+  catch(e){ toast(e.message); }
+}
+function resultado3(compacto){
+  const r = S.res3, ms = S.me.marcas || [];
+  const lista = ms.map((m, n) => `<div class="mk"><span class="n">${n+1}</span><div class="c"><div class="f">«${esc(m.frag)}»</div><div>${esc(m.why)}</div></div><span class="v">${m.ok === true ? "✅" : m.ok === false ? "❌" : "⏳"}</span></div>`).join("");
+  return `${r ? `<div class="ver ${r.clase ? "cl" : "ia"}">Juego 3: ${r.clase ? "¡gana la clase!" : "gana ChatGPT"}<small>La clase encontró ${r.n} de ${S.objetivos.length} (hacían falta ${r.meta})</small></div>` : `<div class="card"><h2>El profesor está revisando las marcas</h2><p>Mirad la pantalla.</p></div>`}
+    ${compacto && !lista ? "" : `<div class="card"><h2>Vuestras marcas</h2>${lista || "<p>No marcasteis nada.</p>"}</div>`}`;
+}
+
+// Aviso al proyector si el móvil cambia de pantalla mientras se escribe
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "hidden" || !unido || !S) return;
+  if (["w1", "w2", "w3"].indexOf(S.stage) < 0) return;
+  const body = JSON.stringify({ a:"away", c: CODE, dev: DEV, idx: S.idx });
+  try { if (navigator.sendBeacon && navigator.sendBeacon(API, new Blob([body], { type:"text/plain" }))) return; } catch(e){}
+  try { fetch(API, { method:"POST", body, keepalive:true }); } catch(e){}
+});
+setInterval(reloj, 500);
+setInterval(refrescar, 2000 + Math.floor(Math.random() * 600));
+if (unido) refrescar(); else pintarEntrada();
+</script>
+</body>
+</html>
