@@ -42,16 +42,17 @@ function aciertaP(text,ap){
 function newRoom(){
   const r={code:code(),hostToken:crypto.randomBytes(8).toString('hex'),host:null,teams:[],phase:'lobby',turn:0,dice:0,aviso:null,
     q:null,priv:null,rev:null,fx:null,fxn:0,winner:null,gen:0,next:null,last:Date.now(),
-    bagT:[],deck:{G:[],R:[],P:[]}};
+    bagT:[],deck:{G:[],R:[],P:[]},rolls:0,stealDone:[],stealWin:[],qTot:30000,failInfo:null};
   rooms.set(r.code,r);return r;
 }
 function resetGame(r){
-  r.teams.forEach(t=>t.pos=1);r.phase='lobby';r.turn=0;r.dice=0;r.aviso=null;r.q=null;r.priv=null;r.rev=null;r.winner=null;r.gen++;r.bagT=[];r.deck={G:[],R:[],P:[]};
+  r.teams.forEach(t=>t.pos=1);r.phase='lobby';r.turn=0;r.dice=0;r.aviso=null;r.q=null;r.priv=null;r.rev=null;r.winner=null;r.rolls=0;r.stealDone=[];r.stealWin=[];r.gen++;r.bagT=[];r.deck={G:[],R:[],P:[]};
 }
 function snap(r,you){
   return {t:'state',code:r.code,phase:r.phase,turn:r.turn,dice:r.dice,aviso:r.aviso,fx:r.fx,winner:r.winner,you,
     teams:r.teams.map(t=>({id:t.id,name:t.name,color:t.color,pos:t.pos,on:!!t.ws})),q:r.q,rev:r.rev,
-    rem:(r.phase==='question'&&r.qEnd)?Math.max(0,Math.round(r.qEnd-Date.now())):0};
+    rolls:r.rolls,tot:r.qTot,sd:r.stealDone,
+    rem:((r.phase==='question'||r.phase==='steal')&&r.qEnd)?Math.max(0,Math.round(r.qEnd-Date.now())):0};
 }
 function send(ws,o){if(ws&&ws.readyState===1)ws.send(JSON.stringify(o));}
 function bc(r){
@@ -62,16 +63,17 @@ function bc(r){
 function fx(r,k){r.fx={n:++r.fxn,k};}
 const SP=+process.env.SPEED||1;
 const QTIME=+process.env.QTIME||30;
+const STEALT=+process.env.STEALT||20;
 function after(r,ms,fn){const g=r.gen;setTimeout(()=>{if(r.gen===g)fn();},ms/SP);}
 
 function siguiente(r){
-  r.turn=(r.turn+1)%r.teams.length;r.phase='roll';r.q=null;r.priv=null;r.rev=null;r.aviso=null;r.dice=0;bc(r);
+  r.turn=(r.turn+1)%r.teams.length;r.rolls=0;r.phase='roll';r.q=null;r.priv=null;r.rev=null;r.aviso=null;r.dice=0;bc(r);
 }
 function repite(r){r.phase='roll';r.q=null;r.priv=null;r.rev=null;r.aviso=null;r.dice=0;bc(r);}
 function fin(r,i){r.phase='end';r.winner=i;r.q=null;r.rev=null;fx(r,'win');bc(r);}
 
 function tira(r){
-  r.phase='rolling';r.dice=1+Math.floor(Math.random()*6);r.aviso=null;fx(r,'dado');bc(r);
+  r.rolls++;r.phase='rolling';r.dice=1+Math.floor(Math.random()*6);r.aviso=null;fx(r,'dado');bc(r);
   after(r,1250,()=>mueve(r,r.dice));
 }
 function mueve(r,n){
@@ -115,30 +117,51 @@ async function pregunta(r){
   if(pp){const img=await bajaFoto(pp);if(img){const tk=crypto.randomBytes(6).toString('hex');fotoTok.set(tk,img);q.photo='/foto/'+tk;
     if(fotoTok.size>60)fotoTok.delete(fotoTok.keys().next().value);}}
   if(r.gen!==g)return;
-  r.q=q;r.priv=priv;r.qid=++qid;r.qEnd=Date.now()+QTIME*1000/SP;
+  r.q=q;r.priv=priv;r.qid=++qid;r.qEnd=Date.now()+QTIME*1000/SP;r.qTot=QTIME*1000/SP;r.stealDone=[];r.stealWin=[];
   r.phase='question';r.rev=null;r.aviso=null;bc(r);
   const id=r.qid;
-  after(r,QTIME*1000,()=>{if(r.phase==='question'&&r.qid===id)cierra(r,{ok:false,timeout:true,kind:priv.kind});});
+  after(r,QTIME*1000,()=>{if(r.phase==='question'&&r.qid===id)fallo(r,{timeout:true,kind:priv.kind});});
 }
 function cierra(r,rev){
-  r.rev=rev;r.phase='reveal';r.qEnd=0;fx(r,rev.ok?'ok':'ko');bc(r);
-  const ok=rev.ok;
-  r.next=()=>ok?repite(r):siguiente(r);
+  rev.limit=!!rev.ok&&r.rolls>=3;
+  r.rev=rev;r.phase='reveal';r.qEnd=0;fx(r,'ok');bc(r);
+  r.next=()=>r.rolls>=3?siguiente(r):repite(r);
   after(r,5000,()=>r.next&&r.next());
+}
+// el equipo del turno falla: el resto puede contestar y avanza una casilla quien acierte
+function fallo(r,info){
+  r.failInfo=info;r.stealDone=[];r.stealWin=[];r.phase='steal';r.rev=null;
+  r.qEnd=Date.now()+STEALT*1000/SP;r.qTot=STEALT*1000/SP;fx(r,'ko');bc(r);
+  const id=r.qid;
+  after(r,STEALT*1000,()=>{if(r.phase==='steal'&&r.qid===id)cierraRebote(r);});
+}
+function cierraRebote(r){
+  const win=r.stealWin.map(id=>(r.teams.find(t=>t.id===id)||{}).name).filter(Boolean);
+  r.rev={ok:false,steal:true,timeout:!!(r.failInfo&&r.failInfo.timeout),winners:win};
+  r.phase='reveal';r.qEnd=0;bc(r);
+  r.next=()=>siguiente(r);
+  after(r,5000,()=>r.next&&r.next());
+}
+function evalua(p,m){
+  if(p.kind==='mc'){const i=m.i;if(!Number.isInteger(i)||i<0||i>3)return null;return i===p.idx;}
+  const t=String(m.text||'').slice(0,60);if(!t.trim())return null;
+  return aciertaP(t,p.ap);
 }
 function responde(r,m){
   if(r.phase!=='question'||!r.priv)return;
-  const p=r.priv;let ok;
-  if(p.kind==='mc'){
-    const i=m.i;if(!Number.isInteger(i)||i<0||i>3)return;
-    ok=i===p.idx;
-  }else{
-    const t=String(m.text||'').slice(0,60);if(!t.trim())return;
-    ok=aciertaP(t,p.ap);
-  }
-  cierra(r,{ok,kind:p.kind});
+  const ok=evalua(r.priv,m);if(ok===null)return;
+  if(ok)cierra(r,{ok:true,kind:r.priv.kind});
+  else fallo(r,{kind:r.priv.kind});
 }
-
+function robar(r,tm,m){
+  if(r.phase!=='steal'||!r.priv)return;
+  if(tm===r.teams[r.turn]||r.stealDone.includes(tm.id))return;
+  const ok=evalua(r.priv,m);if(ok===null)return;
+  r.stealDone.push(tm.id);
+  if(ok){r.stealWin.push(tm.id);tm.pos=Math.min(tm.pos+1,29);fx(r,'ok');}
+  bc(r);
+  if(r.stealDone.length>=r.teams.length-1)cierraRebote(r);
+}
 
 function onMessage(ws,m){
   if(!m||typeof m.t!=='string')return;
@@ -168,11 +191,12 @@ function onMessage(ws,m){
   const r=ws.room;if(!r)return;
   if(ws.role==='host'){
     if(m.t==='start'&&r.phase==='lobby'&&r.teams.length>=2){r.phase='roll';r.turn=0;bc(r);}
-    else if(m.t==='skip'&&(r.phase==='roll'||r.phase==='question'))siguiente(r);
+    else if(m.t==='skip'&&(r.phase==='roll'||r.phase==='question'||r.phase==='steal'))siguiente(r);
     else if(m.t==='cont'&&r.phase==='reveal'&&r.next){r.gen++;r.next();}
     else if(m.t==='reset'){resetGame(r);bc(r);}
     else if(m.t==='kick'&&r.phase==='lobby'){r.teams=r.teams.filter(x=>x.id!==m.id);bc(r);}
   }else if(ws.role==='team'){
+    if(m.t==='ans'&&r.phase==='steal'){robar(r,ws.tm,m);return;}
     const cur=r.teams[r.turn];if(!cur||cur!==ws.tm)return;
     if(m.t==='roll'&&r.phase==='roll')tira(r);
     else if(m.t==='ans')responde(r,m);
