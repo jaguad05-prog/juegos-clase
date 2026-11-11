@@ -31,16 +31,6 @@
    ]
   },
   {
-   "c": "R",
-   "q": "¿Con qué nunca debe empezar el primer párrafo de un reportaje?",
-   "o": [
-    "Con una biografía del protagonista o con una cifra",
-    "Con una escena de alguien haciendo algo en un lugar",
-    "Con un lugar y una hora concretos, sin personajes",
-    "Con un gesto o un detalle de la protagonista"
-   ]
-  },
-  {
    "c": "G",
    "q": "¿Qué es la brecha salarial?",
    "o": [
@@ -71,16 +61,6 @@
    ]
   },
   {
-   "c": "R",
-   "q": "Un dato sin una cosa al lado no sirve. ¿Cuál?",
-   "o": [
-    "La fuente y el año",
-    "El nombre del periodista que lo consiguió y su cargo",
-    "Un gráfico que lo acompañe y lo haga más visual",
-    "La opinión de un experto que lo valore"
-   ]
-  },
-  {
    "c": "G",
    "q": "¿Qué es el patriarcado?",
    "o": [
@@ -88,16 +68,6 @@
     "Un sistema de gobierno dirigido por los miembros más ancianos",
     "La herencia de los bienes familiares solo por línea paterna",
     "El reparto del trabajo entre el campo y la ciudad"
-   ]
-  },
-  {
-   "c": "R",
-   "q": "¿Qué es una frase-puente?",
-   "o": [
-    "La frase que une un bloque con el siguiente",
-    "La frase final que cierra todo el reportaje",
-    "La primera frase, con la que se cuenta la escena",
-    "La frase que resume lo que dice el titular"
    ]
   },
   {
@@ -311,16 +281,6 @@
    ]
   },
   {
-   "c": "R",
-   "q": "¿Por qué es mejor una cifra por frase que cuatro seguidas?",
-   "o": [
-    "Porque amontonadas no se recuerda ninguna",
-    "Porque se tarda menos tiempo en escribirlas todas seguidas",
-    "Porque los lectores desconfían de cualquier cifra que lean",
-    "Porque el editor limita el número de datos de cada texto"
-   ]
-  },
-  {
    "c": "G",
    "q": "¿Qué es la corresponsabilidad?",
    "o": [
@@ -348,16 +308,6 @@
     "Vestir a las niñas con ropa de adultas en los anuncios",
     "Ocultar el cuerpo de las mujeres en todos los medios",
     "Dar prioridad a las mujeres en los anuncios de televisión"
-   ]
-  },
-  {
-   "c": "R",
-   "q": "¿Qué hay que anotar cuando una fuente no contesta?",
-   "o": [
-    "A quién se llamó, qué día, a qué hora y cuántas veces",
-    "Solo el nombre de la fuente a la que se intentó llamar",
-    "Una opinión personal sobre su falta de respuesta",
-    "El número de teléfono privado de la fuente en cuestión"
    ]
   },
   {
@@ -434,7 +384,7 @@
    "c": "R",
    "q": "¿Qué información mínima hay que dar al presentarse por teléfono a una fuente?",
    "o": [
-    "Quién eres, para qué medio y de qué va el reportaje",
+    "Quién eres y para qué medio",
     "Tu nombre, tu edad y tu formación como periodista",
     "El nombre de tu jefe y el medio en el que escribes",
     "Las preguntas exactas que vas a hacerle a la fuente"
@@ -451,16 +401,6 @@
    ]
   },
   {
-   "c": "R",
-   "q": "¿Por qué «se han recortado los turnos» es una frase tramposa?",
-   "o": [
-    "Porque esconde al responsable de la decisión",
-    "Porque está escrita en pasiva y resulta poco elegante",
-    "Porque no incluye ninguna cifra que respalde lo que dice",
-    "Porque es una frase demasiado larga para un titular"
-   ]
-  },
-  {
    "c": "G",
    "q": "¿Qué es el trabajo de cuidados?",
    "o": [
@@ -474,7 +414,7 @@
    "c": "R",
    "q": "¿Cuántas fuentes como mínimo debería tener un reportaje?",
    "o": [
-    "Al menos dos que se respondan entre sí, además de los datos",
+    "Al menos dos, además de los datos",
     "Una sola, siempre que sea muy importante y de peso",
     "Cuatro, y todas ellas deben ser fuentes institucionales",
     "Ninguna, siempre que los datos sean buenos y recientes"
@@ -531,16 +471,6 @@
    ]
   },
   {
-   "c": "R",
-   "q": "¿Qué es el lead o entradilla?",
-   "o": [
-    "El primer párrafo, el que decide si el lector sigue",
-    "El resumen de todas las fuentes que se han consultado",
-    "El cierre con el que acaba el reportaje completo",
-    "El nombre de la sección en la que se publica el texto"
-   ]
-  },
-  {
    "c": "G",
    "q": "¿Qué es el rol tradicional de género?",
    "o": [
@@ -581,16 +511,6 @@
    ]
   },
   {
-   "c": "G",
-   "q": "¿Por qué se dice «interna» y no «sirvienta»?",
-   "o": [
-    "Porque nombra el contrato y no rebaja a la persona",
-    "Porque lo exige la Real Academia Española en su diccionario",
-    "Porque suena más antiguo y más respetuoso con la tradición",
-    "Porque es una palabra que se usa muy poco hoy"
-   ]
-  },
-  {
    "c": "R",
    "q": "¿Qué es una fuente interesada?",
    "o": [
@@ -608,16 +528,6 @@
     "Pagar menos a las mujeres por el mismo trabajo",
     "Negarse a comprar lo que la pareja pide en casa",
     "Perder el empleo a causa de una crisis económica"
-   ]
-  },
-  {
-   "c": "R",
-   "q": "¿Qué es el cierre de un reportaje y qué no debe hacer?",
-   "o": [
-    "La última frase, que vuelve a la persona del principio",
-    "El resumen de todos los datos que se han utilizado",
-    "Una frase con la opinión personal de quien firma",
-    "La lista de las fuentes que se han consultado"
    ]
   },
   {
@@ -661,16 +571,6 @@
    ]
   },
   {
-   "c": "G",
-   "q": "¿Por qué se dice «persona dependiente» y no «discapacitada»?",
-   "o": [
-    "Porque nombra primero a la persona y luego su situación",
-    "Porque es una expresión mucho más antigua en el idioma",
-    "Porque define a la persona por lo que no puede hacer",
-    "Porque son dos sinónimos exactos para cualquier caso"
-   ]
-  },
-  {
    "c": "R",
    "q": "¿Para qué sirve grabar una entrevista si además tomas notas?",
    "o": [
@@ -711,16 +611,6 @@
    ]
   },
   {
-   "c": "R",
-   "q": "¿Qué hay que preguntar a una protagonista para que se abra: su opinión o su día?",
-   "o": [
-    "Su día, porque «¿a qué hora sale de casa?» da más juego",
-    "Su opinión sobre el asunto del que trata el reportaje",
-    "Su valoración de la situación política del momento",
-    "Su biografía completa desde la infancia hasta hoy"
-   ]
-  },
-  {
    "c": "G",
    "q": "¿Qué es la desigualdad estructural?",
    "o": [
@@ -728,16 +618,6 @@
     "La que resulta de decisiones de una persona concreta",
     "La que se da solo en los edificios y en las obras",
     "La que se produce de forma puntual y aislada"
-   ]
-  },
-  {
-   "c": "R",
-   "q": "¿Qué es una crónica y en qué se diferencia del reportaje?",
-   "o": [
-    "La crónica narra hechos que el periodista presencia",
-    "La crónica es siempre más corta que el reportaje",
-    "La crónica no lleva nunca ninguna cita textual",
-    "La crónica es siempre del ámbito deportivo"
    ]
   },
   {
@@ -828,16 +708,6 @@
     "La baja retribuida que se concede al tener un hijo",
     "El gasto económico que supone criar a un hijo",
     "La dificultad de conciliar para ambos progenitores por igual"
-   ]
-  },
-  {
-   "c": "R",
-   "q": "¿Cuándo se pasa del caso particular al dato general?",
-   "o": [
-    "En el segundo o tercer párrafo",
-    "En el último párrafo, justo antes del cierre",
-    "Antes de la escena inicial, para situar el tema",
-    "En el titular, junto al nombre del protagonista"
    ]
   },
   {
@@ -951,16 +821,6 @@
    ]
   },
   {
-   "c": "R",
-   "q": "¿Por qué «por otro lado» o «cabe destacar» no son buenas transiciones?",
-   "o": [
-    "Porque anuncian el cambio de tema en vez de disimularlo",
-    "Porque son expresiones demasiado largas para un texto breve",
-    "Porque son palabras demasiado cultas para el lector",
-    "Porque no existen como tales en el idioma español"
-   ]
-  },
-  {
    "c": "G",
    "q": "¿Qué es la interseccionalidad?",
    "o": [
@@ -1028,16 +888,6 @@
     "Un precio máximo que se fija para un servicio",
     "Una aportación mensual a una asociación determinada",
     "Un número fijo de horas de trabajo a la semana"
-   ]
-  },
-  {
-   "c": "R",
-   "q": "¿Qué hay que hacer antes de llamar por teléfono a una fuente?",
-   "o": [
-    "Escribirle antes, para que mañana pueda haber respuesta",
-    "Llamarle sin avisar, para que no tenga tiempo de preparar nada",
-    "Preguntar a otra fuente por él antes de hacerlo",
-    "Pedir a un compañero que sea quien le llame primero"
    ]
   },
   {
@@ -1118,26 +968,6 @@
     "El que se publica únicamente durante los fines de semana",
     "El que cuenta las noticias del tiempo y del tráfico",
     "El que se escribe para que lo lea una sola persona"
-   ]
-  },
-  {
-   "c": "G",
-   "q": "¿Qué es el periodismo con perspectiva de género?",
-   "o": [
-    "Comprobar si afecta distinto a mujeres y hombres",
-    "Escribir solo sobre temas que afectan a las mujeres",
-    "Añadir una columna de opinión feminista a cada noticia",
-    "Evitar los temas de mujeres para no tomar partido"
-   ]
-  },
-  {
-   "c": "R",
-   "q": "¿Cuáles son los cuatro bloques de un reportaje breve, en orden?",
-   "o": [
-    "El gancho, por qué importa, la prueba y el cierre-venta",
-    "Titular, entradilla, cuerpo del texto y firma del autor",
-    "Presentación, nudo, desenlace y moraleja final",
-    "Cifra, declaración, valoración y despedida de la fuente"
    ]
   },
   {
