@@ -98,7 +98,7 @@ function mueve(r,n){
   after(r,1400,()=>pregunta(r));
 }
 function tipo(r){
-  if(!r.bagT.length)r.bagT=shuffle(['G','R','P']);
+  if(!r.bagT.length)r.bagT=['P'].concat(shuffle(['G','R']));
   return r.bagT.pop();
 }
 let qid=0;
