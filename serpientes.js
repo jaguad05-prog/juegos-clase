@@ -89,9 +89,11 @@ function mueve(r,n){
       t.pos=salto;bc(r);
       if(salto===30)return after(r,700,()=>fin(r,r.turn));
       if(!esc)return after(r,1600,()=>siguiente(r));
+      if(r.rolls>=4)return after(r,1700,()=>siguiente(r));
       after(r,1700,()=>pregunta(r));
     });
   }
+  if(r.rolls>=4){if(!r.aviso){r.aviso={k:'tope'};bc(r);}return after(r,1800,()=>siguiente(r));}
   after(r,1400,()=>pregunta(r));
 }
 function tipo(r){
@@ -123,9 +125,9 @@ async function pregunta(r){
   after(r,QTIME*1000,()=>{if(r.phase==='question'&&r.qid===id)fallo(r,{timeout:true,kind:priv.kind});});
 }
 function cierra(r,rev){
-  rev.limit=!!rev.ok&&r.rolls>=3;
+  rev.limit=false;
   r.rev=rev;r.phase='reveal';r.qEnd=0;fx(r,'ok');bc(r);
-  r.next=()=>r.rolls>=3?siguiente(r):repite(r);
+  r.next=()=>repite(r);
   after(r,5000,()=>r.next&&r.next());
 }
 // el equipo del turno falla: el resto puede contestar y avanza una casilla quien acierte
