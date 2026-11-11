@@ -3,7 +3,8 @@
 const fs=require('fs'),crypto=require('crypto');
 const QS=require('./serpientes_preguntas.json');
 const ESCALERAS={3:22,8:20,21:29}, SERPIENTES={26:1,19:7,16:9};
-const COL=['#E08A4B','#5B8FB9','#C05F7A','#6FA86B','#9B7BC0','#D4B23F'];
+const COL=['#E08A4B','#5B8FB9','#C05F7A','#6FA86B','#9B7BC0','#D4B23F','#3FA7A3','#8C5A3C','#7A7F8C','#C23B3B'];
+const MAXEQ=10;
 const rooms=new Map();
 const conns=new Map();   // cid -> conexión SSE
 const fotoTok=new Map();      // token aleatorio -> {buf,type}
@@ -181,7 +182,7 @@ function onMessage(ws,m){
     if(tm){tm.ws=ws;}
     else{
       if(r.phase!=='lobby')return send(ws,{t:'err',m:'La partida ya ha empezado.'});
-      if(r.teams.length>=6)return send(ws,{t:'err',m:'La sala está completa (6 equipos).'});
+      if(r.teams.length>=MAXEQ)return send(ws,{t:'err',m:'La sala está completa ('+MAXEQ+' equipos).'});
       const name=String(m.name||'').trim().slice(0,22)||('Equipo '+(r.teams.length+1));
       const used=new Set(r.teams.map(x=>x.color));
       tm={id:crypto.randomBytes(3).toString('hex'),token:crypto.randomBytes(8).toString('hex'),name,color:COL.find(c=>!used.has(c)),pos:1,ws};
