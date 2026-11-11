@@ -160,7 +160,7 @@ function robar(r,tm,m){
   if(tm===r.teams[r.turn]||r.stealDone.includes(tm.id))return;
   const ok=evalua(r.priv,m);if(ok===null)return;
   r.stealDone.push(tm.id);
-  if(ok){r.stealWin.push(tm.id);tm.pos=Math.min(tm.pos+1,29);fx(r,'ok');}
+  if(ok){r.stealWin.push(tm.id);tm.pos=Math.min(tm.pos+1,29);fx(r,'ok');bc(r);return cierraRebote(r);}
   bc(r);
   if(r.stealDone.length>=r.teams.length-1)cierraRebote(r);
 }
