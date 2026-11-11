@@ -2,7 +2,7 @@
 // Serpientes y escaleras en red · módulo para el servidor de Render (sin dependencias)
 const fs=require('fs'),crypto=require('crypto');
 const QS=require('./serpientes_preguntas.json');
-const ESCALERAS={3:22,8:20,21:29}, SERPIENTES={26:1,19:7,16:9};
+const NSQ=60, ESCALERAS={3:22,14:33,11:30,37:56}, SERPIENTES={17:6,35:15,52:31,59:40};
 const COL=['#E08A4B','#5B8FB9','#C05F7A','#6FA86B','#9B7BC0','#D4B23F','#3FA7A3','#8C5A3C','#7A7F8C','#C23B3B'];
 const MAXEQ=10;
 const rooms=new Map();
@@ -79,16 +79,16 @@ function tira(r){
 }
 function mueve(r,n){
   const t=r.teams[r.turn];let d=t.pos+n,reb=false;
-  if(d>30){d=60-d;reb=true;}
+  if(d>NSQ){d=2*NSQ-d;reb=true;}
   t.pos=d;r.phase='moved';r.aviso=reb?{k:'reb',a:d}:null;bc(r);
-  if(d===30)return after(r,520,()=>fin(r,r.turn));
+  if(d===NSQ)return after(r,520,()=>fin(r,r.turn));
   const salto=ESCALERAS[d]||SERPIENTES[d];
   if(salto){
     const esc=!!ESCALERAS[d];
     r.aviso={k:esc?'sube':'baja',a:d,b:salto};fx(r,esc?'esc':'ser');bc(r);
     return after(r,1200,()=>{
       t.pos=salto;bc(r);
-      if(salto===30)return after(r,700,()=>fin(r,r.turn));
+      if(salto===NSQ)return after(r,700,()=>fin(r,r.turn));
       if(!esc)return after(r,1600,()=>siguiente(r));
       if(r.rolls>=4)return after(r,1700,()=>siguiente(r));
       after(r,1700,()=>pregunta(r));
@@ -161,7 +161,7 @@ function robar(r,tm,m){
   if(tm===r.teams[r.turn]||r.stealDone.includes(tm.id))return;
   const ok=evalua(r.priv,m);if(ok===null)return;
   r.stealDone.push(tm.id);
-  if(ok){r.stealWin.push(tm.id);tm.pos=Math.min(tm.pos+1,29);fx(r,'ok');bc(r);return cierraRebote(r);}
+  if(ok){r.stealWin.push(tm.id);tm.pos=Math.min(tm.pos+1,NSQ-1);fx(r,'ok');bc(r);return cierraRebote(r);}
   bc(r);
   if(r.stealDone.length>=r.teams.length-1)cierraRebote(r);
 }
