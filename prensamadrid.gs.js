@@ -11,24 +11,24 @@ var PARTICULAS = { "de": 1, "del": 1, "la": 1, "las": 1, "los": 1, "y": 1 };
 
 // Fáciles y difíciles mezcladas.
 var NOMBRES = [
-  { bloque: "Periodismo y Real Madrid", nombre: "Josep, presentador de El Chiringuito", apellido: "Pedrerol", empresas: ["El Chiringuito"] },
-  { bloque: "Periodismo y Real Madrid", nombre: "Rubén, periodista de ABC que discutió con Florentino", apellido: "Cañizares", empresas: ["ABC"] },
-  { bloque: "Periodismo y Real Madrid", nombre: "Antonio, director de comunicación del Real Madrid antes de pasar a laSexta", apellido: "García Ferreras", empresas: ["laSexta"] },
-  { bloque: "Periodismo y Real Madrid", nombre: "Tomás, periodista de AS madridista de bufanda, habitual de El Chiringuito", apellido: "Roncero", empresas: ["AS"] },
+  { bloque: "Periodismo y Real Madrid", nombre: "Presentador de El Chiringuito", apellido: "Pedrerol", empresas: ["El Chiringuito"] },
+  { bloque: "Periodismo y Real Madrid", nombre: "Periodista de ABC que discutió con Florentino", apellido: "Cañizares", empresas: ["ABC"] },
+  { bloque: "Periodismo y Real Madrid", nombre: "Fue director de comunicación del Real Madrid antes de pasar a laSexta", apellido: "García Ferreras", empresas: ["laSexta"] },
+  { bloque: "Periodismo y Real Madrid", nombre: "Periodista de AS madridista de bufanda, habitual de El Chiringuito", apellido: "Roncero", empresas: ["AS"] },
   { bloque: "Periodismo y Real Madrid", nombre: "Periodista que cubre el Real Madrid para la COPE", apellido: "Miguelito", empresas: ["COPE"] },
-  { bloque: "Periodismo y Real Madrid", nombre: "María José, columnista de ABC que respondió a Florentino por su artículo «El Real Madrid y la sordera del perdedor»", apellido: "Fuenteálamo", empresas: ["ABC"] },
-  { bloque: "Periodismo y Real Madrid", nombre: "Juanma, director y presentador de El Partidazo de COPE", apellido: "Castaño", empresas: ["COPE"] },
+  { bloque: "Periodismo y Real Madrid", nombre: "Columnista de ABC que respondió a Florentino por su artículo «El Real Madrid y la sordera del perdedor»", apellido: "Fuenteálamo", empresas: ["ABC"] },
+  { bloque: "Periodismo y Real Madrid", nombre: "Director y presentador de El Partidazo de COPE", apellido: "Castaño", empresas: ["COPE"] },
   { bloque: "Periodismo y Real Madrid", nombre: "Director de AS", apellido: "José Félix Díaz", empresas: ["AS"] },
   { bloque: "Periodismo y Real Madrid", nombre: "Jefe de prensa del vestuario del Real Madrid", apellido: "Carbajosa", empresas: ["Real Madrid"] },
-  { bloque: "Periodismo y Real Madrid", nombre: "Alfredo, dirigió AS durante más de veinte años", apellido: "Relaño", empresas: ["AS"] },
+  { bloque: "Periodismo y Real Madrid", nombre: "Dirigió AS durante más de veinte años", apellido: "Relaño", empresas: ["AS"] },
   { bloque: "Periodismo y Real Madrid", nombre: "Youtuber madridista y creador de La Velada del Año", apellido: "Ibai Llanos", empresas: ["Twitch"] },
   { bloque: "Periodismo y Real Madrid", nombre: "Mítico periodista de radio deportiva al que llamaban «Butanito»", apellido: "José María García", empresas: [] },
-  { bloque: "Periodismo y Real Madrid", nombre: "Eduardo, fue director de Marca y es habitual de El Chiringuito", apellido: "Inda", empresas: ["OKDIARIO"] },
-  { bloque: "Periodismo y Real Madrid", nombre: "Mario, periodista de The Athletic que informa del día a día del vestuario del Real Madrid", apellido: "Cortegana", empresas: ["The Athletic"] },
-  { bloque: "Periodismo y Real Madrid", nombre: "Antonio, director de comunicación del Real Madrid", apellido: "Galeano", empresas: ["Real Madrid"] },
-  { bloque: "Periodismo y Real Madrid", nombre: "Antón, periodista de la SER que se enfrentó a Mourinho en su primera etapa en el Madrid", apellido: "Meana", empresas: ["Cadena SER"] },
-  { bloque: "Periodismo y Real Madrid", nombre: "Juan Ignacio, director de Marca", apellido: "Gallardo", empresas: ["Marca"] },
-  { bloque: "Periodismo y Real Madrid", nombre: "José Ramón, creador de El Larguero en la SER", apellido: "de la Morena", empresas: ["El Larguero"] },
+  { bloque: "Periodismo y Real Madrid", nombre: "Fue director de Marca y es habitual de El Chiringuito", apellido: "Inda", empresas: ["OKDIARIO"] },
+  { bloque: "Periodismo y Real Madrid", nombre: "Periodista de The Athletic que informa del día a día del vestuario del Real Madrid", apellido: "Cortegana", empresas: ["The Athletic"] },
+  { bloque: "Periodismo y Real Madrid", nombre: "Director de comunicación del Real Madrid", apellido: "Galeano", empresas: ["Real Madrid"] },
+  { bloque: "Periodismo y Real Madrid", nombre: "Periodista de la SER que se enfrentó a Mourinho en su primera etapa en el Madrid", apellido: "Meana", empresas: ["Cadena SER"] },
+  { bloque: "Periodismo y Real Madrid", nombre: "Director de Marca", apellido: "Gallardo", empresas: ["Marca"] },
+  { bloque: "Periodismo y Real Madrid", nombre: "Creador de El Larguero en la SER", apellido: "de la Morena", empresas: ["El Larguero"] },
   { bloque: "Periodismo y Real Madrid", nombre: "Presentaba Tiempo de Juego en COPE", apellido: "Paco González", empresas: ["COPE"] }
 ];
 
