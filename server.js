@@ -96,6 +96,10 @@ const server = http.createServer((req, res) => {
     });
     return;
   }
+  // direcciones cortas de La gran carrera madridista (llevan siempre a la última versión)
+  const corto = { "/carrera-madridista": "/madridista_pantalla_v7.html", "/carrera-madridista/proyector": "/madridista_pantalla_v7.html", "/carrera-madridista/equipo": "/madridista_equipo_v7.html" };
+  const cp = url.pathname.replace(/\/+$/, "").toLowerCase();
+  if (corto[cp]) { res.writeHead(302, { Location: corto[cp], "Cache-Control": "no-store" }); return res.end(); }
   if (url.pathname === "/salud") { res.writeHead(200, { "Content-Type": "text/plain" }); return res.end("ok"); }
 
   let p = decodeURIComponent(url.pathname);
