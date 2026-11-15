@@ -1,12 +1,13 @@
 // Juegos de clase · servidor para Render
 // Ejecuta el mismo código de los servidores de Google Apps Script (Guerra de Titulares,
-// Juego de SEO, Carrera de la Redacción, La Vuelta de Deportes, La Liguilla El Ahorcado de los Medios, Serpientes y escaleras, La Liguilla de la Mujer Invisible, El Titular de la Charla, La carrera a la Moncloa, Análisis de columna y La clase contra ChatGPT), pero en memoria, sin las esperas de Google.
+// Juego de SEO, Carrera de la Redacción, La Vuelta de Deportes, La Liguilla El Ahorcado de los Medios, Serpientes y escaleras, La Liguilla de la Mujer Invisible, El Titular de la Charla, La carrera a la Moncloa, Análisis de columna, La clase contra ChatGPT y La gran carrera madridista), pero en memoria, sin las esperas de Google.
 "use strict";
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
 const serpientes = require("./serpientes.js");
+const madridista = require("./madridista.js");
 
 const PORT = process.env.PORT || 3000;
 const PUB = __dirname;
@@ -78,6 +79,7 @@ function cors(res) {
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, "http://x");
   if (serpientes.handle(req, res, url)) return;
+  if (madridista.handle(req, res, url)) return;
   const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla2|liguilla|ahorcado|microfono|mujer|charla|moncloa|columna|torneo)\/?$/);
   if (m) {
     cors(res);
