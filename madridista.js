@@ -46,8 +46,8 @@ let PRUEBAS = [
   { id: 'p3', v: 1, escribible: true, formato: 'noticia', texto: 'Tenéis que encontrar a alguien (no valen compañeros) que se identifique y os cuente el momento deportivo que más le emocionó (tenéis que grabar su voz).\nHacer título, subtítulo y el primer párrafo de 100 palabras que tiene que ser una escena, no una narración.' },
   { id: 'himno', v: 1, escribible: false, soloProyector: true, texto: 'Tenéis que cantar el himno del Real Madrid.' },
   { id: 'p5', v: 1, escribible: true, formato: 'noticia', texto: 'Me tenéis que vender un reportaje de un deportista al que se pueda llamar y hablar con él.\nNecesito tema y modo de contacto.\nO un reportaje de deportes con un protagonista al que llamar.' },
-  { id: 'p6', v: 1, escribible: true, formato: 'noticia', texto: 'Me tenéis que hacer una crónica de esta carrera de 400 palabras.\nTítulo, subtítulo, primer párrafo y texto.' },
-  { id: 'p7', v: 1, escribible: true, formato: 'tuit', texto: 'Tenéis que escribir un tuit respondiendo a esta declaración inventada de Gavi y buscando la polémica:\n«Jamás sería del Madrid, son unos lloricas increíbles».' }
+  { id: 'p7', v: 1, escribible: true, formato: 'tuit', texto: 'Tenéis que escribir un tuit respondiendo a esta declaración inventada de Gavi y buscando la polémica:\n«Jamás sería del Madrid, son unos lloricas increíbles».' },
+  { id: 'p6', v: 1, escribible: true, formato: 'noticia', texto: 'Me tenéis que hacer una crónica de esta carrera de 250 palabras.\nTítulo, subtítulo, primer párrafo y texto.' }
 ];
 
 // Las pruebas editadas desde el panel se guardan en data/madridista_pruebas.json (se pierden si Render vuelve a desplegar).
@@ -120,7 +120,7 @@ function sacar(tipo) {
   if (tipo === 'foto') { if (!S.mazoF.length) S.mazoF = barajar(FOTOS); return S.mazoF.pop(); }
   const quedan = quedanPruebas();
   if (!quedan.length) return null;
-  const p = quedan[Math.floor(Math.random() * quedan.length)];
+  const p = quedan[0]; // las pruebas salen en el orden de la lista
   S.jugadas.push(p.id);
   return p;
 }
