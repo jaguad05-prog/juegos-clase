@@ -46,7 +46,7 @@ let PRUEBAS = [
   { id: 'p1', v: 1, escribible: true, modo: 'votan', formato: 'titular', texto: 'Os pido una previa del Real Madrid - Real Sociedad.\nPero tenéis que basarla en un jugador de la Real Sociedad buscando un dato o algo que pueda ser noticia.\nHay que hacer un título y un subtítulo.' },
   { id: 'p2', v: 1, escribible: true, modo: 'profesor', formato: 'libre', texto: 'Tienes que conseguir un correo o un teléfono con el que se podría llamar a una de las jugadoras de la selección nacional de fútbol sala.' },
   { id: 'p3', v: 1, escribible: true, modo: 'profesor', formato: 'noticia', texto: 'Tenéis que encontrar a alguien (no valen compañeros) que se identifique y os cuente el momento deportivo que más le emocionó (tenéis que grabar su voz).\nHacer título, subtítulo y el primer párrafo de 100 palabras que tiene que ser una escena, no una narración.' },
-  { id: 'himno', v: 1, escribible: false, soloProyector: true, texto: 'Tenéis que cantar el himno del Real Madrid.' },
+  { id: 'himno', v: 1, escribible: false, soloProyector: true, video: '/madridista_himno.mp4', texto: 'Tenéis que cantar el himno del Real Madrid.' },
   { id: 'p5', v: 1, escribible: true, modo: 'profesor', formato: 'noticia', texto: 'Me tenéis que vender un reportaje de un deportista al que se pueda llamar y hablar con él.\nNecesito tema y modo de contacto.\nO un reportaje de deportes con un protagonista al que llamar.' },
   { id: 'p7', v: 1, escribible: true, modo: 'votan', formato: 'tuit', texto: 'Tenéis que escribir un tuit respondiendo a esta declaración inventada de Gavi y buscando la polémica:\n«Jamás sería del Madrid, son unos lloricas increíbles».' },
   { id: 'p6', v: 1, escribible: true, modo: 'votan', minPalabras: 250, formato: 'noticia', texto: 'Me tenéis que hacer una crónica de esta carrera de 250 palabras.\nTítulo, subtítulo, primer párrafo y texto.' }
@@ -63,7 +63,7 @@ function guardarPruebas(lista) {
     const proy = p.tipo === 'proyector';
     return { id: String(p.id || ('n' + Date.now() + i)).slice(0, 40), v: 1, escribible: !proy, soloProyector: proy,
       modo: p.tipo === 'profesor' ? 'profesor' : 'votan', minPalabras: Math.max(0, Math.min(3000, parseInt(p.minPalabras, 10) || 0)), formato: ['libre', 'titular', 'noticia', 'tuit'].includes(p.formato) ? p.formato : 'libre',
-      texto: String(p.texto || '').slice(0, 3000), activa: p.activa !== false };
+      video: String(p.video || '').slice(0, 300), texto: String(p.texto || '').slice(0, 3000), activa: p.activa !== false };
   }).filter(p => p.texto.trim());
   if (!limpia.length) return false;
   PRUEBAS = limpia;
@@ -245,6 +245,7 @@ function vista(rol, eqId) {
       const p = r.prueba;
       base.prueba = { id: p.id, v: p.v, escribible: p.escribible, soloProyector: !!p.soloProyector, formato: p.formato || 'libre', modo: p.modo || 'votan', minPalabras: p.minPalabras || 0 };
       if (prof || !p.soloProyector) base.prueba.texto = p.texto;
+      if (prof && p.video) base.prueba.video = p.video;
       base.etapa = r.etapa;
       if (prof) {
         base.respuestas = r.respuestas; base.nVotaron = Object.keys(r.votos).length; base.premios = r.premios;
