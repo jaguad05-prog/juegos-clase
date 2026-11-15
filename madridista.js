@@ -196,6 +196,11 @@ function cerrar() {
   const r = S.ronda;
   if (!r || !r.abierta) return;
   if (S.timer) clearTimeout(S.timer);
+  if (r.tipo === 'prueba' && r.etapa === 'votar') {
+    // se enseñan los votos antes de sumar: el profesor pulsa otra vez para dar las casillas
+    repartirVotos(r); r.etapa = 'resultado';
+    return emitir();
+  }
   if (r.tipo === 'prueba' && r.etapa === 'escribir' && r.prueba.modo !== 'profesor') {
     r.etapa = 'votar';
     if (todosVotaron()) return cerrar();
@@ -206,7 +211,6 @@ function cerrar() {
   if (r.tipo === 'foto') {
     r.ganadores.forEach(id => { const e = S.equipos.get(id); if (e) { e.pos += 1; llegan.push(e); } });
   } else {
-    if (r.prueba.escribible && r.prueba.modo !== 'profesor') repartirVotos(r);
     Object.entries(r.premios).sort((a, b) => b[1] - a[1]).forEach(([id, pts]) => {
       const e = S.equipos.get(id); if (e && pts > 0) { e.pos += pts; llegan.push(e); }
     });
@@ -244,14 +248,14 @@ function vista(rol, eqId) {
       base.etapa = r.etapa;
       if (prof) {
         base.respuestas = r.respuestas; base.nVotaron = Object.keys(r.votos).length; base.premios = r.premios;
-        if (!r.abierta) base.puntos = r.puntos;
+        if (!r.abierta || r.etapa === 'resultado') { base.puntos = r.puntos; base.votos = r.votos; }
       } else if (eqId) {
         base.miRespuesta = r.respuestas[eqId] ?? null;
         if (r.etapa === 'votar') {
           base.candidatos = candidatos().filter(e => e.id !== eqId).map(e => ({ id: e.id, nombre: e.nombre, texto: r.respuestas[e.id] }));
           base.miVoto = r.votos[eqId] || null;
         }
-        if (!r.abierta) { base.premios = r.premios; base.puntos = r.puntos; }
+        if (!r.abierta || r.etapa === 'resultado') { base.premios = r.premios; base.puntos = r.puntos; }
       }
     }
     out.ronda = base;
