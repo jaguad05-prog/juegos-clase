@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clasificación general</title>
+<style>
+:root{--noche:#10231a;--oro:#f2c94c;--tinta:#1b1b1b;--morado:#5B3FA8}
+*{box-sizing:border-box}
+body{margin:0;font-family:Georgia,"Times New Roman",serif;background:var(--noche);color:#fff}
+header{padding:14px 22px;background:linear-gradient(#173a26,#10231a);border-bottom:4px solid var(--oro);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+h1{margin:0;font-size:30px}
+h1 small{display:block;font-size:13px;font-weight:normal;opacity:.75}
+button{font:inherit;cursor:pointer;border:0;border-radius:8px;padding:9px 14px}
+.btn{background:var(--oro);color:var(--tinta);font-weight:bold}
+.sec{background:#2b4a39;color:#fff}
+main{padding:18px 22px;max-width:1300px;margin:0 auto}
+table{width:100%;border-collapse:collapse;background:#f7f1e3;color:var(--tinta);border-radius:12px;overflow:hidden;font-size:22px}
+th,td{padding:10px 12px;text-align:center;border-bottom:1px solid #ddd2b8}
+th{background:#2b4a39;color:#fff;font-size:15px;vertical-align:bottom}
+th .cargar{display:block;margin:6px auto 0;font-size:13px;padding:5px 8px}
+th .hecho{display:block;font-size:11px;opacity:.75;margin-top:3px}
+td.eq{text-align:left;font-weight:bold}
+td.tot{font-size:30px;font-weight:bold;background:#efe3c2}
+td small{display:block;font-size:12px;color:#777}
+tr.p1 td.eq::before{content:"🥇 "} tr.p2 td.eq::before{content:"🥈 "} tr.p3 td.eq::before{content:"🥉 "}
+.aviso{opacity:.8;font-size:14px;margin:10px 0}
+.fila{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:flex-start;justify-content:center;padding:30px;overflow:auto;z-index:9}
+#modal.vis{display:flex}
+.caja{background:#f7f1e3;color:var(--tinta);border-radius:14px;padding:18px;max-width:640px;width:100%;border:4px solid var(--oro)}
+textarea,input[type=text]{font:inherit;width:100%;padding:10px;border-radius:8px;border:2px solid #999}
+textarea{min-height:240px}
+.ko{color:#b3261e;font-weight:bold}
+#login{max-width:340px;margin:60px auto}
+</style>
+</head>
+<body>
+<div id="login" class="caja">
+  <p>Clave del profesor</p>
+  <input type="text" id="clave" autocomplete="off">
+  <p><button class="btn" id="bClave">Entrar</button></p>
+  <div class="ko" id="errL"></div>
+</div>
+<div id="app" hidden>
+<header>
+  <h1>Clasificación general<small>6 puntos al primero, 5 al segundo, 4, 3, 2 y 1 al resto en cada juego</small></h1>
+  <div class="fila">
+    <button class="sec" id="bBajar">Descargar copia</button>
+    <button class="sec" id="bSubir">Recuperar copia</button>
+    <input type="file" id="fCopia" accept=".json,application/json" hidden>
+    <button class="sec" id="bEquipos">Equipos</button>
+    <button class="sec" id="bBorrar">Borrar todo</button>
+  </div>
+</header>
+<main>
+  <div class="aviso" id="msg" style="color:var(--oro);font-size:16px"></div>
+  <div id="tabla"></div>
+  <p class="aviso">Los equipos tienen que llamarse igual en todos los juegos (las mayúsculas y las tildes no importan). Si un equipo no ha jugado un juego, suma 0 en ese juego. Pulsa «Cargar» debajo de cada juego cuando termine.</p>
+</main>
+</div>
+<div id="modal"><div class="caja" id="caja"></div></div>
+<script>
+const API = location.origin + "/api/general";
+const JUEGOS = [
+  { id: "carrera", nombre: "Carrera madridista", auto: "carrera" },
+  { id: "rosco", nombre: "Rosco madridista", auto: "rosco" },
+  { id: "ahorcado", nombre: "Ahorcado del Periodismo Blanco", auto: "ahorcado" },
+  { id: "kahoot1", nombre: "Kahoot 1" },
+  { id: "kahoot2", nombre: "Kahoot 2" }
+];
+const $ = s => document.querySelector(s);
+const ls = { get: (k, d) => { try { return localStorage.getItem(k) ?? d; } catch (e) { return d; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
+const norm = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+let CLAVE = ls.get("cm_clave", ""), E = { equipos: [], juegos: {} };
+
+async function api(o) { const r = await fetch(API, { method: "POST", body: JSON.stringify(o) }); const j = await r.json(); if (j.error) throw new Error(j.error); return j; }
+// copia en este navegador: si Render se duerme y borra la tabla, se recupera sola al abrir la página
+const copiaLocal = () => { try { return JSON.parse(localStorage.getItem("general_copia") || "null"); } catch (e) { return null; } };
+const vacio = x => !x || !(x.equipos || []).length;
+async function cargar() {
+  const j = await api({ a: "get" }); E = j.estado; E.juegos = E.juegos || {}; E.equipos = E.equipos || [];
+  const c = copiaLocal();
+  if (vacio(E) && !vacio(c)) { E = c; await guardar(); $("#msg").textContent = "Render había borrado la tabla y se ha recuperado la que estaba guardada en este ordenador."; return; }
+  ls.set("general_copia", JSON.stringify(E)); pintar();
+}
+async function guardar() { const j = await api({ a: "save", k: CLAVE, estado: E }); E = j.estado; ls.set("general_copia", JSON.stringify(E)); pintar(); }
+
+async function entrar(c) {
+  CLAVE = c;
+  try { await api({ a: "save", k: CLAVE, estado: (await api({ a: "get" })).estado }); ls.set("cm_clave", CLAVE); $("#login").hidden = true; $("#app").hidden = false; cargar(); }
+  catch (e) { $("#errL").textContent = "Clave incorrecta."; }
+}
+$("#bClave").onclick = () => entrar($("#clave").value.trim());
+$("#clave").onkeydown = e => { if (e.key === "Enter") entrar($("#clave").value.trim()); };
+if (CLAVE) entrar(CLAVE);
+
+// puntos de un juego: 6, 5, 4, 3, 2 y 1 al resto; empate si tienen el mismo valor
+function puntosJuego(j) {
+  const out = {};
+  if (!j || !j.orden) return out;
+  const o = j.orden;
+  o.forEach((x, i) => {
+    let puesto;
+    if (x.valor === undefined || x.valor === null || x.valor === "") puesto = i + 1;
+    else puesto = 1 + o.filter(y => y.valor !== undefined && y.valor !== null && y.valor !== "" && Number(y.valor) > Number(x.valor)).length;
+    out[norm(x.nombre)] = { puesto, pts: Math.max(1, 7 - puesto) };
+  });
+  return out;
+}
+function asegurarEquipos(orden) {
+  orden.forEach(x => { if (!E.equipos.some(e => norm(e) === norm(x.nombre))) E.equipos.push(x.nombre.trim()); });
+}
+
+function pintar() {
+  const pj = {}; JUEGOS.forEach(g => pj[g.id] = puntosJuego(E.juegos[g.id]));
+  const filas = E.equipos.map(n => {
+    const k = norm(n); let tot = 0;
+    const celdas = JUEGOS.map(g => { const r = pj[g.id][k]; if (r) tot += r.pts; return r; });
+    return { n, celdas, tot };
+  }).sort((a, b) => b.tot - a.tot || a.n.localeCompare(b.n));
+  let html = '<table><thead><tr><th>Equipo</th>' + JUEGOS.map(g => {
+    const j = E.juegos[g.id];
+    return `<th>${esc((j && j.titulo) || g.nombre)}<button class="btn cargar" data-g="${g.id}">${j ? "Volver a cargar" : "Cargar"}</button>${j ? `<span class="hecho">cargado</span>` : ""}</th>`;
+  }).join("") + '<th>TOTAL</th></tr></thead><tbody>';
+  if (!filas.length) html += `<tr><td colspan="${JUEGOS.length + 2}">Todavía no hay equipos. Carga el primer juego o añádelos en «Equipos».</td></tr>`;
+  filas.forEach((f, i) => {
+    const puesto = 1 + filas.filter(x => x.tot > f.tot).length;
+    html += `<tr class="${f.tot ? "p" + puesto : ""}"><td class="eq">${esc(f.n)}</td>` + f.celdas.map(r => `<td>${r ? r.pts + `<small>${r.puesto}.º</small>` : "–"}</td>`).join("") + `<td class="tot">${f.tot}</td></tr>`;
+  });
+  $("#tabla").innerHTML = html + "</tbody></table>";
+  document.querySelectorAll(".cargar").forEach(b => b.onclick = () => abrirCarga(JUEGOS.find(g => g.id === b.dataset.g)));
+}
+
+// ── cargar el resultado de un juego ──
+async function leerAuto(g) {
+  if (g.auto === "carrera") {
+    const r = await fetch(location.origin + "/api/madridista/clasificacion", { cache: "no-store" }); const j = await r.json();
+    if (!j.orden || !j.orden.length) throw new Error("La carrera no tiene equipos todavía.");
+    return j.orden.map(x => ({ nombre: x.nombre, valor: x.valor }));
+  }
+  if (g.auto === "rosco") {
+    const v = ls.get("general_rosco", ""); if (!v) throw new Error("En el rosco pulsa antes «🏆 A la general» (en este mismo ordenador).");
+    return JSON.parse(v).orden;
+  }
+  if (g.auto === "ahorcado") {
+    const c = ls.get("pmad_code", ""); if (!c) throw new Error("No encuentro la partida del ahorcado en este ordenador.");
+    const r = await fetch(location.origin + "/api/prensamadrid", { method: "POST", body: JSON.stringify({ a: "state", c }) }); const j = await r.json();
+    if (j.error) throw new Error(j.error);
+    return (j.ranking || []).map(x => ({ nombre: x.name, valor: x.pts }));
+  }
+  return [];
+}
+const aTexto = orden => orden.map(x => x.nombre + (x.valor !== undefined && x.valor !== null && x.valor !== "" ? " = " + x.valor : "")).join("\n");
+function deTexto(t) {
+  return t.split("\n").map(l => l.trim()).filter(Boolean).map(l => {
+    const m = l.match(/^(.*?)\s*=\s*(-?\d+(?:[.,]\d+)?)\s*$/);
+    return m ? { nombre: m[1].trim(), valor: Number(m[2].replace(",", ".")) } : { nombre: l };
+  });
+}
+async function abrirCarga(g) {
+  let orden = [], err = "";
+  if (g.auto) { try { orden = await leerAuto(g); } catch (e) { err = e.message; } }
+  else if (E.juegos[g.id]) orden = E.juegos[g.id].orden;
+  const tit = (E.juegos[g.id] && E.juegos[g.id].titulo) || g.nombre;
+  $("#caja").innerHTML = `<h2 style="margin-top:0">${esc(g.nombre)}</h2>
+    ${g.auto ? "" : `<p>Nombre que sale en la tabla<input type="text" id="mTit" value="${esc(tit)}"></p>`}
+    ${err ? `<p class="ko">${esc(err)}</p>` : ""}
+    <p class="aviso" style="color:#333">Un equipo por línea, del primero al último. Si pones «= puntos» detrás del nombre, los que tengan los mismos puntos empatan. ${g.auto ? "Lo ha traído el juego, revísalo antes de guardar." : "Para el Kahoot, copia el podio en orden."}</p>
+    <textarea id="mTxt" placeholder="Galácticos&#10;La Décima&#10;Chamartín">${esc(aTexto(orden))}</textarea>
+    <div class="fila" style="margin-top:12px"><button class="btn" id="mOk">Guardar y sumar</button><button class="sec" id="mNo">Cancelar</button>${E.juegos[g.id] ? '<button class="sec" id="mDel">Quitar este juego</button>' : ""}</div>`;
+  $("#modal").classList.add("vis");
+  $("#mNo").onclick = () => $("#modal").classList.remove("vis");
+  if ($("#mDel")) $("#mDel").onclick = async () => { delete E.juegos[g.id]; $("#modal").classList.remove("vis"); await guardar(); };
+  $("#mOk").onclick = async () => {
+    const o = deTexto($("#mTxt").value); if (!o.length) return;
+    asegurarEquipos(o);
+    E.juegos[g.id] = { orden: o, fecha: Date.now() };
+    if ($("#mTit")) E.juegos[g.id].titulo = $("#mTit").value.trim() || g.nombre;
+    $("#modal").classList.remove("vis"); await guardar();
+  };
+}
+
+// ── equipos: añadir, cambiar el nombre y quitar ──
+$("#bEquipos").onclick = () => {
+  $("#caja").innerHTML = `<h2 style="margin-top:0">Equipos</h2><p class="aviso" style="color:#333">Uno por línea. Si cambias un nombre aquí, cambia también en los juegos ya cargados.</p>
+    <textarea id="eTxt">${esc(E.equipos.join("\n"))}</textarea>
+    <div class="fila" style="margin-top:12px"><button class="btn" id="eOk">Guardar</button><button class="sec" id="eNo">Cancelar</button></div>`;
+  $("#modal").classList.add("vis");
+  $("#eNo").onclick = () => $("#modal").classList.remove("vis");
+  $("#eOk").onclick = async () => {
+    const nuevos = $("#eTxt").value.split("\n").map(s => s.trim()).filter(Boolean);
+    // los cambios de nombre se aplican por posición
+    E.equipos.forEach((viejo, i) => { const nv = nuevos[i]; if (nv && norm(nv) !== norm(viejo)) Object.values(E.juegos).forEach(j => j.orden.forEach(x => { if (norm(x.nombre) === norm(viejo)) x.nombre = nv; })); });
+    E.equipos = nuevos; $("#modal").classList.remove("vis"); await guardar();
+  };
+};
+$("#bBajar").onclick = () => {
+  const d = new Date(), f = "clasificacion_general_" + d.toISOString().slice(0, 10) + ".json";
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(E, null, 1)], { type: "application/json" })); a.download = f; a.click();
+  $("#msg").textContent = "Copia descargada (" + f + "). Guárdala hasta la próxima clase.";
+};
+$("#bSubir").onclick = () => $("#fCopia").click();
+$("#fCopia").onchange = async ev => {
+  const f = ev.target.files[0]; if (!f) return;
+  try { const x = JSON.parse(await f.text()); if (!Array.isArray(x.equipos) || typeof x.juegos !== "object") throw 0;
+    if (!vacio(E) && !confirm("¿Sustituir la tabla actual por la de la copia?")) return;
+    E = x; await guardar(); $("#msg").textContent = "Copia recuperada."; }
+  catch (e) { $("#msg").textContent = "Ese archivo no es una copia de la clasificación."; }
+  ev.target.value = "";
+};
+$("#bBorrar").onclick = async () => { if (confirm("¿Borrar todos los equipos y todos los resultados?")) { E = { equipos: [], juegos: {} }; await guardar(); ls.set("general_copia", "null"); } };
+setInterval(() => { if (!$("#app").hidden && !$("#modal").classList.contains("vis")) cargar().catch(() => {}); }, 15000);
+</script>
+</body>
+</html>
