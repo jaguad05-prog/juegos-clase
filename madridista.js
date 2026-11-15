@@ -387,6 +387,15 @@ function handle(req, res, url) {
     });
     return true;
   }
+  if (sub === "/clasificacion") {
+    // orden final para la clasificación general: primero el podio, después el resto por casilla
+    const todos = [...S.equipos.values()];
+    const orden = S.podio.map((id, i) => S.equipos.get(id)).filter(Boolean).map((e, i) => ({ nombre: e.nombre, valor: 100000 - i }))
+      .concat(todos.filter(e => !S.podio.includes(e.id)).sort((a, b) => b.pos - a.pos).map(e => ({ nombre: e.nombre, valor: e.pos })));
+    res.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
+    res.end(JSON.stringify({ ok: true, fase: S.fase, orden }));
+    return true;
+  }
   if (sub === "/msg" && req.method === "POST") {
     let body = "";
     req.on("data", c => { body += c; if (body.length > 400000) req.destroy(); });
