@@ -39,15 +39,17 @@ const FOTOS = [
 // soloProyector: los alumnos no ven el texto, solo lo ve quien tenga abierto el panel (el proyector).
 // escribible: los equipos tienen un cuadro para escribir su respuesta.
 // formato: libre (un cuadro), titular (título y subtítulo), noticia (título, subtítulo y texto) o tuit.
+// modo: votan (los equipos votan 3-2-1 y los tres más votados avanzan 3, 2 y 1) o profesor (el profesor da de 0 a 3 casillas a cada equipo).
+// minPalabras: en las pruebas que se votan, las respuestas con menos palabras no entran en la votación.
 // Las pruebas de proyector (el himno) dan 1 casilla solo a los equipos que el profesor marca como participantes.
 let PRUEBAS = [
-  { id: 'p1', v: 1, escribible: true, formato: 'titular', texto: 'Os pido una previa del Real Madrid - Real Sociedad.\nPero tenéis que basarla en un jugador de la Real Sociedad buscando un dato o algo que pueda ser noticia.\nHay que hacer un título y un subtítulo.' },
-  { id: 'p2', v: 1, escribible: true, formato: 'libre', texto: 'Tienes que conseguir un correo o un teléfono con el que se podría llamar a una de las jugadoras de la selección nacional de fútbol sala.' },
-  { id: 'p3', v: 1, escribible: true, formato: 'noticia', texto: 'Tenéis que encontrar a alguien (no valen compañeros) que se identifique y os cuente el momento deportivo que más le emocionó (tenéis que grabar su voz).\nHacer título, subtítulo y el primer párrafo de 100 palabras que tiene que ser una escena, no una narración.' },
+  { id: 'p1', v: 1, escribible: true, modo: 'votan', formato: 'titular', texto: 'Os pido una previa del Real Madrid - Real Sociedad.\nPero tenéis que basarla en un jugador de la Real Sociedad buscando un dato o algo que pueda ser noticia.\nHay que hacer un título y un subtítulo.' },
+  { id: 'p2', v: 1, escribible: true, modo: 'profesor', formato: 'libre', texto: 'Tienes que conseguir un correo o un teléfono con el que se podría llamar a una de las jugadoras de la selección nacional de fútbol sala.' },
+  { id: 'p3', v: 1, escribible: true, modo: 'profesor', formato: 'noticia', texto: 'Tenéis que encontrar a alguien (no valen compañeros) que se identifique y os cuente el momento deportivo que más le emocionó (tenéis que grabar su voz).\nHacer título, subtítulo y el primer párrafo de 100 palabras que tiene que ser una escena, no una narración.' },
   { id: 'himno', v: 1, escribible: false, soloProyector: true, texto: 'Tenéis que cantar el himno del Real Madrid.' },
-  { id: 'p5', v: 1, escribible: true, formato: 'noticia', texto: 'Me tenéis que vender un reportaje de un deportista al que se pueda llamar y hablar con él.\nNecesito tema y modo de contacto.\nO un reportaje de deportes con un protagonista al que llamar.' },
-  { id: 'p7', v: 1, escribible: true, formato: 'tuit', texto: 'Tenéis que escribir un tuit respondiendo a esta declaración inventada de Gavi y buscando la polémica:\n«Jamás sería del Madrid, son unos lloricas increíbles».' },
-  { id: 'p6', v: 1, escribible: true, formato: 'noticia', texto: 'Me tenéis que hacer una crónica de esta carrera de 250 palabras.\nTítulo, subtítulo, primer párrafo y texto.' }
+  { id: 'p5', v: 1, escribible: true, modo: 'profesor', formato: 'noticia', texto: 'Me tenéis que vender un reportaje de un deportista al que se pueda llamar y hablar con él.\nNecesito tema y modo de contacto.\nO un reportaje de deportes con un protagonista al que llamar.' },
+  { id: 'p7', v: 1, escribible: true, modo: 'votan', formato: 'tuit', texto: 'Tenéis que escribir un tuit respondiendo a esta declaración inventada de Gavi y buscando la polémica:\n«Jamás sería del Madrid, son unos lloricas increíbles».' },
+  { id: 'p6', v: 1, escribible: true, modo: 'votan', minPalabras: 250, formato: 'noticia', texto: 'Me tenéis que hacer una crónica de esta carrera de 250 palabras.\nTítulo, subtítulo, primer párrafo y texto.' }
 ];
 
 // Las pruebas editadas desde el panel se guardan en data/madridista_pruebas.json (se pierden si Render vuelve a desplegar).
@@ -59,7 +61,8 @@ function guardarPruebas(lista) {
   if (!Array.isArray(lista)) return false;
   const limpia = lista.slice(0, 40).map((p, i) => {
     const proy = p.tipo === 'proyector';
-    return { id: String(p.id || ('n' + Date.now() + i)).slice(0, 40), v: 1, escribible: !proy, soloProyector: proy, formato: ['libre', 'titular', 'noticia', 'tuit'].includes(p.formato) ? p.formato : 'libre',
+    return { id: String(p.id || ('n' + Date.now() + i)).slice(0, 40), v: 1, escribible: !proy, soloProyector: proy,
+      modo: p.tipo === 'profesor' ? 'profesor' : 'votan', minPalabras: Math.max(0, Math.min(3000, parseInt(p.minPalabras, 10) || 0)), formato: ['libre', 'titular', 'noticia', 'tuit'].includes(p.formato) ? p.formato : 'libre',
       texto: String(p.texto || '').slice(0, 3000), activa: p.activa !== false };
   }).filter(p => p.texto.trim());
   if (!limpia.length) return false;
@@ -146,7 +149,13 @@ function siguiente() {
   emitir();
 }
 
-const candidatos = () => { const r = S.ronda; return activos().filter(e => r.respuestas[e.id]); };
+function palabras(t) {
+  let o; try { o = JSON.parse(t); } catch (e) {}
+  const txt = o && typeof o === 'object' ? String(o.texto || '') : String(t || '');
+  return txt.trim() ? txt.trim().split(/\s+/).length : 0;
+}
+const valeRespuesta = (r, id) => !!r.respuestas[id] && palabras(r.respuestas[id]) >= (r.prueba.minPalabras || 0);
+const candidatos = () => { const r = S.ronda; return activos().filter(e => valeRespuesta(r, e.id)); };
 function todosVotaron() {
   const r = S.ronda, cand = candidatos().map(e => e.id);
   return activos().every(e => cand.filter(id => id !== e.id).length === 0 || r.votos[e.id]);
@@ -187,7 +196,7 @@ function cerrar() {
   const r = S.ronda;
   if (!r || !r.abierta) return;
   if (S.timer) clearTimeout(S.timer);
-  if (r.tipo === 'prueba' && r.etapa === 'escribir') {
+  if (r.tipo === 'prueba' && r.etapa === 'escribir' && r.prueba.modo !== 'profesor') {
     r.etapa = 'votar';
     if (todosVotaron()) return cerrar();
     return emitir();
@@ -197,7 +206,7 @@ function cerrar() {
   if (r.tipo === 'foto') {
     r.ganadores.forEach(id => { const e = S.equipos.get(id); if (e) { e.pos += 1; llegan.push(e); } });
   } else {
-    if (r.prueba.escribible) repartirVotos(r);
+    if (r.prueba.escribible && r.prueba.modo !== 'profesor') repartirVotos(r);
     Object.entries(r.premios).sort((a, b) => b[1] - a[1]).forEach(([id, pts]) => {
       const e = S.equipos.get(id); if (e && pts > 0) { e.pos += pts; llegan.push(e); }
     });
@@ -230,7 +239,7 @@ function vista(rol, eqId) {
       base.revelado = !r.abierta;
     } else {
       const p = r.prueba;
-      base.prueba = { id: p.id, v: p.v, escribible: p.escribible, soloProyector: !!p.soloProyector, formato: p.formato || 'libre' };
+      base.prueba = { id: p.id, v: p.v, escribible: p.escribible, soloProyector: !!p.soloProyector, formato: p.formato || 'libre', modo: p.modo || 'votan', minPalabras: p.minPalabras || 0 };
       if (prof || !p.soloProyector) base.prueba.texto = p.texto;
       base.etapa = r.etapa;
       if (prof) {
@@ -306,6 +315,13 @@ io.on('connection', sock => {
   sock.on('siguiente', prof(() => { if (S.fase === 'entre') siguiente(); }));
   sock.on('cerrar', prof(cerrar));
   sock.on('saltar', prof(saltar));
+  sock.on('premio', prof(({ id, pts }) => {
+    const r = S.ronda;
+    if (!r || !r.abierta || r.tipo !== 'prueba' || r.prueba.modo !== 'profesor' || !r.prueba.escribible || !S.equipos.has(id)) return;
+    pts = Math.max(0, Math.min(3, Number(pts) || 0));
+    if (pts) r.premios[id] = pts; else delete r.premios[id];
+    emitir();
+  }));
   sock.on('participa', prof(({ id, si }) => {
     const r = S.ronda;
     if (!r || !r.abierta || r.tipo !== 'prueba' || r.prueba.escribible || !S.equipos.has(id)) return;

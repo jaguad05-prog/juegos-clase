@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La gran carrera madridista</title>
+<style>:root{--pista:#a63d27;--noche:#10231a;--oro:#f2c94c;--tinta:#1b1b1b}
+*{box-sizing:border-box}
+body{margin:0;font-family:Georgia,"Times New Roman",serif;background:var(--noche);color:#fff}
+header{padding:12px 18px;background:linear-gradient(#173a26,#10231a);border-bottom:4px solid var(--oro);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+h1{margin:0;font-size:24px}
+h1 small{display:block;font-size:12px;font-weight:normal;opacity:.75}
+button{font:inherit;cursor:pointer;border:0;border-radius:8px;padding:10px 16px}
+.btn{background:var(--oro);color:var(--tinta);font-weight:bold}
+.btn.sec{background:#2b4a39;color:#fff}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+input[type=text],textarea{font:inherit;width:100%;padding:12px;border-radius:8px;border:2px solid #888;background:#fff;color:#111}
+textarea{min-height:150px}
+.pista{background:var(--pista);border-radius:12px;padding:8px;border:3px solid #fff}
+.carril{display:grid;grid-template-columns:120px 1fr;align-items:center;border-bottom:3px solid rgba(255,255,255,.85);min-height:48px}
+.carril:last-child{border-bottom:0}
+.carril .nom{font-weight:bold;padding:4px 8px;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.carril.yo{background:rgba(242,201,76,.28)}
+.carril.off .nom{opacity:.55}
+.cel{position:relative;height:40px;margin-right:2px}
+.rayas{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 calc(100%/var(--n) - 2px),rgba(255,255,255,.55) calc(100%/var(--n) - 2px) calc(100%/var(--n)))}
+.meta{position:absolute;right:0;top:0;bottom:0;width:calc(100%/var(--n));background:repeating-conic-gradient(#fff 0 25%,#111 0 50%) 0 0/14px 14px}
+.ficha{position:absolute;top:2px;width:36px;height:36px;border-radius:50%;background:var(--oro);color:var(--tinta);display:grid;place-items:center;font-size:20px;border:2px solid #fff;transition:left .7s ease}
+.carta{background:#f7f1e3;color:var(--tinta);border-radius:14px;padding:16px;border:4px solid var(--oro);display:flex;flex-direction:column;gap:12px}
+.etq{align-self:flex-start;font:bold 13px Georgia,serif;padding:4px 10px;border-radius:20px;background:#2b4a39;color:#fff;letter-spacing:1px}
+.etq.x2{background:#b3261e}
+.foto{width:100%;max-width:340px;aspect-ratio:1/1;object-fit:cover;object-position:center top;border-radius:10px;align-self:center;border:3px solid #222;background:#ddd}
+.texto{font-size:20px;line-height:1.4;white-space:pre-wrap}
+.resp{font-size:28px;font-weight:bold;text-align:center;color:#2b4a39}
+.ok{color:#1b7a2a;font-weight:bold}.ko{color:#b3261e;font-weight:bold}
+.fila{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.aviso{opacity:.85;font-size:14px}
+.tiempo{font:bold 22px Georgia,serif;color:#b3261e}
+.podio div{font-size:22px;margin:4px 0}
+[hidden]{display:none!important}
+.campos{display:flex;flex-direction:column;gap:8px}
+.noti-t{font-size:22px;font-weight:bold;line-height:1.2}
+.noti-s{font-style:italic;color:#444;margin:4px 0 6px}
+.noti-x{white-space:pre-wrap;font-size:15px}
+.tuit{background:#fff;color:#0f1419;border:1px solid #cfd9de;border-radius:16px;padding:12px 14px;font-family:-apple-system,"Segoe UI",Roboto,sans-serif}
+.tuit-cab{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+.tuit-av{width:40px;height:40px;border-radius:50%;background:#f2c94c;display:grid;place-items:center;font-size:22px}
+.tuit-h{color:#536471;font-weight:normal}
+.tuit-txt{font-size:17px;white-space:pre-wrap;line-height:1.35}
+.tuit-pie{color:#536471;margin-top:8px;letter-spacing:2px}
+.tuit-in{border:0!important;font:17px -apple-system,"Segoe UI",Roboto,sans-serif!important;min-height:110px;resize:vertical;padding:4px!important}
+.tuit-cnt{text-align:right;font-size:13px}
+</style>
+<style>
+main{max-width:760px;margin:0 auto;padding:8px;display:flex;flex-direction:column;gap:14px}
+.grande{font-size:20px;padding:14px 22px}
+.resp-eq{background:#fff;color:#111;border-radius:8px;padding:8px 10px;margin:8px 0}.resp-eq .t{white-space:pre-wrap;font-size:15px}
+</style>
+</head>
+<body>
+<header><h1>La gran carrera madridista<small id="sub">Entra con el nombre de tu equipo</small></h1></header>
+<main>
+  <div id="entrada" class="carta">
+    <div class="texto">Nombre de vuestro equipo</div>
+    <input type="text" id="nombre" maxlength="28" placeholder="Por ejemplo, Los Galácticos" autocomplete="off">
+    <button class="btn grande" id="bEntrar">Entrar</button>
+    <div class="ko" id="err"></div>
+  </div>
+  <div id="juego" hidden>
+    <div id="pista"></div>
+    <div class="carta" id="carta" style="margin-top:14px"></div>
+  </div>
+</main>
+<script>
+function io() {
+  let cid;
+  try { cid = sessionStorage.getItem('cm_cid'); if (!cid) { cid = 'c' + Math.random().toString(36).slice(2) + Date.now(); sessionStorage.setItem('cm_cid', cid); } }
+  catch (e) { cid = 'c' + Math.random().toString(36).slice(2) + Date.now(); }
+  const h = {}, fire = (ev, d) => (h[ev] || []).forEach(f => f(d));
+  const es = new EventSource('/api/madridista/stream?cid=' + encodeURIComponent(cid));
+  es.onopen = () => fire('connect');
+  es.onmessage = m => { try { const x = JSON.parse(m.data); fire(x.ev, x.d); } catch (e) {} };
+  return {
+    on(ev, f) { (h[ev] = h[ev] || []).push(f); return this; },
+    emit(ev, d) { fetch('/api/madridista/msg', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cid, ev, d }) }).catch(() => {}); }
+  };
+}
+</script>
+<script>const FICHAS = ['🦁','🐺','🦅','🐯','🐻','🦊','🐉','🦄','🐢','🐙','🦉','🐬','🐝','🦓','🐘'];
+
+// Pista de atletismo: dos rectas y dos curvas, una calle por equipo (hasta 15).
+function pintarPista(el, est, opc) {
+  opc = opc || {}; const V = !!opc.vertical, mio = est.yo;
+  el.innerHTML = '';
+  const NS = 'http://www.w3.org/2000/svg';
+  const M = est.meta, n = Math.max(1, est.equipos.length);
+  const w = 26, R0 = Math.max(130, n * w * .5 + 70), L = 2.2 * R0, RO = R0 + n * w, fs = Math.max(15, R0 / 9);
+  const mx = 40, my = 40;
+  const W = L + 2 * RO + 2 * mx, H = 2 * RO + 2 * my;
+  const cx = W / 2, cy = H / 2, P = 2 * L + 2 * Math.PI * R0, x0 = cx + L / 4;
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 ' + (V ? H : W) + ' ' + (V ? W : H));
+  svg.style.cssText = V ? 'width:100%;display:block' : 'width:100%;max-height:80vh;display:block';
+  const add = (tag, a, txt) => { const x = document.createElementNS(NS, tag); for (const k in a) x.setAttribute(k, a[k]); if (txt !== undefined) x.textContent = txt; svg.appendChild(x); return x; };
+
+  // punto de la pista: u = fracción de vuelta desde la línea de meta, r = radio
+  const T = ([x, y]) => V ? [H - y, x] : [x, y];
+  const pt = (u, r) => T(pt0(u, r));
+  function pt0(u, r) {
+    let d = ((u * P) % P + P) % P;
+    const a = L / 4, C = Math.PI * R0;
+    if (d < a) return [x0 + d, cy + r];
+    d -= a;
+    if (d < C) { const t = d / R0; return [cx + L / 2 + r * Math.sin(t), cy + r * Math.cos(t)]; }
+    d -= C;
+    if (d < L) return [cx + L / 2 - d, cy - r];
+    d -= L;
+    if (d < C) { const t = d / R0; return [cx - L / 2 - r * Math.sin(t), cy - r * Math.cos(t)]; }
+    d -= C;
+    return [cx - L / 2 + d, cy + r];
+  }
+  const ruta = r => { let s = ''; for (let i = 0; i <= 240; i++) { const [x, y] = pt(i / 240, r); s += (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1); } return s + 'Z'; };
+
+  add('rect', { x: 0, y: 0, width: V ? H : W, height: V ? W : H, rx: 24, fill: '#2f6b3a' });
+  add('path', { d: ruta(R0 + n * w / 2), fill: 'none', stroke: '#b8492d', 'stroke-width': n * w });
+  add('path', { d: ruta(R0), fill: '#3f8a4a' });
+  const yo = est.equipos.findIndex(e => e.id === est.yo);
+  if (yo >= 0) add('path', { d: ruta(R0 + (yo + .5) * w), fill: 'none', stroke: 'rgba(242,201,76,.75)', 'stroke-width': w });
+  for (let k = 0; k <= n; k++) add('path', { d: ruta(R0 + k * w), fill: 'none', stroke: '#fff', 'stroke-width': k === 0 || k === n ? 2.5 : 1.4 });
+
+  // casillas (líneas transversales) y sus números en el borde del césped
+  for (let k = 1; k < M; k++) {
+    const [a, b] = pt(k / M, R0), [c, d] = pt(k / M, RO);
+    add('line', { x1: a, y1: b, x2: c, y2: d, stroke: 'rgba(255,255,255,.55)', 'stroke-width': 1.2 });
+  }
+  for (let k = 1; k <= M; k++) {
+    const [x, y] = pt((k - .5) / M, R0 - fs);
+    add('text', { x, y: y + fs * .35, 'text-anchor': 'middle', 'font-size': fs, 'font-weight': 'bold', fill: '#fff', 'font-family': 'Georgia,serif' }, k);
+  }
+  // línea de salida y meta (a cuadros)
+  const [s1, s2] = pt(0, R0), [s3, s4] = pt(0, RO);
+  add('line', { x1: s1, y1: s2, x2: s3, y2: s4, stroke: '#fff', 'stroke-width': 10 });
+  add('line', { x1: s1, y1: s2, x2: s3, y2: s4, stroke: '#111', 'stroke-width': 10, 'stroke-dasharray': '5 5' });
+  add('text', { x: s3, y: s4 + 26, 'text-anchor': 'middle', 'font-size': 18, 'font-weight': 'bold', fill: '#fff', 'font-family': 'Georgia,serif' }, 'SALIDA · META');
+  // número de calle antes de la salida
+  for (let k = 0; k < n; k++) {
+    const [x, y] = pt(-1.6 / M, R0 + (k + .5) * w);
+    add('text', { x, y: y + 6, 'text-anchor': 'middle', 'font-size': 16, 'font-weight': 'bold', fill: 'rgba(255,255,255,.8)', 'font-family': 'Georgia,serif' }, k + 1);
+  }
+  const [tx, ty] = V ? [H / 2, W / 2] : [cx, cy], tf = V ? R0 / 7 : R0 / 3.6;
+  add('text', { x: tx, y: ty - tf * .2, 'text-anchor': 'middle', 'font-size': tf, 'font-weight': 'bold', fill: '#f2c94c', 'font-family': 'Georgia,serif' }, 'LA GRAN CARRERA');
+  add('text', { x: tx, y: ty + tf, 'text-anchor': 'middle', 'font-size': tf, 'font-weight': 'bold', fill: '#f2c94c', 'font-family': 'Georgia,serif' }, 'MADRIDISTA');
+
+  // fichas: cada equipo en su calle; casilla 0 detrás de la salida
+  const fichas = est.equipos.map((e, i) => ({ e, i }));
+  fichas.sort((a, b) => (a.e.id === mio) - (b.e.id === mio)); // la propia, encima de todas
+  fichas.forEach(({ e, i }) => {
+    const u = e.pos === 0 ? -.5 / M : (e.pos - .5) / M;
+    const [x, y] = pt(u, R0 + (i + .5) * w);
+    const yoMismo = e.id === mio, otro = mio && !yoMismo;
+    const rr = yoMismo ? Math.max(w * 1.15, R0 / 4.5) : otro ? w * .5 : w * .7;
+    const g = document.createElementNS(NS, 'g'); if (otro) g.setAttribute('opacity', '.55'); svg.appendChild(g);
+    const add2 = (tag, a, txt) => { const z = add(tag, a, txt); g.appendChild(z); return z; };
+    if (yoMismo) add2('circle', { cx: x, cy: y, r: rr + 7, fill: 'none', stroke: '#fff', 'stroke-width': 3, 'stroke-dasharray': '6 4' });
+    add2('circle', { cx: x, cy: y, r: rr, fill: '#f2c94c', stroke: yoMismo ? '#e53935' : '#fff', 'stroke-width': yoMismo ? 5 : 1.5 });
+    add2('text', { x, y: y + rr * .42, 'text-anchor': 'middle', 'font-size': rr * 1.2 }, FICHAS[i % FICHAS.length]);
+    if (yoMismo) {
+      const lab = add2('text', { x, y: y - rr - 16, 'text-anchor': 'middle', 'font-size': Math.max(24, R0 / 4.5), 'font-weight': 'bold', fill: '#fff', stroke: '#111', 'stroke-width': 4, 'paint-order': 'stroke', 'font-family': 'Georgia,serif' }, 'VOSOTROS · ' + e.pos);
+    }
+  });
+  el.appendChild(svg);
+
+  const ley = document.createElement('div');
+  ley.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;margin-top:8px;font-size:16px';
+  const yoE = est.equipos.findIndex(e => e.id === mio);
+  if (yoE >= 0) {
+    const e = est.equipos[yoE], big = document.createElement('div');
+    big.style.cssText = 'width:100%;text-align:center;font-size:22px;font-weight:bold;color:#111;background:#f2c94c;border-radius:10px;padding:8px';
+    big.textContent = FICHAS[yoE % FICHAS.length] + ' ' + e.nombre + ' · Calle ' + (yoE + 1) + ' · Casilla ' + e.pos + ' de ' + M;
+    ley.appendChild(big);
+  }
+  if (!est.equipos.length) ley.textContent = 'Todavía no hay equipos. Cada equipo que entra abre una calle.';
+  est.equipos.map((e, i) => ({ e, i })).sort((a, b) => b.e.pos - a.e.pos).forEach(({ e, i }) => {
+    const d = document.createElement('div'); const m = est.podio.indexOf(e.id);
+    d.textContent = (m >= 0 ? ['🥇', '🥈', '🥉'][m] + ' ' : '') + 'Calle ' + (i + 1) + ' ' + FICHAS[i % FICHAS.length] + ' ' + e.nombre + ' · ' + e.pos + (e.conectado ? '' : ' ⚠');
+    if (e.id === est.yo) d.style.cssText = 'font-weight:bold;color:#f2c94c';
+    ley.appendChild(d);
+  });
+  el.appendChild(ley);
+}
+
+/* ---------- respuestas con formato (libre, titular, noticia, tuit) ---------- */
+function leerResp(t) {
+  try { const o = JSON.parse(t); if (o && typeof o === 'object') return o; } catch (e) {}
+  return { texto: t || '' };
+}
+function fichaDe(est, id) { const i = est.equipos.findIndex(e => e.id === id); return i >= 0 ? FICHAS[i % FICHAS.length] : '⚽'; }
+function verResp(texto, formato, nombre, ficha) {
+  const o = leerResp(texto), d = document.createElement('div');
+  const mk = (tag, cls, t) => { const x = document.createElement(tag); if (cls) x.className = cls; if (t !== undefined) x.textContent = t; return x; };
+  if (formato === 'tuit') {
+    d.className = 'tuit';
+    const cab = mk('div', 'tuit-cab');
+    cab.append(mk('div', 'tuit-av', ficha || '⚽'));
+    const q = mk('div', ''); q.append(mk('b', '', nombre || 'Equipo'), mk('span', 'tuit-h', ' @' + String(nombre || 'equipo').normalize('NFD').replace(/[^\w]/g, '').toLowerCase() + ' · ahora'));
+    cab.append(q); d.append(cab, mk('div', 'tuit-txt', o.texto || ''), mk('div', 'tuit-pie', '💬   🔁   ♡   📊'));
+    return d;
+  }
+  d.className = 'noti';
+  if (o.titulo) d.append(mk('div', 'noti-t', o.titulo));
+  if (o.subtitulo) d.append(mk('div', 'noti-s', o.subtitulo));
+  if (o.texto) d.append(mk('div', 'noti-x', o.texto));
+  return d;
+}
+// cuadros para escribir según el formato; leer() devuelve lo que se envía
+function camposResp(formato, val, minP) {
+  val = val || {};
+  const d = document.createElement('div'); d.className = 'campos';
+  const campo = (f, tag, ph, extra) => { const x = document.createElement(tag); if (tag === 'input') x.type = 'text'; x.dataset.f = f; x.placeholder = ph; x.value = val[f] || ''; if (extra) extra(x); d.append(x); return x; };
+  if (formato === 'titular' || formato === 'noticia') {
+    campo('titulo', 'input', 'Título', x => { x.style.fontWeight = 'bold'; x.style.fontSize = '20px'; });
+    campo('subtitulo', 'input', 'Subtítulo', x => { x.style.fontStyle = 'italic'; });
+    if (formato === 'noticia') {
+      const t = campo('texto', 'textarea', 'Texto', x => { x.style.minHeight = '220px'; });
+      const cnt = document.createElement('div'); cnt.className = 'aviso'; cnt.style.textAlign = 'right';
+      const upd = () => { const n = t.value.trim() ? t.value.trim().split(/\s+/).length : 0; cnt.textContent = n + (minP ? ' / ' + minP : '') + ' palabras'; cnt.style.color = minP && n < minP ? '#b3261e' : '#1b7a2a'; };
+      t.addEventListener('input', upd); upd(); d.append(cnt);
+    }
+  } else if (formato === 'tuit') {
+    const caja = document.createElement('div'); caja.className = 'tuit';
+    caja.innerHTML = '<div class="tuit-cab"><div class="tuit-av">✍️</div><b>Vuestro tuit</b></div>';
+    const t = document.createElement('textarea'); t.dataset.f = 'texto'; t.maxLength = 280; t.placeholder = '¿Qué está pasando?'; t.value = val.texto || ''; t.className = 'tuit-in';
+    const cnt = document.createElement('div'); cnt.className = 'tuit-cnt';
+    const upd = () => { cnt.textContent = (280 - t.value.length) + ' caracteres'; cnt.style.color = t.value.length > 260 ? '#b3261e' : '#536471'; };
+    t.addEventListener('input', upd); upd();
+    caja.append(t, cnt); d.append(caja);
+  } else campo('texto', 'textarea', 'Escribid aquí vuestra respuesta');
+  return {
+    nodo: d,
+    leer() {
+      const o = {}; d.querySelectorAll('[data-f]').forEach(x => { o[x.dataset.f] = x.value; });
+      return formato === 'libre' || !formato ? (o.texto || '') : JSON.stringify(o);
+    },
+    vacio() { return [...d.querySelectorAll('[data-f]')].every(x => !x.value.trim()); }
+  };
+}
+function palabras(t) { const o = leerResp(t); const x = String(o.texto || '').trim(); return x ? x.split(/\s+/).length : 0; }
+</script>
+<script>
+const $ = s => document.querySelector(s);
+const socket = io();
+let est = null, ultimoRes = null, tick = null, rondaAct = -1;
+const tokenGuardado = () => { try { return localStorage.getItem('cm_token') || ''; } catch (e) { return ''; } };
+const guardarToken = t => { try { localStorage.setItem('cm_token', t); } catch (e) {} };
+
+function entrar() {
+  socket.emit('unirse', { nombre: $('#nombre').value, token: tokenGuardado() });
+}
+$('#bEntrar').addEventListener('click', entrar);
+$('#nombre').addEventListener('keydown', e => { if (e.key === 'Enter') entrar(); });
+socket.on('connect', () => { if (tokenGuardado()) entrar(); });
+socket.on('error_msg', m => { $('#err').textContent = m; });
+socket.on('unido', d => { guardarToken(d.token); $('#entrada').hidden = true; $('#juego').hidden = false; $('#sub').textContent = 'Equipo: ' + d.nombre; });
+socket.on('reinicio', () => { try { localStorage.removeItem('cm_token'); } catch (e) {} location.reload(); });
+socket.on('resultado', r => { ultimoRes = r; pintar(); });
+socket.on('estado', e => { est = e; const n = e.ronda ? e.ronda.n : -1; if (n !== rondaAct) { rondaAct = n; ultimoRes = null; } pintar(); });
+
+function el(tag, cls, txt) { const x = document.createElement(tag); if (cls) x.className = cls; if (txt !== undefined) x.textContent = txt; return x; }
+
+function pintar() {
+  if (!est || $('#juego').hidden) return;
+  pintarPista($('#pista'), est, { vertical: window.innerWidth < 700 });
+  const c = $('#carta');
+  // no machacar lo que el equipo está escribiendo
+  const ta = c.querySelector('textarea'), inp = c.querySelector('input');
+  const guardado = ta ? ta.value : (inp ? inp.value : null);
+  const prev = {}; c.querySelectorAll('[data-f]').forEach(x => { prev[x.dataset.f] = x.value; });
+  const prevRonda = c.dataset.ronda;
+  const tieneFoco = document.activeElement && c.contains(document.activeElement) && (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT');
+  const r = est.ronda;
+  const clave = [est.fase, r ? r.n + ':' + r.abierta + ':' + (r.etapa || '') + ':' + JSON.stringify(r.miVoto || '') : '', ultimoRes ? JSON.stringify(ultimoRes) : '', r && r.miRespuesta !== undefined ? 'm' : ''].join('|');
+  if (c.dataset.clave === clave && tieneFoco) return;
+  c.dataset.clave = clave; c.dataset.ronda = r ? r.n : '';
+  c.innerHTML = '';
+  const yo = est.equipos.find(e => e.id === est.yo);
+
+  if (est.fase === 'lobby') { c.append(el('div', 'texto', 'Todo listo. Esperad a que empiece la carrera.')); return; }
+  if (est.fase === 'fin') {
+    c.append(el('div', 'texto', '¡Carrera terminada!'));
+    const p = el('div', 'podio');
+    est.podio.forEach((id, k) => { const q = est.equipos.find(e => e.id === id); if (q) p.append(el('div', '', ['🥇', '🥈', '🥉'][k] + ' ' + q.nombre)); });
+    c.append(p); return;
+  }
+  if (yo && yo.fin) { c.append(el('div', 'texto', '¡Habéis llegado a la meta! Mirad cómo acaba la carrera.')); return; }
+  if (!r) { c.append(el('div', 'texto', 'Preparados…')); return; }
+
+  if (r.tipo === 'foto') {
+    c.append(el('span', 'etq', 'CARA · ¿QUIÉN ES?'));
+    const im = el('img', 'foto'); im.src = r.foto; c.append(im);
+    if (r.abierta) {
+      const aviso = el('div', 'aviso', 'Avanzan los ' + r.cupo + ' primeros equipos que acierten.');
+      c.append(aviso);
+      if (r.ganadores.includes(est.yo)) {
+        c.append(el('div', 'ok', '✔ ¡Correcto! Vais en el puesto ' + (r.ganadores.indexOf(est.yo) + 1) + ' de ' + r.cupo + '. Avanzáis una casilla.'));
+      } else if ((r.fallados || []).includes(est.yo)) {
+        c.append(el('div', 'ko', '✘ Habéis fallado. En esta foto ya no podéis contestar.'));
+      } else {
+        c.append(el('div', 'aviso', 'Solo tenéis una oportunidad: si falláis, no podéis volver a contestar.'));
+        const t = el('input'); t.type = 'text'; t.placeholder = 'Nombre o apellido del futbolista'; t.autocomplete = 'off';
+        if (guardado && !ultimoRes) t.value = guardado;
+        const b = el('button', 'btn', 'Enviar');
+        const enviar = () => { if (!t.value.trim()) return; socket.emit('respuesta', t.value); t.select(); };
+        b.addEventListener('click', enviar); t.addEventListener('keydown', e => { if (e.key === 'Enter') enviar(); });
+        c.append(t, b);
+      }
+      const tm = el('div', 'tiempo'); tm.id = 'tm'; c.append(tm); cuenta(r.finTs);
+    } else {
+      c.append(el('div', 'resp', r.nombre));
+      const gano = r.ganadores.includes(est.yo);
+      c.append(el('div', gano ? 'ok' : 'ko', gano ? '✔ Habéis avanzado una casilla.' : 'Esta vez no avanzáis.'));
+      c.append(el('div', 'aviso', 'Esperad a la siguiente ronda.'));
+    }
+    return;
+  }
+
+  // prueba
+  const p = r.prueba;
+  c.append(el('span', 'etq', 'PRUEBA'));
+  if (p.soloProyector) c.append(el('div', 'texto', 'Mirad la pantalla del profesor.'));
+  else c.append(el('div', 'texto', p.texto));
+  if (p.escribible && r.etapa === 'escribir') {
+    const usarPrev = Object.keys(prev).length && String(prevRonda) === String(r.n);
+    const cr = camposResp(p.formato, usarPrev ? prev : leerResp(r.miRespuesta || ''), p.minPalabras);
+    const b = el('button', 'btn', r.miRespuesta ? 'Volver a enviar' : 'Enviar');
+    const avisoP = el('div', 'ko');
+    b.addEventListener('click', () => {
+      if (cr.vacio()) return;
+      const n = palabras(cr.leer());
+      if (p.minPalabras && n < p.minPalabras) { avisoP.textContent = 'Faltan ' + (p.minPalabras - n) + ' palabras para llegar a ' + p.minPalabras + '. Si no llegáis, no entra en la votación.'; return; }
+      avisoP.textContent = ''; socket.emit('respuesta', cr.leer());
+    });
+    c.append(el('div', 'aviso', p.modo === 'profesor' ? 'Mandad vuestra respuesta. El profesor decide cuántas casillas avanza cada equipo.' : 'Cuando todos hayan enviado, votaréis las respuestas de los demás equipos.'));
+    c.append(cr.nodo, b, avisoP);
+    if (r.miRespuesta) c.append(el('div', 'ok', '✔ Enviado. Podéis corregirlo y volver a enviarlo hasta que el profesor cierre la prueba.'));
+  } else if (r.etapa === 'votar') {
+    pintarVoto(c, r);
+  } else if (!r.abierta) {
+    const mi = r.premios && r.premios[est.yo];
+    if (p.escribible) c.append(el('div', mi ? 'ok' : 'aviso', mi ? '✔ Habéis avanzado ' + mi + (mi === 1 ? ' casilla.' : ' casillas.') : 'Esta vez no avanzáis con la prueba.'));
+    c.append(el('div', 'aviso', 'Mirad la pista y esperad a la siguiente ronda.'));
+  }
+}
+
+function pintarVoto(c, r) {
+  const cand = r.candidatos || [];
+  const n = Math.min(3, cand.length);
+  if (!n) { c.append(el('div', 'aviso', 'No hay respuestas de otros equipos que votar. Esperad.')); return; }
+  c.append(el('div', 'texto', 'Votad a los ' + n + ' equipos que más os gusten. Podéis elegir el orden, 3, 2 y 1 puntos. A vosotros no os podéis votar.'));
+  const sel = (r.miVoto || []).slice();
+  const caja = el('div'); c.append(caja);
+  const btn = el('button', 'btn', r.miVoto ? 'Cambiar voto' : 'Enviar voto'); btn.disabled = sel.length !== n;
+  const pts = [3, 2, 1];
+  function dibuja() {
+    caja.innerHTML = '';
+    cand.forEach(q => {
+      const k = sel.indexOf(q.id);
+      const d = el('div', 'resp-eq'); d.style.cursor = 'pointer'; d.style.outline = k >= 0 ? '4px solid #2e7d32' : '';
+      d.append(el('b', '', (k >= 0 ? pts[k] + ' puntos · ' : '') + q.nombre));
+      d.append(verResp(q.texto, r.prueba.formato, q.nombre, fichaDe(est, q.id)));
+      d.addEventListener('click', () => { if (k >= 0) sel.splice(k, 1); else if (sel.length < n) sel.push(q.id); dibuja(); });
+      caja.append(d);
+    });
+    btn.disabled = sel.length !== n;
+  }
+  btn.addEventListener('click', () => socket.emit('votar', sel));
+  dibuja(); c.append(btn);
+  if (r.miVoto) c.append(el('div', 'ok', '✔ Voto enviado. Esperad a que voten los demás.'));
+}
+
+function cuenta(fin) {
+  clearInterval(tick);
+  const f = () => { const t = $('#tm'); if (!t) return clearInterval(tick); const s = Math.max(0, Math.ceil((fin - Date.now()) / 1000)); t.textContent = '⏱ ' + s + ' s'; };
+  f(); tick = setInterval(f, 500);
+}
+</script>
+</body>
+</html>
