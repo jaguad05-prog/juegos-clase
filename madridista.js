@@ -135,7 +135,7 @@ function siguiente() {
   S.n++;
   if (tipo === 'foto') {
     const f = sacar('foto');
-    S.ronda = { n: S.n, tipo, foto: f, abierta: true, cupo: Math.max(1, Math.ceil(act / 2)), ganadores: [], ultimo: {}, finTs: Date.now() + TIEMPO_FOTO * 1000 };
+    S.ronda = { n: S.n, tipo, foto: f, abierta: true, cupo: Math.max(1, Math.ceil(act / 2)), ganadores: [], fallados: [], finTs: Date.now() + TIEMPO_FOTO * 1000 };
     S.timer = setTimeout(cerrar, TIEMPO_FOTO * 1000);
   } else {
     const p = sacar('prueba');
@@ -225,7 +225,7 @@ function vista(rol, eqId) {
   if (r) {
     const base = { n: r.n, tipo: r.tipo, abierta: r.abierta };
     if (r.tipo === 'foto') {
-      Object.assign(base, { foto: '/madridista_fotos/' + r.foto.file, cupo: r.cupo, ganadores: r.ganadores, finTs: r.finTs });
+      Object.assign(base, { foto: '/madridista_fotos/' + r.foto.file, cupo: r.cupo, ganadores: r.ganadores, fallados: r.fallados || [], finTs: r.finTs });
       if (!r.abierta || prof) base.nombre = r.foto.nombre;
       base.revelado = !r.abierta;
     } else {
@@ -281,15 +281,14 @@ io.on('connection', sock => {
     if (!e || e.fin || !r || !r.abierta) return;
     texto = String(texto || '').slice(0, 8000);
     if (r.tipo === 'foto') {
-      if (r.ganadores.includes(e.id)) return;
-      const t = Date.now();
-      if (r.ultimo[e.id] && t - r.ultimo[e.id] < 1200) return sock.emit('resultado', { espera: true });
-      r.ultimo[e.id] = t;
+      // una sola respuesta por equipo y foto: si falla, ya no puede volver a contestar
+      if (r.ganadores.includes(e.id) || r.fallados.includes(e.id) || !texto.trim()) return;
       if (acierta(texto, r.foto.claves)) {
         r.ganadores.push(e.id);
         sock.emit('resultado', { ok: true, puesto: r.ganadores.length });
-        if (r.ganadores.length >= r.cupo) { emitir(); cerrar(); return; }
-      } else sock.emit('resultado', { ok: false });
+      } else { r.fallados.push(e.id); sock.emit('resultado', { ok: false }); }
+      const todos = activos().every(q => r.ganadores.includes(q.id) || r.fallados.includes(q.id));
+      if (r.ganadores.length >= r.cupo || todos) { emitir(); cerrar(); return; }
       emitir();
     } else if (r.prueba.escribible && r.etapa === 'escribir') {
       r.respuestas[e.id] = texto;
