@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kahoot madridista</title><style>
+:root{--noche:#1e1240;--oro:#f2c94c}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Arial,sans-serif;background:var(--noche);color:#fff}
+header{padding:12px 20px;background:#2b1a5c;border-bottom:4px solid var(--oro);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+h1{margin:0;font-size:24px}
+h1 small{display:block;font-size:13px;font-weight:normal;opacity:.75}
+button{font:inherit;cursor:pointer;border:0;border-radius:8px;padding:10px 16px}
+.btn{background:var(--oro);color:#1b1b1b;font-weight:bold}
+.sec{background:#46307f;color:#fff}
+.caja{background:#fff;color:#1b1b1b;border-radius:14px;padding:16px}
+input[type=text]{font:inherit;width:100%;padding:12px;border-radius:8px;border:2px solid #888}
+.ops{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.op{border-radius:10px;padding:18px;font-weight:bold;color:#fff;display:flex;align-items:center;gap:12px;min-height:80px;font-size:20px;text-align:left}
+.op .f{font-size:30px}
+.c0{background:#e21b3c}.c1{background:#1368ce}.c2{background:#d89e00}.c3{background:#26890c}
+.op.mal{opacity:.3}.op.bien{outline:5px solid #fff}
+.tiempo{font-size:40px;font-weight:bold;color:var(--oro)}
+.ko{color:#ff8a8a;font-weight:bold}.ok{color:#7ee081;font-weight:bold}
+[hidden]{display:none!important}
+</style>
+<style>main{max-width:620px;margin:0 auto;padding:12px}.op{min-height:110px;font-size:18px;justify-content:center}.op .f{font-size:40px}.grande{font-size:22px;text-align:center;padding:20px}</style>
+</head><body>
+<header><h1>Kahoot madridista<small id="sub">Entra con el nombre de tu equipo</small></h1><b id="pts"></b></header>
+<main><div id="entrada" class="caja"><p>Nombre de vuestro equipo (el mismo que en los otros juegos)</p><input type="text" id="nombre" maxlength="28" autocomplete="off"><p><button class="btn" id="bEnt" style="width:100%;font-size:20px">Entrar</button></p><div class="ko" id="err"></div></div>
+<div id="juego" hidden></div></main>
+<script>
+function io() {
+  let cid;
+  try { cid = sessionStorage.getItem('km_cid'); if (!cid) { cid = 'c' + Math.random().toString(36).slice(2) + Date.now(); sessionStorage.setItem('km_cid', cid); } }
+  catch (e) { cid = 'c' + Math.random().toString(36).slice(2) + Date.now(); }
+  const h = {}, fire = (ev, d) => (h[ev] || []).forEach(f => f(d));
+  const es = new EventSource('/api/kahootmad/stream?cid=' + encodeURIComponent(cid));
+  es.onopen = () => fire('connect');
+  es.onmessage = m => { try { const x = JSON.parse(m.data); fire(x.ev, x.d); } catch (e) {} };
+  return {
+    on(ev, f) { (h[ev] = h[ev] || []).push(f); return this; },
+    emit(ev, d) { fetch('/api/kahootmad/msg', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cid, ev, d }) }).catch(() => {}); }
+  };
+}
+</script>
+<script>
+const $ = s => document.querySelector(s), FORMAS = ["▲","◆","●","■"];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const socket = io(); let est = null;
+const tok = () => { try { return localStorage.getItem("km_token") || ""; } catch (e) { return ""; } };
+const entrar = () => socket.emit("unirse", { nombre: $("#nombre").value, token: tok() });
+$("#bEnt").onclick = entrar; $("#nombre").onkeydown = e => { if (e.key === "Enter") entrar(); };
+socket.on("connect", () => { if (tok()) entrar(); });
+socket.on("error_msg", m => $("#err").textContent = m);
+socket.on("unido", d => { try { localStorage.setItem("km_token", d.token); } catch (e) {} $("#entrada").hidden = true; $("#juego").hidden = false; $("#sub").textContent = "Equipo: " + d.nombre; });
+socket.on("reinicio", () => { try { localStorage.removeItem("km_token"); } catch (e) {} location.reload(); });
+socket.on("estado", e => { est = e; pintar(); });
+function pintar() {
+  if (!est || !est.mi) return;
+  $("#pts").textContent = est.mi.pts + " pts · " + est.mi.puesto + ".º";
+  const j = $("#juego"), q = est.pregunta;
+  if (est.fase === "lobby") { j.innerHTML = `<div class="caja grande">Ya estáis dentro.<br>Mirad el proyector, enseguida empieza.</div>`; return; }
+  if (est.fase === "fin") { j.innerHTML = `<div class="caja grande">¡Se acabó!<br>Habéis quedado <b>${est.mi.puesto}.º</b> con <b>${est.mi.pts}</b> puntos.</div>`; return; }
+  if (est.fase === "pregunta") {
+    if (est.mi.respondido !== null) { j.innerHTML = `<div class="caja grande">Respuesta enviada <span style="font-size:40px">${FORMAS[est.mi.respondido]}</span><br>Esperad a que se cierre la pregunta.</div>`; return; }
+    j.innerHTML = `<p style="font-size:18px;text-align:center">${esc(q.p)}</p><div class="ops">${q.o.map((o, i) => `<button class="op c${i}" data-i="${i}"><span class="f">${FORMAS[i]}</span><span>${esc(o)}</span></button>`).join("")}</div>`;
+    j.querySelectorAll("[data-i]").forEach(b => b.onclick = () => socket.emit("responder", +b.dataset.i));
+    return;
+  }
+  const r = est.mi;
+  j.innerHTML = `<div class="caja grande">${r.respondido === null ? '<span class="ko">No habéis respondido</span>' : r.ok ? `<span class="ok">✔ ¡Correcto! +${r.ganados}</span>` : '<span class="ko">✘ Incorrecto</span>'}<br>Vais ${r.puesto}.º con ${r.pts} puntos.</div>`;
+}
+</script></body></html>

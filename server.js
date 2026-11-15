@@ -8,6 +8,7 @@ const path = require("path");
 const vm = require("vm");
 const serpientes = require("./serpientes.js");
 const madridista = require("./madridista.js");
+const kahootmad = require("./kahootmad.js");
 
 const PORT = process.env.PORT || 3000;
 const PUB = __dirname;
@@ -82,6 +83,7 @@ const server = http.createServer((req, res) => {
   const url = new URL(req.url, "http://x");
   if (serpientes.handle(req, res, url)) return;
   if (madridista.handle(req, res, url)) return;
+  if (kahootmad.handle(req, res, url)) return;
   const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla2|liguilla|ahorcado|microfono|mujer|charla|moncloa|columna|torneo|prensamadrid|general)\/?$/);
   if (m) {
     cors(res);
