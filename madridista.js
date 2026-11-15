@@ -38,14 +38,16 @@ const FOTOS = [
 
 // soloProyector: los alumnos no ven el texto, solo lo ve quien tenga abierto el panel (el proyector).
 // escribible: los equipos tienen un cuadro para escribir su respuesta.
+// formato: libre (un cuadro), titular (título y subtítulo), noticia (título, subtítulo y texto) o tuit.
+// Las pruebas de proyector (el himno) dan 1 casilla solo a los equipos que el profesor marca como participantes.
 let PRUEBAS = [
-  { id: 'p1', v: 1, escribible: true, texto: 'Os pido una previa del Real Madrid - Real Sociedad.\nPero tenéis que basarla en un jugador de la Real Sociedad buscando un dato o algo que pueda ser noticia.\nHay que hacer un título y un subtítulo.' },
-  { id: 'p2', v: 1, escribible: true, texto: 'Tienes que conseguir un correo o un teléfono con el que se podría llamar a una de las jugadoras de la selección nacional de fútbol sala.' },
-  { id: 'p3', v: 1, escribible: true, texto: 'Tenéis que encontrar a alguien (no valen compañeros) que se identifique y os cuente el momento deportivo que más le emocionó (tenéis que grabar su voz).\nHacer título, subtítulo y el primer párrafo de 100 palabras que tiene que ser una escena, no una narración.' },
+  { id: 'p1', v: 1, escribible: true, formato: 'titular', texto: 'Os pido una previa del Real Madrid - Real Sociedad.\nPero tenéis que basarla en un jugador de la Real Sociedad buscando un dato o algo que pueda ser noticia.\nHay que hacer un título y un subtítulo.' },
+  { id: 'p2', v: 1, escribible: true, formato: 'libre', texto: 'Tienes que conseguir un correo o un teléfono con el que se podría llamar a una de las jugadoras de la selección nacional de fútbol sala.' },
+  { id: 'p3', v: 1, escribible: true, formato: 'noticia', texto: 'Tenéis que encontrar a alguien (no valen compañeros) que se identifique y os cuente el momento deportivo que más le emocionó (tenéis que grabar su voz).\nHacer título, subtítulo y el primer párrafo de 100 palabras que tiene que ser una escena, no una narración.' },
   { id: 'himno', v: 1, escribible: false, soloProyector: true, texto: 'Tenéis que cantar el himno del Real Madrid.' },
-  { id: 'p5', v: 1, escribible: true, texto: 'Me tenéis que vender un reportaje de un deportista al que se pueda llamar y hablar con él.\nNecesito tema y modo de contacto.\nO un reportaje de deportes con un protagonista al que llamar.' },
-  { id: 'p6', v: 1, escribible: true, texto: 'Me tenéis que hacer una crónica de esta carrera de 400 palabras.\nTítulo, subtítulo, primer párrafo y texto.' },
-  { id: 'p7', v: 1, escribible: true, texto: 'Tenéis que escribir un tuit respondiendo a esta declaración inventada de Gavi y buscando la polémica:\n«Jamás sería del Madrid, son unos lloricas increíbles».' }
+  { id: 'p5', v: 1, escribible: true, formato: 'noticia', texto: 'Me tenéis que vender un reportaje de un deportista al que se pueda llamar y hablar con él.\nNecesito tema y modo de contacto.\nO un reportaje de deportes con un protagonista al que llamar.' },
+  { id: 'p6', v: 1, escribible: true, formato: 'libre', texto: 'Me tenéis que hacer una crónica de esta carrera de 400 palabras.\nTítulo, subtítulo, primer párrafo y texto.' },
+  { id: 'p7', v: 1, escribible: true, formato: 'tuit', texto: 'Tenéis que escribir un tuit respondiendo a esta declaración inventada de Gavi y buscando la polémica:\n«Jamás sería del Madrid, son unos lloricas increíbles».' }
 ];
 
 // Las pruebas editadas desde el panel se guardan en data/madridista_pruebas.json (se pierden si Render vuelve a desplegar).
@@ -57,7 +59,7 @@ function guardarPruebas(lista) {
   if (!Array.isArray(lista)) return false;
   const limpia = lista.slice(0, 40).map((p, i) => {
     const proy = p.tipo === 'proyector';
-    return { id: String(p.id || ('n' + Date.now() + i)).slice(0, 40), v: 1, escribible: !proy, soloProyector: proy,
+    return { id: String(p.id || ('n' + Date.now() + i)).slice(0, 40), v: 1, escribible: !proy, soloProyector: proy, formato: ['libre', 'titular', 'noticia', 'tuit'].includes(p.formato) ? p.formato : 'libre',
       texto: String(p.texto || '').slice(0, 3000), activa: p.activa !== false };
   }).filter(p => p.texto.trim());
   if (!limpia.length) return false;
@@ -195,8 +197,7 @@ function cerrar() {
   if (r.tipo === 'foto') {
     r.ganadores.forEach(id => { const e = S.equipos.get(id); if (e) { e.pos += 1; llegan.push(e); } });
   } else {
-    if (!r.prueba.escribible) activos().forEach(e => { r.premios[e.id] = 1; });
-    else repartirVotos(r);
+    if (r.prueba.escribible) repartirVotos(r);
     Object.entries(r.premios).sort((a, b) => b[1] - a[1]).forEach(([id, pts]) => {
       const e = S.equipos.get(id); if (e && pts > 0) { e.pos += pts; llegan.push(e); }
     });
@@ -229,12 +230,12 @@ function vista(rol, eqId) {
       base.revelado = !r.abierta;
     } else {
       const p = r.prueba;
-      base.prueba = { id: p.id, v: p.v, escribible: p.escribible, soloProyector: !!p.soloProyector };
+      base.prueba = { id: p.id, v: p.v, escribible: p.escribible, soloProyector: !!p.soloProyector, formato: p.formato || 'libre' };
       if (prof || !p.soloProyector) base.prueba.texto = p.texto;
       base.etapa = r.etapa;
       if (prof) {
-        base.respuestas = r.respuestas; base.nVotaron = Object.keys(r.votos).length;
-        if (!r.abierta) { base.premios = r.premios; base.puntos = r.puntos; }
+        base.respuestas = r.respuestas; base.nVotaron = Object.keys(r.votos).length; base.premios = r.premios;
+        if (!r.abierta) base.puntos = r.puntos;
       } else if (eqId) {
         base.miRespuesta = r.respuestas[eqId] ?? null;
         if (r.etapa === 'votar') {
@@ -278,7 +279,7 @@ io.on('connection', sock => {
   sock.on('respuesta', texto => {
     const e = S.equipos.get(sock.data.eqId); const r = S.ronda;
     if (!e || e.fin || !r || !r.abierta) return;
-    texto = String(texto || '').slice(0, 1500);
+    texto = String(texto || '').slice(0, 8000);
     if (r.tipo === 'foto') {
       if (r.ganadores.includes(e.id)) return;
       const t = Date.now();
@@ -306,6 +307,12 @@ io.on('connection', sock => {
   sock.on('siguiente', prof(() => { if (S.fase === 'entre') siguiente(); }));
   sock.on('cerrar', prof(cerrar));
   sock.on('saltar', prof(saltar));
+  sock.on('participa', prof(({ id, si }) => {
+    const r = S.ronda;
+    if (!r || !r.abierta || r.tipo !== 'prueba' || r.prueba.escribible || !S.equipos.has(id)) return;
+    if (si) r.premios[id] = 1; else delete r.premios[id];
+    emitir();
+  }));
   sock.on('get_pruebas', prof(() => sock.emit('pruebas', PRUEBAS)));
   sock.on('guardar_pruebas', prof(lista => {
     if (guardarPruebas(lista)) { for (const [, x] of io.sockets.sockets) if (x.data.rol === 'prof') x.emit('pruebas', PRUEBAS); sock.emit('guardado', true); }
