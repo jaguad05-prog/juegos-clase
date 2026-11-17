@@ -9,6 +9,11 @@ const FICHERO = path.join(__dirname, "data", "noticias.json");
 // La clave del panel del profesor no está escrita aquí: solo su huella
 const HUELLA = "d4837ccf11d67cbfa9503909a2a6da7dd15a98b3e0b37bedb7f9767cd8572464";
 
+// Copia de cada noticia en el Google Drive del profesor (Apps Script). La dirección y la clave
+// están en las variables de entorno de Render, así no quedan a la vista en GitHub.
+const DRIVE_URL = process.env.NOTICIAS_DRIVE_URL || "";
+const DRIVE_CLAVE = process.env.NOTICIAS_DRIVE_CLAVE || "";
+
 let noticias = {};
 try { noticias = JSON.parse(fs.readFileSync(FICHERO, "utf8")); } catch (e) {}
 let pendiente = null;
@@ -24,6 +29,25 @@ const textoPlano = (h) => String(h || "").replace(/<br\s*\/?>/gi, " ").replace(/
   .replace(/&nbsp;/g, " ").replace(/&[a-z]+;|&#\d+;/gi, "x");
 const contar = (blocks) => (blocks || []).filter((b) => b && b.type === "text").map((b) => textoPlano(b.content)).join(" ")
   .split(/\s+/).filter((w) => /[0-9A-Za-zÀ-ÿ]/.test(w)).length;
+const archivoDe = (n) => String(n || "alumno").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "") + "-noticia";
+
+async function aDrive(id, intento = 1) {
+  const n = noticias[id];
+  if (!n) return;
+  if (!DRIVE_URL) { n.drive = "sin configurar"; return; }
+  const fecha = n.fecha;
+  try {
+    const r = await fetch(DRIVE_URL, { method: "POST", headers: { "Content-Type": "text/plain" }, redirect: "follow",
+      body: JSON.stringify({ clave: DRIVE_CLAVE, archivo: archivoDe(n.nombre), html: n.html }) });
+    const d = JSON.parse(await r.text());
+    if (!d.ok) throw new Error(d.error || "error");
+    if (noticias[id] && noticias[id].fecha === fecha) { noticias[id].drive = "ok"; guardar(); }
+  } catch (e) {
+    if (noticias[id] && noticias[id].fecha === fecha) noticias[id].drive = "error";
+    if (intento < 4) setTimeout(() => aDrive(id, intento + 1), 20000 * intento);
+  }
+}
+
 const hora = () => new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Madrid" });
 
 function responder(res, obj) {
@@ -43,9 +67,10 @@ function accion(nombre, d) {
     noticias[id] = {
       id, nombre: String(d.nombre).trim().slice(0, 80), titulo: String(art.title || "").slice(0, 300),
       seccion: String(art.section || ""), palabras, html: d.html, article: art,
-      fecha: new Date().toISOString(), envios: (antes ? antes.envios : 0) + 1,
+      fecha: new Date().toISOString(), envios: (antes ? antes.envios : 0) + 1, drive: "enviando",
     };
     guardar();
+    aDrive(id);
     return { ok: true, hora: hora() };
   }
   if (nombre === "entrar") return { ok: claveOk(d.clave) };
@@ -55,7 +80,7 @@ function accion(nombre, d) {
   }
   if (nombre === "ver") {
     const n = noticias[d.id];
-    return n ? { ok: true, noticia: { id: n.id, nombre: n.nombre, titulo: n.titulo, seccion: n.seccion, palabras: n.palabras, fecha: n.fecha, envios: n.envios, html: n.html } } : { ok: false, error: "no está" };
+    return n ? { ok: true, noticia: { id: n.id, nombre: n.nombre, titulo: n.titulo, seccion: n.seccion, palabras: n.palabras, fecha: n.fecha, envios: n.envios, drive: n.drive, html: n.html } } : { ok: false, error: "no está" };
   }
   if (nombre === "borrar") {
     delete noticias[d.id];

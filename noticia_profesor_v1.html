@@ -73,7 +73,7 @@ td.acc button.x{color:var(--r)}
   </div></header>
   <main>
     <div class="aviso">Aquí llegan las noticias que publican los alumnos, que solo pueden publicar con 500 palabras o más. Si un alumno vuelve a publicar, su noticia se sustituye por la nueva. La lista se actualiza sola cada 20 segundos.<br>
-    <b>Render borra lo que guarda cuando el servidor se apaga tras un rato sin uso.</b> Este panel guarda una copia de cada noticia en este navegador, pero descárgalas al acabar la clase con «Descargar todas».</div>
+    <b>Render borra lo que guarda cuando el servidor se apaga tras un rato sin uso.</b> Por eso cada noticia se guarda también en tu Google Drive, en la carpeta «Tu noticia - noticias de los alumnos». La columna Drive te dice si ya está guardada allí. Este panel guarda además una copia en este navegador.</div>
     <div class="resumen">
       <div class="cifra"><b id="nTot">0</b><span>noticias recibidas</span></div>
       <div class="cifra"><b id="nMed">0</b><span>palabras de media</span></div>
@@ -129,13 +129,14 @@ const esc=s=>String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>
 const fechaTxt=iso=>{const d=new Date(iso);return d.toLocaleDateString("es-ES",{day:"numeric",month:"short"})+" · "+d.toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"});};
 const archivoDe=n=>(n.nombre||"alumno").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^A-Za-z0-9]+/g,"-").replace(/^-|-$/g,"")+"-noticia.html";
 
-let enServidor=new Set();
+let enServidor=new Map();
+const driveTxt=d=>d==="ok"?'<span style="color:#23683b;font-weight:700">✅ Guardada</span>':d==="enviando"?'<span style="color:#6b7090">Guardando…</span>':d==="error"?'<span style="color:#FF3228;font-weight:700">⚠️ Reintentando</span>':'<span style="color:#6b7090">—</span>';
 async function actualizar(){
   const est=document.getElementById("estado");
   try{
     const d=await api("lista",{});
     if(!d.ok)throw new Error(d.error);
-    enServidor=new Set(d.noticias.map(n=>n.id));
+    enServidor=new Map(d.noticias.map(n=>[n.id,n.drive]));
     const locales=Object.fromEntries((await leerTodas()).map(n=>[n.id,n]));
     for(const n of d.noticias){
       if(!locales[n.id]||locales[n.id].fecha!==n.fecha){
@@ -154,11 +155,11 @@ async function pintar(){
   document.getElementById("nMed").textContent=todas.length?Math.round(todas.reduce((s,n)=>s+n.palabras,0)/todas.length):0;
   const L=document.getElementById("lista");
   if(!todas.length){L.innerHTML='<div class="vacio">Todavía no ha llegado ninguna noticia.</div>';return;}
-  L.innerHTML='<table><tr><th>ALUMNO</th><th>NOTICIA</th><th>PALABRAS</th><th>RECIBIDA</th><th></th></tr>'+
+  L.innerHTML='<table><tr><th>ALUMNO</th><th>NOTICIA</th><th>PALABRAS</th><th>RECIBIDA</th><th>DRIVE</th><th></th></tr>'+
     todas.map(n=>`<tr class="${vistas[n.id]!==n.fecha?"nueva":""}"><td><b>${esc(n.nombre)}</b>${enServidor.has(n.id)?"":'<span class="loc">solo en este navegador</span>'}</td>
       <td><span class="sec">${esc(n.seccion)}</span><div class="tit">${esc(n.titulo)}</div></td>
       <td>${n.palabras}</td><td>${fechaTxt(n.fecha)}${n.envios>1?`<div style="font-size:11px;color:#6b7090">enviada ${n.envios} veces</div>`:""}</td>
-      <td class="acc"><button onclick="ver('${n.id}')">Ver</button><button onclick="bajar('${n.id}')">⬇</button><button class="x" onclick="quitar('${n.id}')">✕</button></td></tr>`).join("")+'</table>';
+      <td>${driveTxt(enServidor.get(n.id)||n.drive)}</td><td class="acc"><button onclick="ver('${n.id}')">Ver</button><button onclick="bajar('${n.id}')">⬇</button><button class="x" onclick="quitar('${n.id}')">✕</button></td></tr>`).join("")+'</table>';
 }
 
 function guardarArchivo(blob,nombre){

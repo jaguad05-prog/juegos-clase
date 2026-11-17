@@ -776,7 +776,6 @@ ${fuentes.length?`<table><tr><th>NOMBRE</th><th>QUIÉN ES</th><th>CONTACTO</th><
         </div>
         <div style={{maxWidth:820,margin:"0 auto",background:"#fff",border:"1px solid #e0e0e0"}}>
           <VistaNoticia article={article}/>
-          <TarjetaFuentes fuentes={article.fuentes}/>
         </div>
       </main>
       {editando&&<EditorNoticia article={article} onGuardar={guardarNoticia} onCancelar={()=>setEditando(false)}/>}
