@@ -511,8 +511,6 @@ function EditorNoticia({article,onGuardar,onCancelar}){
             <p style={{fontSize:12,color:"#888",margin:"0 0 12px"}}>▲▼ para reordenar · ✕ para eliminar · Añade párrafos, ladillos, destacados, fotos, tuits o publicaciones de Instagram con los botones</p>
             <EditorBloques blocks={form.blocks} onChange={b=>setForm(f=>({...f,blocks:b}))}/>
           </div>
-          <label style={lSt}>📇 FICHA DE FUENTES (con quién habéis hablado)</label>
-          <EditorFuentes fuentes={form.fuentes} onChange={v=>setForm(f=>({...f,fuentes:v}))}/>
           <Contador n={palabras}/>
           <div style={{display:"flex",gap:12,justifyContent:"flex-end",flexWrap:"wrap",alignItems:"center"}}>
             <button onClick={onCancelar} style={bSec}>Cancelar</button>
@@ -653,7 +651,6 @@ function App(){
     };
     const fecha=new Date().toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
     const marca=article.published?"":'<span class="borrador">BORRADOR</span>';
-    const fuentes=(article.fuentes||[]).filter(f=>f.nombre||f.cargo||f.contacto);
     const doc=`<!DOCTYPE html>
 <html lang="es"><head><meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
@@ -690,13 +687,8 @@ figure.foto .pie{margin:6px 0 0}
 .ig p{font-size:14px;line-height:1.5;white-space:pre-wrap;padding:10px 14px 0;color:#262626}
 .enlace-ig{display:inline-block;margin:6px 14px 12px;font-size:12px;color:#d62976}
 .ig p:last-child{padding-bottom:14px}
-.ficha{max-width:780px;margin:20px auto 0;background:#fff8ef;border:1px solid #ffcc80;border-top:4px solid #fb8c00;padding:22px 40px}
-.ficha h3{font-size:13px;letter-spacing:1.5px;color:#e65100;margin-bottom:4px}
-.ficha .nota{font-size:12px;color:#8a5300;margin-bottom:12px}
-.ficha table{width:100%;border-collapse:collapse;font-size:14px}
-.ficha th{text-align:left;font-size:11px;letter-spacing:1px;color:#8a5300;border-bottom:2px solid #ffcc80;padding:6px 8px}
-.ficha td{border-bottom:1px solid #ffe0b2;padding:8px;vertical-align:top}
-@media (max-width:600px){.hoja{padding:24px 18px}.ficha{padding:18px}}
+.ficha{max-width:780px;margin:12px auto 0;font-size:12px;color:#6b7090;text-align:right}
+@media (max-width:600px){.hoja{padding:24px 18px}}
 @media print{body{background:#fff;padding:0}.hoja{border:none;max-width:none;padding:0}}
 </style></head>
 <body><div class="hoja">
@@ -708,8 +700,7 @@ ${foto?`<img class="principal" src="${foto}" alt="${esc(article.imageCaption||""
 ${(article.imageCaption&&foto)?`<p class="pie">${esc(article.imageCaption)}</p>`:""}
 ${(article.blocks||[]).map(bloque).join("")}
 </div>
-<div class="ficha"><h3>📇 FICHA DE FUENTES</h3><div class="nota">Hecha por ${esc(nombre)} · ${contarPalabras(article.blocks)} palabras · Para el profesor, no se publica con la noticia</div>
-${fuentes.length?`<table><tr><th>NOMBRE</th><th>QUIÉN ES</th><th>CONTACTO</th></tr>${fuentes.map(f=>`<tr><td><b>${esc(f.nombre||"")}</b></td><td>${esc(f.cargo||"")}</td><td>${esc(f.contacto||"")}</td></tr>`).join("")}</table>`:"<p>No se ha apuntado ninguna fuente.</p>"}
+<div class="ficha">Hecha por ${esc(nombre)} · ${contarPalabras(article.blocks)} palabras</div>
 </div></body></html>`;
     return doc;
   };
@@ -771,7 +762,7 @@ ${fuentes.length?`<table><tr><th>NOMBRE</th><th>QUIÉN ES</th><th>CONTACTO</th><
         <div style={{maxWidth:820,margin:"0 auto 16px",background:"#fff",borderLeft:`6px solid ${AZUL}`,padding:"14px 18px",fontSize:14,color:"#3b3f55",lineHeight:1.55,boxShadow:"0 1px 3px rgba(0,0,0,.06)"}}>
           <div style={{fontWeight:800,fontSize:15,marginBottom:6,color:AZULO}}>Cómo funciona</div>
           <div style={{marginBottom:6}}><b>💾 Guardar borrador</b> guarda la noticia solo en este ordenador y el profesor no la ve.</div>
-          <div style={{marginBottom:6}}><b>📤 Publicar y enviar</b> le manda la noticia al profesor, con sus fotos y la ficha de fuentes. Solo se puede cuando el cuerpo de la noticia tiene por lo menos <b>{MINIMO} palabras</b>. Si después cambias algo, vuelve a publicar y le llegará la versión nueva.</div>
+          <div style={{marginBottom:6}}><b>📤 Publicar y enviar</b> le manda la noticia al profesor, con sus fotos. Solo se puede cuando el cuerpo de la noticia tiene por lo menos <b>{MINIMO} palabras</b>. Si después cambias algo, vuelve a publicar y le llegará la versión nueva.</div>
           <div><b>💾 Descargar copia</b> guarda un archivo para seguir otro día o en otro ordenador con <b>«Cargar copia»</b>. Descárgala antes de cerrar la página.</div>
         </div>
         <div style={{maxWidth:820,margin:"0 auto",background:"#fff",border:"1px solid #e0e0e0"}}>
