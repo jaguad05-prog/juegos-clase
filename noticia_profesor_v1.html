@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Tu noticia · Panel del profesor</title>
+<script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
+<style>
+:root{--b:#2D41B4;--bd:#1F2F8F;--r:#FF3228;--g:#F2F3F8;--k:#151515}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Century Gothic","URW Gothic","Avant Garde",Futura,"Trebuchet MS",sans-serif;background:var(--g);color:var(--k)}
+button{font-family:inherit;cursor:pointer}
+header{background:var(--b);border-bottom:4px solid var(--r);color:#fff;position:sticky;top:0;z-index:5}
+header .in{max-width:1100px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header h1{font-size:20px;font-weight:800}
+header .k{font-size:11px;letter-spacing:3px;font-weight:700;opacity:.8}
+header .sp{flex:1}
+.bt{border:1px solid #fff;background:#fff;color:var(--b);font-weight:800;font-size:13px;padding:8px 14px;border-radius:4px}
+.bt.o{background:transparent;color:#fff;border-color:rgba(255,255,255,.5)}
+.bt.r{background:var(--r);border-color:var(--r);color:#fff}
+main{max-width:1100px;margin:0 auto;padding:22px 20px 60px}
+.aviso{background:#fff;border-left:6px solid var(--b);padding:12px 16px;font-size:14px;line-height:1.5;margin-bottom:16px;color:#3b3f55}
+.resumen{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.cifra{background:#fff;padding:12px 18px;border-top:4px solid var(--b);min-width:150px}
+.cifra b{display:block;font-size:28px;color:var(--b)}
+.cifra span{font-size:12px;color:#6b7090}
+table{width:100%;border-collapse:collapse;background:#fff}
+th{text-align:left;font-size:11px;letter-spacing:1.5px;color:var(--bd);padding:10px 12px;border-bottom:3px solid var(--b);background:#fff}
+td{padding:10px 12px;border-bottom:1px solid #e3e5ee;font-size:14px;vertical-align:middle}
+tr.nueva td{background:#eef1ff}
+td .tit{font-family:Georgia,serif;font-weight:700}
+td .sec{display:inline-block;font-size:10px;font-weight:800;letter-spacing:1.5px;color:#fff;background:var(--b);padding:2px 7px;margin-bottom:3px}
+td .loc{display:inline-block;font-size:10px;font-weight:700;color:#8a5300;background:#fff3e0;padding:2px 6px;margin-left:6px}
+td.acc{white-space:nowrap}
+td.acc button{border:1px solid #c9cde0;background:#fff;color:var(--bd);font-weight:700;font-size:12px;padding:5px 9px;border-radius:4px;margin-left:4px}
+td.acc button.x{color:var(--r)}
+.vacio{background:#fff;padding:40px;text-align:center;color:#6b7090}
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--b);background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);background-size:48px 48px;padding:20px}
+#login .c{background:#fff;padding:36px;max-width:420px;width:100%;border-left:7px solid var(--r)}
+#login h1{font-size:28px;margin:8px 0 10px}
+#login .bar{width:48px;height:5px;background:var(--r);margin-bottom:18px}
+#login input{width:100%;padding:12px;border:2px solid #d6d9e6;font-size:16px;margin:6px 0 12px;font-family:inherit}
+#login .err{color:var(--r);font-weight:700;font-size:13px;min-height:18px;margin-bottom:8px}
+#visor{position:fixed;inset:0;background:rgba(10,14,40,.7);display:none;z-index:20;padding:20px}
+#visor .caja{max-width:900px;height:100%;margin:0 auto;background:#fff;display:flex;flex-direction:column}
+#visor .barra{background:var(--b);color:#fff;padding:10px 14px;display:flex;gap:10px;align-items:center;border-bottom:4px solid var(--r)}
+#visor .barra b{flex:1;font-size:14px}
+#visor iframe{flex:1;border:0;width:100%}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="c">
+    <div style="font-size:12px;font-weight:700;letter-spacing:3px;color:var(--r)">TU NOTICIA</div>
+    <h1>Panel del profesor</h1>
+    <div class="bar"></div>
+    <label style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--bd)">CLAVE</label>
+    <input id="clave" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')entrar()"/>
+    <div class="err" id="err"></div>
+    <button class="bt r" style="width:100%;padding:13px;font-size:15px" onclick="entrar()">Entrar →</button>
+  </div>
+</div>
+
+<div id="panel" style="display:none">
+  <header><div class="in">
+    <div><div class="k">TU NOTICIA</div><h1>Noticias recibidas</h1></div>
+    <div class="sp"></div>
+    <span id="estado" style="font-size:12px;opacity:.85"></span>
+    <button class="bt o" onclick="actualizar()">↻ Actualizar</button>
+    <button class="bt" onclick="bajarTodas()">⬇ Descargar todas (.zip)</button>
+    <button class="bt o" onclick="salir()">Salir</button>
+  </div></header>
+  <main>
+    <div class="aviso">Aquí llegan las noticias que publican los alumnos, que solo pueden publicar con 500 palabras o más. Si un alumno vuelve a publicar, su noticia se sustituye por la nueva. La lista se actualiza sola cada 20 segundos.<br>
+    <b>Render borra lo que guarda cuando el servidor se apaga tras un rato sin uso.</b> Este panel guarda una copia de cada noticia en este navegador, pero descárgalas al acabar la clase con «Descargar todas».</div>
+    <div class="resumen">
+      <div class="cifra"><b id="nTot">0</b><span>noticias recibidas</span></div>
+      <div class="cifra"><b id="nMed">0</b><span>palabras de media</span></div>
+    </div>
+    <div id="lista"></div>
+  </main>
+</div>
+
+<div id="visor"><div class="caja">
+  <div class="barra"><b id="vTit"></b><button class="bt" id="vBajar">⬇ Descargar</button><button class="bt o" onclick="cerrarVisor()">✕ Cerrar</button></div>
+  <iframe id="vFrame"></iframe>
+</div></div>
+
+<script>
+const API="/api/noticias";
+let CLAVE="";
+let vistas={};   // id -> fecha ya vista (para marcar las nuevas)
+try{vistas=JSON.parse(localStorage.getItem("noticias-vistas")||"{}");}catch(e){}
+
+/* ── Copia en el navegador (IndexedDB) ── */
+let dbp=null;
+function db(){
+  if(!dbp)dbp=new Promise((ok,ko)=>{const r=indexedDB.open("tu-noticia-profesor",1);r.onupgradeneeded=()=>r.result.createObjectStore("n",{keyPath:"id"});r.onsuccess=()=>ok(r.result);r.onerror=()=>ko(r.error);});
+  return dbp;
+}
+async function idb(modo,fn){const d=await db();return new Promise((ok,ko)=>{const t=d.transaction("n",modo);const st=t.objectStore("n");const r=fn(st);t.oncomplete=()=>ok(r&&r.result);t.onerror=()=>ko(t.error);});}
+const leerTodas=()=>idb("readonly",st=>st.getAll());
+const leerUna=(id)=>idb("readonly",st=>st.get(id));
+const guardarUna=(n)=>idb("readwrite",st=>st.put(n));
+const borrarUna=(id)=>idb("readwrite",st=>st.delete(id));
+
+async function api(accion,datos){
+  const r=await fetch(API+"/"+accion,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({clave:CLAVE,...datos})});
+  return r.json();
+}
+
+async function entrar(c){
+  const clave=c||document.getElementById("clave").value;
+  document.getElementById("err").textContent="";
+  try{
+    const d=await (await fetch(API+"/entrar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({clave})})).json();
+    if(!d.ok){if(!c)document.getElementById("err").textContent="La clave no es correcta";else localStorage.removeItem("noticias-clave");return;}
+  }catch(e){document.getElementById("err").textContent="No hay conexión con el servidor. Espera unos segundos a que Render despierte y vuelve a probar.";return;}
+  CLAVE=clave;localStorage.setItem("noticias-clave",clave);
+  document.getElementById("login").style.display="none";
+  document.getElementById("panel").style.display="block";
+  actualizar();
+  setInterval(actualizar,20000);
+}
+function salir(){localStorage.removeItem("noticias-clave");location.reload();}
+
+const esc=s=>String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const fechaTxt=iso=>{const d=new Date(iso);return d.toLocaleDateString("es-ES",{day:"numeric",month:"short"})+" · "+d.toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"});};
+const archivoDe=n=>(n.nombre||"alumno").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^A-Za-z0-9]+/g,"-").replace(/^-|-$/g,"")+"-noticia.html";
+
+let enServidor=new Set();
+async function actualizar(){
+  const est=document.getElementById("estado");
+  try{
+    const d=await api("lista",{});
+    if(!d.ok)throw new Error(d.error);
+    enServidor=new Set(d.noticias.map(n=>n.id));
+    const locales=Object.fromEntries((await leerTodas()).map(n=>[n.id,n]));
+    for(const n of d.noticias){
+      if(!locales[n.id]||locales[n.id].fecha!==n.fecha){
+        const v=await api("ver",{id:n.id});
+        if(v.ok)await guardarUna(v.noticia);
+      }
+    }
+    est.textContent="Actualizado a las "+new Date().toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"});
+  }catch(e){est.textContent="⚠️ Sin conexión con el servidor, se muestra la copia de este navegador";}
+  pintar();
+}
+
+async function pintar(){
+  const todas=(await leerTodas()).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  document.getElementById("nTot").textContent=todas.length;
+  document.getElementById("nMed").textContent=todas.length?Math.round(todas.reduce((s,n)=>s+n.palabras,0)/todas.length):0;
+  const L=document.getElementById("lista");
+  if(!todas.length){L.innerHTML='<div class="vacio">Todavía no ha llegado ninguna noticia.</div>';return;}
+  L.innerHTML='<table><tr><th>ALUMNO</th><th>NOTICIA</th><th>PALABRAS</th><th>RECIBIDA</th><th></th></tr>'+
+    todas.map(n=>`<tr class="${vistas[n.id]!==n.fecha?"nueva":""}"><td><b>${esc(n.nombre)}</b>${enServidor.has(n.id)?"":'<span class="loc">solo en este navegador</span>'}</td>
+      <td><span class="sec">${esc(n.seccion)}</span><div class="tit">${esc(n.titulo)}</div></td>
+      <td>${n.palabras}</td><td>${fechaTxt(n.fecha)}${n.envios>1?`<div style="font-size:11px;color:#6b7090">enviada ${n.envios} veces</div>`:""}</td>
+      <td class="acc"><button onclick="ver('${n.id}')">Ver</button><button onclick="bajar('${n.id}')">⬇</button><button class="x" onclick="quitar('${n.id}')">✕</button></td></tr>`).join("")+'</table>';
+}
+
+function guardarArchivo(blob,nombre){
+  const u=URL.createObjectURL(blob);const a=document.createElement("a");a.href=u;a.download=nombre;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(u);a.remove();},60000);
+}
+async function ver(id){
+  const n=await leerUna(id);if(!n)return;
+  vistas[id]=n.fecha;localStorage.setItem("noticias-vistas",JSON.stringify(vistas));
+  document.getElementById("vTit").textContent=n.nombre+" · "+n.palabras+" palabras";
+  document.getElementById("vFrame").srcdoc=n.html;
+  document.getElementById("vBajar").onclick=()=>bajar(id);
+  document.getElementById("visor").style.display="block";
+  pintar();
+}
+function cerrarVisor(){document.getElementById("visor").style.display="none";document.getElementById("vFrame").srcdoc="";}
+async function bajar(id){const n=await leerUna(id);if(n)guardarArchivo(new Blob([n.html],{type:"text/html"}),archivoDe(n));}
+async function bajarTodas(){
+  const todas=await leerTodas();if(!todas.length)return alert("Todavía no hay noticias.");
+  const z=new JSZip();const usados={};
+  todas.forEach(n=>{let f=archivoDe(n);if(usados[f]){f=f.replace(".html","-"+(++usados[f])+".html");}else usados[f]=1;z.file(f,n.html);});
+  const blob=await z.generateAsync({type:"blob"});
+  guardarArchivo(blob,"noticias-"+new Date().toISOString().slice(0,10)+".zip");
+}
+async function quitar(id){
+  const n=await leerUna(id);
+  if(!confirm(`¿Borras la noticia de ${n?n.nombre:"este alumno"}? Se quita del servidor y de este navegador.`))return;
+  try{await api("borrar",{id});}catch(e){}
+  await borrarUna(id);pintar();
+}
+
+const guardada=localStorage.getItem("noticias-clave");
+if(guardada)entrar(guardada);
+</script>
+</body>
+</html>
