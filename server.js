@@ -64,6 +64,7 @@ const JUEGOS = {
   moncloa: cargarJuego("moncloa"),   // Mujeres y poder: la carrera a la Moncloa (preguntas, mímica y pruebas)
   columna: cargarJuego("columna"),   // Análisis de columna: concurso con puntuación automática
   torneo: cargarJuego("torneo"),   // La clase contra ChatGPT: torneo de tres juegos de escritura
+  vale: cargarJuego("vale"),   // ¿Vale para cualquiera?: el tercer juego del torneo, suelto
   prensamadrid: cargarJuego("prensamadrid"),
   general: cargarJuego("general"),   // Clasificación general: suma los puestos de varios juegos   // El Ahorcado del Periodismo Blanco: quién cuenta el Real Madrid
 };
@@ -86,7 +87,7 @@ const server = http.createServer((req, res) => {
   if (madridista.handle(req, res, url)) return;
   if (kahootmad.handle(req, res, url)) return;
   if (noticias.handle(req, res, url)) return;
-  const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla2|liguilla|ahorcado|microfono|mujer|charla|moncloa|columna|torneo|prensamadrid|general)\/?$/);
+  const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla2|liguilla|ahorcado|microfono|mujer|charla|moncloa|columna|torneo|vale|prensamadrid|general)\/?$/);
   if (m) {
     cors(res);
     if (req.method === "OPTIONS") { res.writeHead(204); return res.end(); }
