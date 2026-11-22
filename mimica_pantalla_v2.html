@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mímica de libros · Proyector</title>
+<style>
+:root{--red:#C8102E;--ink:#1B1B1F;--paper:#fff;--bg:#F3F1EC;--muted:#6B6B72;--border:#D8D8DC;--green:#1E7A45;--gold:#E8B54A}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);min-height:100%}
+body{font-family:Arial,Helvetica,sans-serif;color:var(--ink);display:flex;flex-direction:column;min-height:100vh}
+header{background:var(--ink);color:#fff;padding:14px 26px;display:flex;align-items:center;gap:22px}
+.brand .t1{font-family:Georgia,"Times New Roman",serif;font-size:30px;font-weight:700}
+.brand .t2{font-size:12px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;margin-top:2px}
+.sp{flex:1}
+.cnt{font-size:15px;color:#ccc;font-weight:700}
+.cnt b{color:var(--gold);font-size:22px}
+.timer{display:flex;align-items:center;gap:8px}
+.clock{font-size:38px;font-weight:900;font-variant-numeric:tabular-nums;min-width:110px;text-align:right;color:#fff}
+.clock.low{color:var(--gold)}.clock.out{color:#FF6B6B}
+.tb{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;padding:8px 11px;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit}
+main{flex:1;display:flex;gap:20px;padding:20px 26px}
+aside{width:270px;flex:none;display:flex;flex-direction:column;gap:12px}
+.box{background:var(--paper);border:1px solid var(--border);border-radius:14px;padding:14px}
+.box h3{font-size:12px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+#qr svg{width:100%;height:auto;display:block}
+.code{font-size:40px;font-weight:900;letter-spacing:.14em;text-align:center;color:var(--red);margin-top:4px}
+.link{font-size:11px;color:var(--muted);text-align:center;word-break:break-all;margin-top:2px}
+.team{display:flex;align-items:center;gap:8px;padding:7px 4px;border-bottom:1px solid #EEE;font-size:17px}
+.team:last-child{border-bottom:none}
+.team .nm{flex:1;font-weight:700}
+.team .pt{font-size:24px;font-weight:900;min-width:34px;text-align:right}
+.team.turn{background:#FFF6DD;border-radius:8px}
+.team .adj{border:1px solid var(--border);background:#fff;border-radius:6px;width:24px;height:24px;font-weight:900;cursor:pointer;color:var(--muted);font-size:14px;line-height:1}
+.stage{flex:1;display:flex;flex-direction:column;gap:16px;min-width:0}
+.turnline{background:var(--paper);border:1px solid var(--border);border-left:8px solid var(--red);border-radius:14px;padding:16px 22px;display:flex;align-items:center;gap:20px}
+.turnline .lb{font-size:13px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.turnline .tm{font-family:Georgia,serif;font-size:40px;font-weight:700}
+.mimo{margin-left:auto;font-size:16px;font-weight:800;padding:8px 14px;border-radius:999px;background:#F1F1F3;color:var(--muted)}
+.mimo.ok{background:#E6F4EC;color:var(--green)}
+.board{flex:1;background:var(--paper);border:1px solid var(--border);border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 30px 24px;gap:22px;min-height:340px}
+.words{display:flex;flex-wrap:wrap;justify-content:center;gap:26px 30px;max-width:100%}
+.w{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;user-select:none}
+.w .tx{font-family:Georgia,"Times New Roman",serif;font-size:var(--fs,58px);font-weight:700;line-height:1.1;min-height:1.1em;color:var(--ink);white-space:nowrap}
+.w .ln{height:7px;border-radius:4px;background:var(--ink);min-width:60px}
+.w.hid .tx{visibility:hidden}
+.w.on .ln{background:var(--green)}
+.w.on .tx{animation:pop .4s ease-out}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+.author{font-size:24px;color:var(--muted);font-style:italic;min-height:30px}
+.tip{font-size:13px;color:var(--muted)}
+.ctrl{background:var(--paper);border:1px solid var(--border);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.ctrl .lb{font-size:12px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;font-weight:800}
+.row{display:flex;flex-wrap:wrap;gap:8px}
+.btn{border:none;border-radius:10px;padding:12px 16px;font-size:16px;font-weight:800;font-family:inherit;color:#fff;background:var(--red);cursor:pointer}
+.btn.dark{background:var(--ink)}.btn.green{background:var(--green)}
+.btn.out{background:#fff;color:var(--ink);border:2px solid var(--border)}
+.btn small{display:block;font-size:11px;font-weight:700;opacity:.85;margin-top:2px}
+.btn:disabled{opacity:.4;cursor:default}
+.res{background:#E6F4EC;border:2px solid var(--green);border-radius:14px;padding:14px 18px;font-size:20px;font-weight:800;color:var(--green);text-align:center}
+.res.no{background:#FDECEE;border-color:var(--red);color:var(--red)}
+.setup{max-width:640px;margin:50px auto;width:100%;padding:0 20px}
+.setup h1{font-family:Georgia,serif;font-size:36px;margin-bottom:10px}
+.setup p{color:var(--muted);line-height:1.5;margin-bottom:16px}
+.setup input{width:100%;border:2px solid var(--border);border-radius:10px;padding:12px;font-size:18px;font-family:inherit;margin-bottom:10px}
+.err{color:var(--red);font-weight:700;margin-top:10px;min-height:20px}
+.fin{max-width:760px;margin:40px auto;width:100%;display:flex;flex-direction:column;gap:12px;padding:0 20px}
+.fin h1{font-family:Georgia,serif;font-size:44px;text-align:center;margin-bottom:10px}
+.fr{display:flex;align-items:center;gap:16px;background:var(--paper);border:1px solid var(--border);border-radius:14px;padding:16px 22px;font-size:26px;font-weight:800;animation:pop .5s ease-out both}
+.fr .pos{font-size:34px;width:50px}.fr .nm{flex:1}.fr .pt{color:var(--red);font-size:34px}
+.fr.f1{border:3px solid var(--gold)}
+
+.oculto{text-align:center}.oculto .ocx{font-size:64px;margin:14px 0 6px}.oculto p{font-size:14px;color:var(--muted);line-height:1.45}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 20px;border-radius:10px;font-weight:700;opacity:0;transition:opacity .3s;z-index:9}
+#toast.on{opacity:1}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="t1">Mímica de libros</div><div class="t2">Periodismo narrativo</div></div>
+  <div class="sp"></div>
+  <div class="cnt" id="cnt"></div>
+  <div class="timer" id="timer" style="display:none">
+    <div class="clock" id="clock">1:30</div>
+    <button class="tb" id="tPlay">▶</button><button class="tb" id="tReset">↺</button>
+  </div>
+</header>
+<div id="app" style="flex:1;display:flex;flex-direction:column"></div>
+<div id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+const API = location.origin + "/api/mimica";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const lsGet = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch(e){ return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch(e){} };
+const toast = m => { const t = $("toast"); t.textContent = m; t.classList.add("on"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), 2600); };
+let CODE = lsGet("mimica_code", ""), KEY = lsGet("mimica_key", ""), S = null, busy = false;
+
+async function api(params){
+  const r = await fetch(API, { method:"POST", body: JSON.stringify(Object.assign({ c: CODE, k: KEY }, params)) });
+  const j = await r.json(); if (j.error) throw new Error(j.error); return j;
+}
+const urlMimo = () => location.origin + "/mimica_mimo_v1.html?c=" + CODE;
+
+// ---------- configuración ----------
+function setup(){
+  $("timer").style.display = "none"; $("cnt").textContent = "";
+  const prev = JSON.parse(lsGet("mimica_teams", "null") || "null") || ["Equipo 1","Equipo 2","Equipo 3","Equipo 4"];
+  $("app").innerHTML = `<div class="setup">
+    <h1>Mímica de libros</h1>
+    <p>Un equipo representa un libro elegido al azar y los demás adivinan. En pantalla sale una línea por palabra del título, y se destapan las que van acertando pulsando en cada línea. Si acierta otro equipo, 1 punto para el que representa y 1 para el que acierta. Si acierta su propio equipo, 2 puntos para ese equipo.</p>
+    <div id="tl"></div>
+    <div class="row" style="margin-bottom:14px"><button class="btn out" id="add">+ Equipo</button><button class="btn out" id="del">− Equipo</button></div>
+    <button class="btn" id="go" style="width:100%">Empezar la partida</button>
+    ${CODE ? `<button class="btn out" id="vuelve" style="width:100%;margin-top:10px">Volver a la partida ${esc(CODE)}</button>` : ""}
+    <div class="err" id="err"></div></div>`;
+  let teams = prev.slice();
+  const draw = () => { $("tl").innerHTML = teams.map((t,i) => `<input data-i="${i}" value="${esc(t)}" placeholder="Nombre del equipo ${i+1}">`).join("");
+    $("tl").querySelectorAll("input").forEach(el => el.oninput = () => teams[el.dataset.i] = el.value); };
+  draw();
+  $("add").onclick = () => { if (teams.length < 10) { teams.push("Equipo " + (teams.length + 1)); draw(); } };
+  $("del").onclick = () => { if (teams.length > 2) { teams.pop(); draw(); } };
+  $("go").onclick = async () => {
+    const t = teams.map(s => s.trim()).filter(Boolean);
+    try { CODE = ""; const j = await api({ a:"new", teams: t }); CODE = j.code; KEY = j.admin; lsSet("mimica_code", CODE); lsSet("mimica_key", KEY); lsSet("mimica_teams", JSON.stringify(t)); resetTimer(); refrescar(); }
+    catch(e){ $("err").textContent = e.message; }
+  };
+  if ($("vuelve")) $("vuelve").onclick = () => refrescar();
+}
+
+// ---------- temporizador (solo en esta pantalla) ----------
+const DUR = 90; let left = DUR, tick = null;
+function showClock(){ const m = Math.floor(Math.max(0,left)/60), s = Math.max(0,left)%60; const c = $("clock"); c.textContent = m + ":" + String(s).padStart(2,"0"); c.className = "clock" + (left <= 0 ? " out" : left <= 15 ? " low" : ""); $("tPlay").textContent = tick ? "❚❚" : "▶"; }
+function resetTimer(){ clearInterval(tick); tick = null; left = DUR; showClock(); }
+$("tPlay").onclick = () => { if (tick) { clearInterval(tick); tick = null; } else { if (left <= 0) left = DUR; tick = setInterval(() => { left--; if (left <= 0) { clearInterval(tick); tick = null; } showClock(); }, 1000); } showClock(); };
+$("tReset").onclick = resetTimer;
+
+// ---------- juego ----------
+let lastKey = "";
+function render(){
+  const s = S;
+  if (s.status === "done") return fin();
+  $("timer").style.display = "flex";
+  $("cnt").innerHTML = `Libro <b>${s.n}</b> de ${s.total}`;
+  const turno = s.teams[s.turn];
+  const key = s.n + "|" + s.status;
+  if (key !== lastKey) { if (s.status === "play" && !lastKey.startsWith(s.n + "|")) resetTimer(); lastKey = key; }
+  const larg = s.words.reduce((a,w) => a + (w.t ? w.t.length : w.len), 0) + s.words.length;
+  const fs = larg > 40 ? 40 : larg > 28 ? 48 : 58;
+  const words = s.words.map((w,i) => `<div class="w ${w.t ? "on" : "hid"}" data-i="${i}"><div class="tx">${esc(w.t || "x".repeat(w.len))}</div><div class="ln" style="width:${Math.max(2, (w.t ? w.t.length : w.len)) * fs * 0.52}px"></div></div>`).join("");
+  let ctrl;
+  if (s.status === "play") {
+    ctrl = `<div class="ctrl"><div class="lb">¿Quién ha acertado?</div><div class="row">${s.teams.map((t,i) => `<button class="btn ${i === s.turn ? "green" : "dark"}" data-who="${i}">${esc(t.name)}<small>${i === s.turn ? "+2 para su equipo" : "+1 y +1 para " + esc(turno.name)}</small></button>`).join("")}</div>
+      <div class="row"><button class="btn out" id="pass">Nadie lo acierta</button><button class="btn out" id="hint">${s.authorShown ? "Ocultar autor" : "Pista: el autor"}</button>${s.hasMimo ? `<button class="btn out" id="free">Liberar el libro</button>` : ""}</div></div>`;
+  } else {
+    const L = s.last || {}; let txt;
+    if (L.who < 0) txt = `<div class="res no">Nadie lo ha acertado. Sin puntos.</div>`;
+    else if (L.who === L.mimo) txt = `<div class="res">¡Lo acierta su propio equipo! +2 para ${esc(s.teams[L.who].name)}</div>`;
+    else txt = `<div class="res">¡Acierta ${esc(s.teams[L.who].name)}! +1 para ${esc(s.teams[L.who].name)} y +1 para ${esc(s.teams[L.mimo].name)}</div>`;
+    ctrl = txt + `<div class="row"><button class="btn" id="next" style="flex:1">${s.n >= s.total ? "Ver la clasificación final" : "Siguiente libro · le toca a " + esc(s.teams[(s.turn + 1) % s.teams.length].name)}</button><button class="btn out" id="end">Terminar aquí</button></div>`;
+  }
+  $("app").innerHTML = `<main>
+    <aside>
+      ${s.status === "play" && !s.hasMimo
+        ? `<div class="box"><h3>El mimo entra aquí</h3><div id="qr"></div><div class="code">${esc(s.code)}</div><div class="link">${esc(urlMimo())}</div></div>`
+        : `<div class="box oculto"><h3>QR oculto</h3><div class="ocx">🔒</div><p>${s.status === "play" ? "El mimo ya tiene el libro. El QR vuelve en el siguiente turno." : "El QR vuelve en el siguiente turno."}</p></div>`}
+      <div class="box"><h3>Puntos</h3>${s.teams.map((t,i) => `<div class="team ${i === s.turn ? "turn" : ""}"><span class="nm">${esc(t.name)}</span><button class="adj" data-t="${i}" data-d="-1">−</button><button class="adj" data-t="${i}" data-d="1">+</button><span class="pt">${t.pts}</span></div>`).join("")}</div>
+      <button class="btn out" id="nueva" style="font-size:13px">Nueva partida</button>
+    </aside>
+    <div class="stage">
+      <div class="turnline"><div><div class="lb">Representa</div><div class="tm">${esc(turno.name)}</div></div>
+        <div class="mimo ${s.hasMimo ? "ok" : ""}">${s.status !== "play" ? "Turno resuelto" : s.hasMimo ? "✓ El mimo ya tiene el libro" : "Esperando al mimo… que entre con el QR"}</div></div>
+      <div class="board" style="--fs:${fs}px"><div class="words">${words}</div>
+        <div class="author">${s.authorShown && s.author ? esc(s.author) : ""}</div>
+        ${s.status === "play" ? `<div class="tip">Pulsa en una línea para destapar la palabra que han acertado</div>` : ""}</div>
+      ${ctrl}
+    </div></main>`;
+  if ($("qr")) try { const q = qrcode(0, "L"); q.addData(urlMimo()); q.make(); $("qr").innerHTML = q.createSvgTag({ cellSize:4, margin:1, scalable:true }); } catch(e){}
+  const act = async (params) => { if (busy) return; busy = true; try { await api(params); await refrescar(true); } catch(e){ toast(e.message); } busy = false; };
+  document.querySelectorAll(".w").forEach(el => el.onclick = () => s.status === "play" && act({ a:"reveal", i: el.dataset.i }));
+  document.querySelectorAll("[data-who]").forEach(el => el.onclick = () => { clearInterval(tick); tick = null; showClock(); act({ a:"point", who: el.dataset.who }); });
+  document.querySelectorAll(".adj").forEach(el => el.onclick = () => act({ a:"adj", t: el.dataset.t, d: el.dataset.d }));
+  if ($("pass")) $("pass").onclick = () => { clearInterval(tick); tick = null; showClock(); act({ a:"pass" }); };
+  if ($("hint")) $("hint").onclick = () => act({ a:"hint" });
+  if ($("free")) $("free").onclick = () => act({ a:"freemimo" });
+  if ($("next")) $("next").onclick = () => act({ a:"next" });
+  if ($("end")) $("end").onclick = () => { if (confirm("¿Terminar la partida y ver la clasificación?")) act({ a:"end" }); };
+  $("nueva").onclick = () => { if (confirm("¿Empezar una partida nueva? Se pierde la actual.")) { CODE = ""; KEY = ""; lsSet("mimica_code",""); lsSet("mimica_key",""); setup(); } };
+}
+function fin(){
+  $("timer").style.display = "none"; $("cnt").textContent = "";
+  const t = S.teams.map((x,i) => Object.assign({ i }, x)).sort((a,b) => b.pts - a.pts);
+  let pos = 0, prevPts = null;
+  $("app").innerHTML = `<div class="fin"><h1>Clasificación final</h1>${t.map((x,k) => { if (x.pts !== prevPts) { pos = k + 1; prevPts = x.pts; } const m = pos === 1 ? "🥇" : pos === 2 ? "🥈" : pos === 3 ? "🥉" : pos + "."; return `<div class="fr ${pos === 1 ? "f1" : ""}" style="animation-delay:${(t.length - k) * .3}s"><span class="pos">${m}</span><span class="nm">${esc(x.name)}</span><span class="pt">${x.pts}</span></div>`; }).join("")}
+    <button class="btn out" id="nueva2" style="margin-top:16px">Nueva partida</button></div>`;
+  $("nueva2").onclick = () => { CODE = ""; KEY = ""; lsSet("mimica_code",""); lsSet("mimica_key",""); setup(); };
+}
+let lastJson = "";
+async function refrescar(force){
+  if (!CODE) return setup();
+  try {
+    const j = await api({ a:"state" });
+    const js = JSON.stringify(j);
+    if (force || js !== lastJson || !document.querySelector("main,.fin")) { lastJson = js; S = j; render(); }
+  } catch(e){ if (/No existe/.test(e.message)) { CODE = ""; lsSet("mimica_code",""); setup(); } else toast(e.message); }
+}
+refrescar();
+setInterval(() => { if (CODE && !busy) refrescar(); }, 1500);
+</script>
+</body>
+</html>
