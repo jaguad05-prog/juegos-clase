@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leila Guerriero · La escena y la anécdota</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--red:#C8102E;--dark:#1B1B1F;--ink:#2B2B30;--gold:#E8B54A;--muted:#6B6B72;--border:#D8D8DC;--bg:#F5F5F7;--paper:#FFFDF8;--green:#1E7A45}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
+.topbar{background:var(--dark);color:#fff;padding:10px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:5}
+.tt{font-size:15px;font-weight:800;letter-spacing:.04em}
+.ts{font-size:11px;color:var(--gold);letter-spacing:.06em}
+.tabs{display:flex;gap:6px}
+.tab{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#fff;padding:9px 14px;border-radius:8px;font-size:13.5px;cursor:pointer;font-family:inherit;font-weight:700}
+.tab.on{background:#fff;color:var(--dark)}
+.tbtn{background:var(--red);border:none;color:#fff;padding:9px 14px;border-radius:8px;font-size:13.5px;cursor:pointer;font-family:inherit;font-weight:800}
+.tbtn:disabled{opacity:.45;cursor:not-allowed}
+.wrap{max-width:820px;margin:22px auto;padding:0 16px 60px}
+.card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin-bottom:16px}
+.kick{font-size:11px;letter-spacing:.14em;color:var(--red);font-weight:800;text-transform:uppercase}
+h1{font-family:Georgia,"Times New Roman",serif;font-size:30px;line-height:1.15;color:var(--dark);margin:6px 0 10px}
+h2{font-size:16px;font-weight:800;color:var(--dark);margin-bottom:12px;letter-spacing:.02em}
+.intro{font-style:italic;color:var(--muted);line-height:1.5;font-size:15px}
+label.nm{display:block;font-size:13px;font-weight:700;margin:14px 0 6px}
+input,textarea{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 12px;font-size:15.5px;font-family:inherit;color:var(--ink);background:#fff}
+input:focus,textarea:focus{outline:none;border-color:var(--dark)}
+textarea{min-height:90px;resize:vertical;line-height:1.45}
+textarea[readonly]{background:#F3F3F5;color:#555}
+.texto{background:var(--paper);border:1px solid #EEE7D8;border-left:5px solid var(--red);border-radius:10px;padding:16px 20px}
+.texto p{font-family:Georgia,"Times New Roman",serif;font-size:16.5px;line-height:1.65;margin-bottom:12px}
+.texto .firma{font-family:Arial,sans-serif;font-size:12.5px;color:var(--muted);text-align:right;font-style:italic;margin:0}
+.q{margin-top:18px}
+.q .qt{font-weight:800;font-size:15px;line-height:1.4;margin-bottom:7px}
+.q .qt b{color:var(--red);margin-right:4px}
+.big{display:block;width:100%;border:none;border-radius:10px;padding:14px;font-size:16px;font-weight:800;font-family:inherit;color:#fff;background:var(--dark);cursor:pointer;margin-top:18px}
+.big:disabled{opacity:.4;cursor:not-allowed}
+.lock{text-align:center;color:var(--muted);padding:26px 10px;font-size:15px;line-height:1.5}
+.lock .ic{font-size:44px;display:block;margin-bottom:8px}
+.done{color:var(--green);font-weight:800;font-size:14px;margin-top:10px}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--dark);color:#fff;padding:11px 16px;border-radius:10px;font-weight:700;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9;max-width:90vw;text-align:center}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div><div class="tt">LEILA GUERRIERO · LA ESCENA Y LA ANÉCDOTA</div><div class="ts">LEE, CONTESTA Y DESCARGA TUS RESPUESTAS EN PDF</div></div>
+  <div class="tabs"><button class="tab" data-f="f1">Ficha 1 · Buscarita</button><button class="tab" data-f="f2">Ficha 2 · Busetto</button><button class="tbtn" id="pdf">Descargar PDF</button></div>
+</div>
+<div class="wrap" id="app"></div>
+<div id="toast"></div>
+<script>
+const D = {"f1": {"kick": "Ficha 1 · La escena", "title": "Buscarita y la botella de aceite", "intro": "Vas a leer el comienzo de una crónica de Leila Guerriero. Contesta las preguntas de la parte 1 y después pulsa «Pasar a la parte 2». Cuando pases, ya no podrás cambiar las respuestas de la parte 1.", "p1": ["El 10 de septiembre de 1971, en el living de su casa —pasaje 40, Villa 4 de Septiembre, La Cisterna, Santiago— a Buscarita Imperi Navarro Roa se le volcó, entera, una botella de aceite, y ella no supo qué hacer, más que las cruces.", "—Me santigüé, y dije ay Dios mío, dios mío, qué va a pasar.", "Porque se volcó entera, la botella entera, dice, más de treinta años después, en su departamento del barrio de La Boca, Buenos Aires.", "Volcar una sola gota de aceite fuera de la cocina, reza la superstición, puede traer meses de mala suerte. Y a ella, supersticiosa, se le había volcado una botella. De todos modos, no dijo nada. Limpió el charco y esperó. La tranquilizó el ritmo de los días: serenos en aquella primavera. Había problemas de dinero, como siempre, pero los hijos —eran siete: José “Pepe” Liborio, Lucinda, Fernando, Patricia, Víctor, Patricio y Francia, no traían sobresaltos, y su propio trabajo, limpiar casas ajenas, marchaba bien.", "El 15 fue su cumpleaños.", "El charco de aceite había empezado a quedar en el olvido cuando el 17 de septiembre su hijo mayor, José “Pepe” Liborio Poblete, 16 años, le anunció que viajaría a Curicó en tren, con un amigo. Buscarita dijo “Bueno” y se quedó limpiando. No había motivos para ver en eso una amenaza y puso agua para el té.", "Septiembre, a sus espaldas, empezaba a ser el mes tan cruel."], "q1": ["¿Qué crees que va a pasar después?", "¿Qué detalles del texto te hacen pensar eso? Copia al menos dos.", "La autora no cuenta lo que siente Buscarita. ¿Cómo lo sabes tú? Fíjate en lo que hace.", "¿Qué función tiene la última frase, «Septiembre, a sus espaldas, empezaba a ser el mes tan cruel»?"], "p2": ["Hace un par de años escribí la historia de un militante de izquierda desaparecido en la Argentina durante la última dictadura militar, un chileno llamado José Liborio Poblete, a quien apodaban Pepe. La historia arrancaba con Buscarita Imperi Navarro Roa, la madre de ese hombre, un día de septiembre de 1971, allá en Santiago.", "Dos párrafos después, Pepe Poblete caía por accidente sobre las vías, el tren le cortaba las dos piernas, y, con la esperanza de conseguir rehabilitación adecuada, dos años más tarde, viajaba a la Argentina donde, en 1977, sería secuestrado junto a su mujer y su hija de ocho meses, torturado, probablemente ejecutado y con certeza desaparecido por el régimen militar.", "Empezar con la cámara fija en Buscarita haciendo el té, inocentemente haciéndose las cruces, era una forma de resaltar la monstruosidad del destino que aparecería dos párrafos más tarde, perseguiría a esa mujer hasta el otro lado de la cordillera, la alcanzaría y terminaría por destrozarla. Pero por el momento sólo veíamos un plano cerrado de esa dama humilde calentando agua. Y aun sabiendo que algo muy malo iba a pasar, no sabíamos qué, y no sabíamos cómo. Se nos había clavado, como a Buscarita, la mala semilla de la premonición.", "Eso, decir el horror sin decirlo, se puede aprender de muchas formas, pero no está mal aprenderlo en el cine, paralizados, con la respiración rígida entre la boca y la garganta, sin entender la razón de ese volcán de miedo que nos ahoga si después de todo estamos en el cine, si después de todo en la pantalla el cielo es tan azul, la protagonista tan plácida y dormida, la puerta tan cerrada y sin embargo."], "q2": ["¿Acertaste con lo que iba a pasar? ¿Qué pista te pareció la más fuerte?", "Guerriero habla de «decir el horror sin decirlo». Explica con tus palabras qué quiere decir y cómo lo consigue en esta escena.", "¿Por qué crees que la autora compara su forma de empezar con el cine? ¿Qué sería la «cámara fija»?"]}, "f2": {"kick": "Ficha 2 · La anécdota significativa", "title": "El doble de Freddie Mercury", "intro": "Vas a leer cómo encontró Leila Guerriero la anécdota de uno de sus perfiles. Léelo con atención y contesta las preguntas.", "p1": ["Hace unos años escribí acerca de Jorge Busetto, un médico cardiólogo, mujeriego, cantante y doble de Freddie Mercury en una banda argentina tributo a Queen. Lo entrevisté en días y lugares diferentes, entrevisté a su madre, su padre, su mujer, sus compañeros, lo acompañé al hospital en el que trabaja, al gimnasio, a hacer las compras y a uno de sus recitales. El día del show los músicos llegaron a la casa de Busetto a las ocho de la noche y fueron a cambiarse. Pasaron unos minutos y de pronto Busetto, que llevaba por toda vestimenta un chaleco de cuero, unos anteojos de sol Ray Ban y unos pantalones de cuerina rojos, apareció corriendo, alarmadísimo: el baterista estaba encerrado en el baño, víctima de una diarrea fulminante. Y así vestido, sin pensarlo, Busetto salió a la calle a buscar, casa por casa, vecino por vecino, pastillas de carbón para la diarrea. Yo llevaba un mes trabajando en esa historia y ese minuto milagroso ocurrió al final. Aunque después sería una sola línea del perfil, ese minuto decía, acerca de las diferencias entre el original y el clon, acerca de los patetismos de esa fama de segunda mano, más que cualquier cosa que yo hubiera podido teorizar en cuatro párrafos."], "q1": ["Haz una lista con todo lo que hizo Guerriero para reportear la historia de Busetto. ¿Cuánto tiempo le dedicó?", "Cuenta la anécdota en una sola frase.", "¿Por qué crees que ese minuto llegó al final del trabajo y no el primer día?", "¿Qué dice esa escena de Busetto que no habría dicho en una entrevista?", "Guerriero dice que el minuto habla de «las diferencias entre el original y el clon» y de «esa fama de segunda mano». Explica qué ves tú en la imagen de Busetto vestido de Freddie Mercury pidiendo pastillas a los vecinos.", "En el perfil esta anécdota ocupó una sola línea. ¿Por qué crees que no hacía falta más?"], "p2": [], "q2": []}};
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const KEY = 'guerriero_fichas_v2_';
+const MEM = {};
+const lsGet = (k, d) => { if (k in MEM) return MEM[k]; try { const v = localStorage.getItem(KEY+k); if (v !== null) { MEM[k] = v; return v; } } catch(e){} return d; };
+const lsSet = (k, v) => { MEM[k] = v; try { localStorage.setItem(KEY+k, v); } catch(e){} };
+const toast = m => { const t=$('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2800); };
+let F = lsGet('ficha','f1');
+
+function texto(ps){ return '<div class="texto">' + ps.map(p => '<p>'+esc(p)+'</p>').join('') + '<p class="firma">Leila Guerriero</p></div>'; }
+function preguntas(f, part, qs, start, ro){
+  return qs.map((q,i) => { const k = f+'_'+part+'_'+i; return `<div class="q"><div class="qt"><b>${start+i}.</b>${esc(q)}</div><textarea data-k="${k}" ${ro ? 'readonly' : ''}>${esc(lsGet(k,''))}</textarea></div>`; }).join('');
+}
+function respondidas(f, part){ return D[f][part === 1 ? 'q1' : 'q2'].every((_,i) => lsGet(f+'_'+part+'_'+i,'').trim()); }
+function render(){
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.f === F));
+  const d = D[F], abierta = lsGet(F+'_abierta','') === '1';
+  let h = `<div class="card"><div class="kick">${esc(d.kick)}</div><h1>${esc(d.title)}</h1><p class="intro">${esc(d.intro)}</p>
+    <label class="nm" for="nombre">Nombre y apellidos</label><input id="nombre" value="${esc(lsGet('nombre',''))}" autocomplete="off"></div>`;
+  if (F === 'f1') {
+    h += `<div class="card"><h2>Parte 1 · El comienzo de la crónica</h2>${texto(d.p1)}${preguntas(F,1,d.q1,1,abierta)}
+      ${abierta ? '<div class="done">✓ Parte 1 entregada</div>' : '<button class="big" id="abrir">Pasar a la parte 2</button>'}</div>`;
+    h += abierta ? `<div class="card"><h2>Parte 2 · Lo que cuenta la autora</h2>${texto(d.p2)}${preguntas(F,2,d.q2,5,false)}</div>`
+                 : `<div class="card lock"><span class="ic">🔒</span>La parte 2 se abre cuando contestes las cuatro preguntas de la parte 1.</div>`;
+  } else {
+    h += `<div class="card"><h2>El texto</h2>${texto(d.p1)}${preguntas(F,1,d.q1,1,false)}</div>`;
+  }
+  $('app').innerHTML = h;
+  $('nombre').oninput = e => lsSet('nombre', e.target.value);
+  document.querySelectorAll('textarea[data-k]').forEach(t => t.oninput = () => lsSet(t.dataset.k, t.value));
+  if ($('abrir')) $('abrir').onclick = () => {
+    if (!respondidas('f1',1)) { toast('Contesta las cuatro preguntas de la parte 1 antes de pasar'); return; }
+    const b = $('abrir');
+    if (!b.dataset.ok) { b.dataset.ok = '1'; b.textContent = 'Pulsa otra vez para pasar. Ya no podrás cambiar la parte 1'; b.style.background = 'var(--red)'; setTimeout(() => { if ($('abrir')) { delete b.dataset.ok; b.textContent = 'Pasar a la parte 2'; b.style.background = ''; } }, 4000); return; }
+    lsSet('f1_abierta','1'); render(); window.scrollTo({ top: document.querySelectorAll('.card')[2].offsetTop - 70, behavior: 'smooth' });
+  };
+}
+document.querySelectorAll('.tab').forEach(b => b.onclick = () => { F = b.dataset.f; lsSet('ficha', F); render(); window.scrollTo(0,0); });
+render();
+
+function limpio(s){ return s.replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/…/g,'...').replace(/[^\x00-\xFF—–€]/g,''); }
+function nombreArchivo(s){ return (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,''); }
+$('pdf').onclick = () => {
+  const nombre = lsGet('nombre','').trim(), d = D[F];
+  if (!nombre) { toast('Escribe tu nombre'); return; }
+  if (F === 'f1' && lsGet('f1_abierta','') !== '1') { toast('Primero termina la parte 1 y pasa a la parte 2'); return; }
+  if (!respondidas(F,1) || (F === 'f1' && !respondidas(F,2))) { toast('Te faltan preguntas por contestar'); return; }
+  if (!window.jspdf) { toast('No se ha cargado el generador de PDF, revisa la conexión'); return; }
+  const { jsPDF } = window.jspdf, doc = new jsPDF({ unit:'mm', format:'a4' });
+  const L = 22, R = 188, Wd = R - L, BOT = 278; let y = 24;
+  const salto = h => { if (y + h > BOT) { doc.addPage(); y = 24; } };
+  doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(200,16,46); doc.text(limpio('PERIODISMO NARRATIVO  ·  ' + d.kick.toUpperCase()), L, y); y += 9;
+  doc.setFont('times','bold'); doc.setFontSize(22); doc.setTextColor(27,27,31); doc.text(limpio(d.title), L, y); y += 8;
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(107,107,114); doc.text(limpio(nombre), L, y); y += 4;
+  doc.setDrawColor(221,213,197); doc.setLineWidth(0.3); doc.line(L, y, R, y); y += 8;
+  const bloque = (titulo, qs, part, start) => {
+    if (titulo) { salto(10); doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(27,27,31); doc.text(limpio(titulo), L, y); y += 7; }
+    qs.forEach((q,i) => {
+      doc.setFont('helvetica','bold'); doc.setFontSize(10.5); doc.setTextColor(27,27,31);
+      const ql = doc.splitTextToSize(limpio((start+i) + '. ' + q), Wd); salto(ql.length * 5 + 6);
+      ql.forEach(l => { doc.text(l, L, y); y += 5; }); y += 1;
+      doc.setFont('times','normal'); doc.setFontSize(11.5); doc.setTextColor(43,43,48);
+      lsGet(F+'_'+part+'_'+i,'').trim().split(/\n+/).forEach(par => {
+        doc.splitTextToSize(limpio(par), Wd - 4).forEach(l => { salto(6); doc.text(l, L + 4, y); y += 5.6; });
+      });
+      y += 5;
+    });
+  };
+  if (F === 'f1') { bloque('Parte 1 · El comienzo de la crónica', d.q1, 1, 1); bloque('Parte 2 · Lo que cuenta la autora', d.q2, 2, 5); }
+  else bloque('', d.q1, 1, 1);
+  const n = doc.getNumberOfPages();
+  for (let i = 1; i <= n; i++) { doc.setPage(i); doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(150,150,150); doc.text(i + ' / ' + n, R, 287, { align:'right' }); }
+  doc.save((F === 'f1' ? 'Ficha1_Buscarita_' : 'Ficha2_Busetto_') + (nombreArchivo(nombre) || 'alumno') + '.pdf');
+  toast('PDF descargado');
+};
+</script>
+</body>
+</html>
