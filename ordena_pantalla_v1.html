@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ordena la crónica · Pantalla</title>
+<style>
+:root{--red:#C8102E;--dark:#1B1B1F;--ink:#2B2B30;--gold:#E8B54A;--muted:#6B6B72;--border:#D8D8DC;--green:#1E7A45;--greenbg:#E9F6EE;--bg:#F5F5F7;--paper:#FFFDF8}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+.topbar{background:var(--dark);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:12px 18px;gap:10px;flex-wrap:wrap}
+.tt{font-size:16px;font-weight:800;letter-spacing:.04em}
+.ts{font-size:11px;color:var(--gold);letter-spacing:.06em}
+.tr{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.badge{background:var(--red);color:#fff;font-weight:800;font-size:13px;padding:7px 14px;border-radius:20px}
+.codebadge{background:#fff;color:var(--dark);font-weight:800;font-size:15px;padding:6px 12px;border-radius:8px;letter-spacing:.12em}
+.tbtn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#fff;padding:8px 13px;border-radius:8px;font-size:12.5px;cursor:pointer;font-family:inherit;font-weight:700}
+.wrap{max-width:1400px;margin:0 auto;padding:18px;display:flex;flex-direction:column;gap:16px}
+.panel{background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden}
+.ph{background:var(--dark);color:#fff;padding:11px 16px;font-size:12.5px;font-weight:800;letter-spacing:.06em;display:flex;justify-content:space-between;gap:10px}
+.ph span{color:var(--gold)}
+.pb{padding:20px}
+.btn{border:none;padding:14px 22px;border-radius:10px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.b-red{background:var(--red);color:#fff}.b-dark{background:var(--dark);color:#fff}.b-out{background:#fff;border:2px solid var(--border);color:var(--ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--muted)}
+.err{color:var(--red);font-weight:700;margin-top:10px;min-height:18px}
+.lobby{display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:center}
+@media(max-width:700px){.lobby{grid-template-columns:1fr}}
+.bigcode{font-size:64px;font-weight:900;letter-spacing:.14em;color:var(--dark)}
+.link{font-size:15px;word-break:break-all;color:var(--muted);margin-top:6px}
+#qr{background:#fff;padding:6px;border-radius:10px;border:1px solid var(--border)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{border:2px solid var(--border);border-radius:30px;padding:7px 13px;font-weight:800;font-size:15px;background:#fff}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:18px}
+.opt{border:2px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;background:#fff;text-align:left;font-family:inherit}
+.opt.on{border-color:var(--red);background:#FBF1F2}
+.opt .m{font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--red)}
+.opt .t{font-family:Georgia,serif;font-size:20px;font-weight:700;margin-top:4px;color:var(--dark)}
+.reloj{font-size:clamp(70px,10vw,140px);font-weight:900;font-variant-numeric:tabular-nums;color:var(--dark);line-height:1}
+.cab .m{font-size:12px;font-weight:800;letter-spacing:.14em;color:var(--red);text-transform:uppercase}
+.cab h1{font-family:Georgia,serif;font-size:clamp(26px,2.8vw,40px);line-height:1.15;margin:6px 0}
+.cab p{font-family:Georgia,serif;font-style:italic;font-size:17px;color:#444;line-height:1.4}
+.top{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
+.eqs{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.eq{border:2px solid var(--border);border-radius:12px;padding:10px 14px;background:#fff}
+.eq .nm{font-weight:900;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.eq .bar{display:flex;gap:4px;margin:8px 0 6px}
+.eq .bar i{flex:1;height:12px;border-radius:3px;background:#E6E6EA}
+.eq .bar i.ok{background:var(--green)}
+.eq .inf{font-size:13px;color:var(--muted);font-weight:700}
+.eq.fin{border-color:var(--green);background:var(--greenbg)}
+.eq.fin .inf{color:var(--green)}
+.pod{display:flex;flex-direction:column;gap:10px}
+.pr{display:flex;align-items:center;gap:14px;border:2px solid var(--border);border-radius:12px;padding:10px 16px;background:#fff;font-size:22px;font-weight:800}
+.pr .md{font-size:28px;width:44px;text-align:center}
+.pr .tm{margin-left:auto;color:var(--red);font-size:24px;font-weight:900;font-variant-numeric:tabular-nums}
+.pr .it{font-size:14px;color:var(--muted);font-weight:700}
+.pr.empty{color:var(--muted);font-weight:400;font-style:italic;font-size:17px}
+.champ{background:linear-gradient(135deg,var(--gold),#f3d38a);border-radius:16px;padding:30px;text-align:center}
+.champ .cp{font-size:52px;display:block}
+.champ h3{font-size:13px;letter-spacing:.1em;margin:6px 0}
+.champ .nm{font-size:48px;font-weight:900}
+.sol{display:flex;flex-direction:column;gap:10px}
+.sp{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start;border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.sp .n{width:34px;height:34px;border-radius:50%;background:var(--green);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center}
+.sp .lb{font-weight:800;font-size:14px;margin-bottom:3px}
+.sp .lb em{font-style:normal;color:var(--red);margin-right:8px}
+.sp .tx{font-family:Georgia,serif;font-size:15px;line-height:1.45}
+.empty{text-align:center;color:var(--muted);padding:20px;font-style:italic;font-size:14px}
+.tb{width:100%;border-collapse:collapse;font-size:16px}
+.tb th{text-align:left;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:2px solid var(--border)}
+.tb td{padding:10px;border-bottom:1px solid var(--border)}
+.tb td.nm{font-weight:800}
+.tb tr.done{background:var(--greenbg)}
+.tb .tot{color:var(--red);font-size:18px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--red);color:#fff;padding:12px 18px;border-radius:10px;font-weight:700;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:99}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div><div class="tt">ORDENA LA CRÓNICA</div><div class="ts">GANA EL EQUIPO QUE LA DEJA ENTERA EN VERDE ANTES</div></div>
+  <div class="tr" id="tr"></div>
+</div>
+<div class="wrap" id="main"></div>
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+const API = location.origin + "/api/ordena";
+const PAGINA_EQUIPO = "ordena_equipo_v1.html";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const lsGet = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch(e){ return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch(e){} };
+const lsDel = k => { try { localStorage.removeItem(k); } catch(e){} };
+const mmss = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+
+let CODE = lsGet("ord_p_code", ""), KEY = lsGet("ord_p_key", ""), S = null, vista = "", pidiendo = false, desfase = 0, elegida = "";
+// orden de juego: primero Marca y después As
+function siguiente(){ const o = S.game.opciones.find(x => (S.game.jugadas || []).indexOf(x.id) < 0); return o || null; }
+
+async function api(params){
+  const r = await fetch(API, { method:"POST", body: JSON.stringify(Object.assign({ c: CODE, k: KEY }, params)) });
+  const j = await r.json();
+  if (j.error) throw new Error(j.error);
+  return j;
+}
+function toast(t){ const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("show"), 3200); }
+async function accion(params){
+  try { const j = await api(params); if (j.state){ S = j.state; desfase = Date.now() - S.now; pintar(); } }
+  catch(e){ toast(e.message); }
+}
+
+function pintarInicio(){
+  $("tr").innerHTML = "";
+  $("main").innerHTML = `<div class="panel"><div class="ph">NUEVA PARTIDA</div><div class="pb">
+    <p style="font-size:17px;line-height:1.5;margin-bottom:16px">Cada equipo recibe en su ordenador los párrafos de una crónica desordenados y tiene que llevarlos a las cajas numeradas. Cuando los ha puesto todos se corrige solo: los bien puestos salen en verde y se quedan fijos, los mal puestos en rojo, y no se pueden mover hasta que el equipo los saca todos para volver a colocarlos. Primero se juega la crónica de Marca y después la de As. Gana el equipo que deja la crónica entera en verde antes.</p>
+    <div class="row"><button class="btn b-red" id="bCrear">Crear partida en clase</button><button class="btn b-dark" id="bCasa">Crear partida para casa</button></div>
+    <p class="muted" style="font-size:14.5px;line-height:1.5;margin-top:12px">En clase, el profesor arranca el reloj para todos los equipos a la vez. Para casa, cada alumno entra con su nombre desde el enlace, su reloj empieza al entrar y hace las dos crónicas a su ritmo; la partida dura un mes.</p>
+    <div class="err" id="errCrear"></div></div></div>
+    <div class="panel"><div class="ph">VER LOS RESULTADOS DE UNA PARTIDA</div><div class="pb"><div class="row"><input id="inVer" maxlength="6" placeholder="Código" style="border:1.5px solid var(--border);border-radius:9px;padding:12px;font-size:17px;width:160px;text-transform:uppercase;letter-spacing:.1em;font-family:inherit"><button class="btn b-out" id="bVer">Ver</button></div></div></div>`;
+  const crear = async modo => {
+    try { const r = await fetch(API, { method:"POST", body: JSON.stringify({ a:"new", modo }) }); const j = await r.json(); if (j.error) throw new Error(j.error);
+      CODE = j.code; KEY = j.admin; lsSet("ord_p_code", CODE); lsSet("ord_p_key", KEY); lsSet("ord_p_key_" + CODE, KEY); vista = ""; await refrescar(true); }
+    catch(e){ $("errCrear").textContent = e.message || "No se ha podido crear la partida"; }
+  };
+  $("bCrear").onclick = () => crear("clase");
+  $("bCasa").onclick = () => crear("casa");
+  $("bVer").onclick = async () => {
+    const c = $("inVer").value.trim().toUpperCase(); if (!c) return;
+    const k = lsGet("ord_p_key_" + c, "");
+    CODE = c; KEY = k; lsSet("ord_p_code", CODE); lsSet("ord_p_key", KEY); vista = ""; await refrescar(true);
+    if (!S || S.game.code !== c) $("errCrear").textContent = "No existe ninguna partida con ese código";
+  };
+}
+
+async function refrescar(forzar){
+  if (!CODE || (pidiendo && !forzar)) return;
+  pidiendo = true;
+  try { const j = await api({ a:"state" }); S = j; desfase = Date.now() - j.now; pintar(); }
+  catch(e){ if (/No existe/.test(e.message)){ lsDel("ord_p_code"); lsDel("ord_p_key"); CODE = ""; pintarInicio(); } }
+  finally { pidiendo = false; }
+}
+setInterval(() => { if (!document.hidden) refrescar(); }, 1200);
+setInterval(() => { if (S && S.game.status === "play" && $("reloj")) $("reloj").textContent = mmss(Date.now() - desfase - S.game.startedAt); }, 250);
+
+function urlEquipo(){ const u = new URL(PAGINA_EQUIPO, location.href); u.searchParams.set("c", CODE); return u.toString(); }
+function pintarQR(){
+  try { const q = qrcode(0, "L"); q.addData(urlEquipo()); q.make(); $("qr").innerHTML = q.createSvgTag({ cellSize:4, margin:2, scalable:true }); $("qr").querySelector("svg").setAttribute("style","width:240px;height:240px;display:block"); } catch(e){}
+}
+
+function pintar(){
+  const g = S.game;
+  if (g.modo === "casa") return pintarCasa();
+  $("tr").innerHTML = `<span class="codebadge">${esc(g.code)}</span>
+    <span class="badge">${g.status === "lobby" ? "ESPERANDO" : g.status === "over" ? "FINAL" : "EN JUEGO"}</span>
+    ${g.status === "play" ? `<button class="tbtn" id="bFin" style="background:var(--red);border-color:var(--red)">Terminar</button>` : ""}
+    ${g.status !== "lobby" ? `<button class="tbtn" id="bOtra">Otra crónica</button>` : ""}
+    <button class="tbtn" id="bNueva">Nueva partida</button>`;
+  if ($("bFin")) $("bFin").onclick = () => { if (confirm("¿Terminar ya y enseñar el orden bueno?")) accion({ a:"end" }); };
+  if ($("bOtra")) $("bOtra").onclick = () => { if (confirm("¿Volver a la sala con los mismos equipos para jugar otra crónica?")) accion({ a:"lobby" }); };
+  $("bNueva").onclick = () => { if (confirm("¿Empezar una partida nueva? Esta se pierde.")){ lsDel("ord_p_code"); lsDel("ord_p_key"); CODE = ""; KEY = ""; pintarInicio(); } };
+  const clave = g.status + "|" + g.cronica + "|" + g.startedAt;
+  if (g.status === "lobby") return pintarLobby(clave);
+  if (g.status === "play") return pintarJuego(clave);
+  if (g.status === "over") return pintarFinal(clave);
+}
+
+function pintarLobby(clave){
+  if (vista !== clave){
+    vista = clave;
+    elegida = (siguiente() || S.game.opciones[0]).id;
+    $("main").innerHTML = `<div class="panel"><div class="ph">ENTRAD CON EL NOMBRE DEL EQUIPO <span id="nJug"></span></div><div class="pb">
+      <div class="lobby"><div id="qr"></div><div><div class="muted" style="font-weight:700">Código de la partida</div>
+      <div class="bigcode">${esc(S.game.code)}</div><div class="link">${esc(urlEquipo())}</div></div></div>
+      <div class="chips" id="chips"></div></div></div>
+      <div class="panel"><div class="ph">ELIGE LA CRÓNICA</div><div class="pb">
+      <div class="opts" id="opts"></div>
+      <div class="row" style="margin-top:18px"><button class="btn b-red" id="bEmpezar">Empezar y poner el reloj en marcha</button></div></div></div>`;
+    pintarQR();
+    $("bEmpezar").onclick = () => accion({ a:"start", cronica: elegida });
+  }
+  const pintarOpts = () => {
+    $("opts").innerHTML = S.game.opciones.map(o => `<button class="opt${o.id === elegida ? " on" : ""}" data-o="${o.id}"><div class="m">${esc(o.medio.toUpperCase())}</div><div class="t">${esc(o.titulo)}</div></button>`).join("");
+    $("opts").querySelectorAll(".opt").forEach(b => b.onclick = () => { elegida = b.dataset.o; pintarOpts(); });
+  };
+  pintarOpts();
+  $("nJug").textContent = S.game.players + (S.game.players === 1 ? " equipo" : " equipos");
+  $("chips").innerHTML = S.equipos.map(r => `<span class="chip">${esc(r.name)}</span>`).join("") || `<span class="muted">Todavía no ha entrado nadie</span>`;
+}
+
+function medalla(i){ return ["🥇","🥈","🥉"][i] || (i + 1) + ".º"; }
+function podio(){
+  if (!S.podio.length) return `<div class="pr empty">Nadie ha terminado todavía</div>`;
+  return S.podio.map((p, i) => `<div class="pr"><span class="md">${medalla(i)}</span>${esc(p.name)} <span class="it">${p.intentos} ${p.intentos === 1 ? "intento" : "intentos"}</span><span class="tm">${mmss(p.ms)}</span></div>`).join("");
+}
+function equipos(){
+  const n = S.game.texto.cajas.length;
+  const lista = S.equipos.slice().sort((a, b) => (b.fin - a.fin) || (a.fin && b.fin ? a.ms - b.ms : b.aciertos - a.aciertos) || a.name.localeCompare(b.name));
+  return lista.map(e => `<div class="eq${e.fin ? " fin" : ""}"><div class="nm">${esc(e.name)}</div>
+    <div class="bar">${Array.from({ length: n }, (_, i) => `<i class="${i < (e.fin ? n : e.aciertos) ? "ok" : ""}"></i>`).join("")}</div>
+    <div class="inf">${e.fin ? "Terminado en " + mmss(e.ms) : e.intentos ? (e.aciertos + " de " + n + " bien · " + e.intentos + (e.intentos === 1 ? " intento" : " intentos")) : "Colocando párrafos…"}</div></div>`).join("")
+    || `<div class="empty">No hay equipos</div>`;
+}
+
+function pintarJuego(clave){
+  const T = S.game.texto;
+  if (vista !== clave){
+    vista = clave;
+    $("main").innerHTML = `<div class="panel"><div class="pb top"><div class="cab"><div class="m">${esc(T.medio)} · ${T.cajas.length} párrafos</div><h1>${esc(T.titulo)}</h1><p>${esc(T.subtitulo)}</p></div>
+      <div class="reloj" id="reloj">0:00</div></div></div>
+      <div class="panel"><div class="ph">LOS QUE YA HAN TERMINADO <span id="nFin"></span></div><div class="pb"><div class="pod" id="podio"></div></div></div>
+      <div class="panel"><div class="ph">CÓMO VAN LOS EQUIPOS <span>párrafos en verde en su última corrección</span></div><div class="pb"><div class="eqs" id="eqs"></div></div></div>`;
+  }
+  $("nFin").textContent = S.game.finished + " de " + S.game.players;
+  $("podio").innerHTML = podio();
+  $("eqs").innerHTML = equipos();
+}
+
+function pintarFinal(clave){
+  if (vista === clave){ return; }
+  vista = clave;
+  const T = S.game.texto, top = S.podio[0], sig = siguiente();
+  const sol = (S.game.solucion || []).map((id, i) => {
+    const b = T.bloques.find(x => x.id === id);
+    return `<div class="sp"><span class="n">${i + 1}</span><div><div class="lb"><em>${esc(id)}</em>${esc(T.cajas[i] || "")}</div><div class="tx">${esc(b.texto)}</div></div></div>`;
+  }).join("");
+  $("main").innerHTML = (top ? `<div class="champ"><span class="cp">🏆</span><h3>GANA ORDENA LA CRÓNICA</h3><div class="nm">${esc(top.name)}</div><div style="font-size:22px;font-weight:800;margin-top:6px">${mmss(top.ms)}</div></div>` : "")
+    + (sig ? `<div class="row"><button class="btn b-red" id="bSig">Empezar la crónica de ${esc(sig.medio)}</button><span class="muted">Los mismos equipos, el reloj vuelve a cero</span></div>` : "")
+    + `<div class="panel"><div class="ph">CLASIFICACIÓN</div><div class="pb"><div class="pod">${podio()}</div></div></div>
+    <div class="panel"><div class="ph">EL ORDEN BUENO <span>${esc((S.game.solucion || []).join(" – "))}</span></div><div class="pb"><div class="cab" style="margin-bottom:16px"><div class="m">${esc(T.medio)}</div><h1>${esc(T.titulo)}</h1><p>${esc(T.subtitulo)}</p></div><div class="sol">${sol}</div></div></div>`;
+  if ($("bSig")) $("bSig").onclick = () => accion({ a:"start", cronica: sig.id });
+}
+
+// ── partida para casa: enlace para los alumnos y tabla de tiempos ──
+function urlCasa(){ const u = new URL(PAGINA_EQUIPO, location.href); u.searchParams.set("c", CODE); return u.toString(); }
+function pintarCasa(){
+  const g = S.game;
+  $("tr").innerHTML = `<span class="codebadge">${esc(g.code)}</span><span class="badge">PARA CASA</span><button class="tbtn" id="bNueva">Salir</button>`;
+  $("bNueva").onclick = () => { lsDel("ord_p_code"); lsDel("ord_p_key"); CODE = ""; KEY = ""; vista = ""; pintarInicio(); };
+  if (vista !== "casa|" + g.code){
+    vista = "casa|" + g.code;
+    $("main").innerHTML = `<div class="panel"><div class="ph">ENLACE PARA LOS ALUMNOS <span>cada uno entra con su nombre y empieza</span></div><div class="pb">
+      <div class="lobby"><div id="qr"></div><div><div class="muted" style="font-weight:700">Código de la partida</div><div class="bigcode">${esc(g.code)}</div>
+      <div class="link" id="lnk">${esc(urlCasa())}</div><div class="row" style="margin-top:14px"><button class="btn b-red" id="bCopiar">Copiar el enlace</button></div></div></div></div></div>
+      <div class="panel"><div class="ph">RESULTADOS <span id="nAl"></span></div><div class="pb" id="tabla"></div></div>`;
+    try { const q = qrcode(0, "L"); q.addData(urlCasa()); q.make(); $("qr").innerHTML = q.createSvgTag({ cellSize:4, margin:2, scalable:true }); $("qr").querySelector("svg").setAttribute("style","width:200px;height:200px;display:block"); } catch(e){}
+    $("bCopiar").onclick = async () => { try { await navigator.clipboard.writeText(urlCasa()); toast("Enlace copiado"); } catch(e){ toast("Copia el enlace a mano"); } };
+  }
+  const A = S.alumnos || [], ops = g.opciones;
+  $("nAl").textContent = A.length + (A.length === 1 ? " alumno" : " alumnos");
+  const celda = (x, n) => !x ? `<span class="muted">—</span>` : x.fin ? `<b>${mmss(x.ms)}</b> <span class="muted">· ${x.intentos} int.</span>`
+    : `<span class="muted">en curso${x.intentos ? " · " + x.aciertos + " de " + n + " bien" : ""}</span>`;
+  $("tabla").innerHTML = A.length ? `<table class="tb"><thead><tr><th>#</th><th>Alumno</th>${ops.map(o => `<th>${esc(o.medio)}</th>`).join("")}<th>Total</th></tr></thead><tbody>
+    ${A.map((a, i) => `<tr class="${a.completas === ops.length ? "done" : ""}"><td>${a.completas === ops.length ? (["🥇","🥈","🥉"][i] || i + 1) : ""}</td><td class="nm">${esc(a.name)}</td>
+      ${ops.map(o => `<td>${celda(a.porCron[o.id], o.n)}</td>`).join("")}<td>${a.completas === ops.length ? `<b class="tot">${mmss(a.total)}</b>` : `<span class="muted">${a.completas} de ${ops.length}</span>`}</td></tr>`).join("")}
+    </tbody></table>` : `<div class="empty">Todavía no ha entrado nadie</div>`;
+}
+
+if (CODE) refrescar(true); else pintarInicio();
+</script>
+</body>
+</html>
