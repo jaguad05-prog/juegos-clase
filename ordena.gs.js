@@ -16,7 +16,7 @@ var CRONICAS = {
     medio: "Marca",
     titulo: "Carlos Espí saca al Madrid de otro lío",
     subtitulo: "El punta vuelve a anotar en el tramo final el gol del triunfo ante un Celta notable que puso en apuros a los blancos desde los cinco minutos, con gol de Durán. Bellingham brilla de nuevo",
-    cajas: ["Idea del titular", "Alineaciones comentadas", "Desarrollo", "", "", "", "", "Final"],
+    cajas: ["Idea del titular", "Alineaciones comentadas y contexto", "Desarrollo", "", "", "", "", "Final"],
     bloques: [
       { id: "A", texto: "Cambió Giráldez tras el descanso, a Jutglà por Hugo Álvarez. Pero cambió el Madrid, que salió más agresivo. Al minuto evitó Javi Rodríguez, el gol de Carreras, que apareció por sorpresa en el área pequeña. Metió intensidad el equipo blanco, hundiendo a su adversario, aunque tampoco hacía trabajar a Radu. Así que a los diez minutos, triple cambio. Valverde, Cucurella y Vinicius. Suplente en la primera justa con Diomande de igual a igual, saltó con media hora larga para sacar rebeldía, carácter y desborde. Que falta hacían." },
       { id: "B", texto: "Venía el Celta de Giráldez como un equipo más sólido que atrevido, cambiando el plan de pasados ejercicios. Sin ningún fichaje en el once y seis titulares formados en el Fortuna, el equipo gallego se comportó con inteligencia, cerrando espacios en defensa, prietas las filas, y desplegándose con movilidad en ataque." },
@@ -33,7 +33,7 @@ var CRONICAS = {
     medio: "As",
     titulo: "Espí siempre llega a tiempo",
     subtitulo: "Otro gol del valenciano, a cinco minutos del final, salva a un Madrid que tiró un tiempo. A un buen Celta solo le falló la puntería. Mbappé erró un penalti.",
-    cajas: ["Idea del titular", "Alineaciones comentadas (Madrid)", "Alineaciones comentadas (Celta)", "Desarrollo", "", "", "", "", "Final"],
+    cajas: ["Idea del titular", "Alineaciones comentadas y contexto (Madrid)", "Alineaciones comentadas y contexto (Celta)", "Desarrollo", "", "", "", "", "Final"],
     bloques: [
       { id: "A", texto: "En la segunda mitad al Celta se le vino el Madrid encima. Aquel equipo alegre y atrevido de los inicios quedó encogido en dos líneas amuralladas, estrechas para no hundirse demasiado. Sobre su área cayó mas lluvia fina que granizada, pero se vio realmente sometido, más cuando Mourinho activó el plan de emergencia: de un golpe metió a Valverde y Cucurella por los dos laterales y a Vinicius por Bernardo Silva, para abrir aún más el campo. Una acrobacia arriesgada, con tres puntas y dos mediapuntas para pasar por el ojo de la aguja." },
       { id: "B", texto: "Al Celta, al que le aguarda una paliza similar, no se le hizo tan largo el parón porque tuvo Copa en Salamanca la semana pasada. Allí jugó con lo que parecía una alineación alternativa que quizá no lo fuera tanto, porque cuatro de aquel once repitieron en el Bernabéu. En el equipo vigués importan menos los nombres que el plan. Los tres centrales le permiten escalonar mucho a sus futbolistas, maniobra útil para eludir la primera presión del adversario con cierta facilidad." },
