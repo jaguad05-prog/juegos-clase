@@ -64,8 +64,9 @@ socket.on("auth_ok", () => { try { localStorage.setItem("cm_clave", clave); } ca
 socket.on("auth_error", () => { $("#errL").textContent = "Clave incorrecta."; });
 socket.on("estado", e => { est = e; pintar(); });
 $("#bNueva").onclick = () => { if (confirm("¿Empezar una partida nueva? Los equipos tendrán que volver a entrar.")) socket.emit("reiniciar"); };
-function reloj() { clearInterval(tick); const f = () => { const s = Math.max(0, Math.ceil((est.finTs - Date.now()) / 1000)); $("#tm").textContent = est.fase === "pregunta" ? s + " s" : ""; }; f(); tick = setInterval(f, 300); }
+function reloj() { clearInterval(tick); const f = () => { const s = Math.max(0, Math.ceil((est.finTs - Date.now()) / 1000)); $("#tm").textContent = est.fase === "pregunta" ? s + " s" : (est.fase === "resultado" && est.finTs ? "siguiente en " + s + " s" : ""); }; f(); tick = setInterval(f, 300); }
 function rk(n) { return '<div class="caja rk">' + est.ranking.slice(0, n || 99).map((x, i) => `<div><span>${i + 1}. ${esc(x.nombre)}${x.conectado ? "" : " ⚠"}</span><b>${x.pts}</b></div>`).join("") + "</div>"; }
+function dur() { const n = est.quizzes.find(z => z.id === est.quiz).n, s = n * (est.tiempo + (est.auto ? est.espera : 0)); const mm = Math.floor(s / 60), ss = s % 60; return (mm ? mm + " min" : "") + (ss ? " " + ss + " s" : "") + (est.auto ? "" : " + lo que tardes en pasar"); }
 function pintar() {
   if (!est) return;
   $("#sub").textContent = est.titulo + (est.idx >= 0 && est.fase !== "fin" ? " · pregunta " + (est.idx + 1) + " de " + est.total : "");
@@ -75,9 +76,14 @@ function pintar() {
     m.innerHTML = `<div class="fila" style="align-items:flex-start;gap:24px"><div class="caja" style="flex:1;min-width:300px">
       <h2 style="margin-top:0">Elige el Kahoot</h2><div class="fila">${est.quizzes.map(z => `<button class="${z.id === est.quiz ? "btn" : "sec"}" data-q="${z.id}">${esc(z.titulo)} (${z.n})</button>`).join("")}</div>
       <p style="font-size:20px">Los equipos entran desde el móvil en<br><b>${esc(url)}</b><br>con el nombre de su equipo (el mismo que en los otros juegos).</p>
+      <h3 style="margin-bottom:6px">Segundos para contestar</h3><div class="fila">${est.tiempos.map(n => `<button class="${n === est.tiempo ? "btn" : "sec"}" data-s="${n}">${n} s</button>`).join("")}</div>
+      <p style="font-size:18px"><label><input type="checkbox" id="chAuto" ${est.auto ? "checked" : ""} style="transform:scale(1.4);margin-right:8px">Pasar de pregunta solo</label><br>
+      <span style="opacity:.8">Duración aproximada: <b>${dur()}</b></span></p>
       <button class="btn" id="bEmp" style="font-size:22px">Empezar ▶</button></div>
       <div style="flex:1;min-width:280px"><h2>Equipos (${est.ranking.length})</h2>${rk()}</div></div>`;
     m.querySelectorAll("[data-q]").forEach(b => b.onclick = () => socket.emit("quiz", b.dataset.q));
+    m.querySelectorAll("[data-s]").forEach(b => b.onclick = () => socket.emit("segundos", Number(b.dataset.s)));
+    $("#chAuto").onchange = e => socket.emit("auto", e.target.checked);
     $("#bEmp").onclick = () => socket.emit("empezar");
     return;
   }
