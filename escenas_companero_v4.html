@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Un compañero en dos escenas</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--red:#C8102E;--dark:#1B1B1F;--ink:#2B2B30;--gold:#E8B54A;--muted:#6B6B72;--border:#D8D8DC;--bg:#F5F5F7;--paper:#FFFDF8}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+.topbar{background:var(--dark);color:#fff;padding:10px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;flex:none}
+.tt{font-size:15px;font-weight:800;letter-spacing:.04em}
+.ts{font-size:11px;color:var(--gold);letter-spacing:.06em}
+.tbtns{display:flex;gap:8px;flex-wrap:wrap}
+.tbtn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#fff;padding:9px 14px;border-radius:8px;font-size:13.5px;cursor:pointer;font-family:inherit;font-weight:700}
+.tbtn.red{background:var(--red);border-color:var(--red)}
+.board{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px}
+.col{display:flex;flex-direction:column;min-height:0;background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.ph{background:var(--dark);color:#fff;padding:10px 16px;font-size:12.5px;font-weight:800;letter-spacing:.06em;display:flex;justify-content:space-between;gap:10px;flex:none}
+.ph span{color:var(--gold)}
+.scroll{flex:1;min-height:0;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:6px}
+label{display:block;font-size:13px;font-weight:700;margin:8px 0 6px}
+input,textarea{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 12px;font-size:15.5px;font-family:inherit;color:var(--ink);background:#fff}
+input:focus,textarea:focus{outline:none;border-color:var(--dark)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+#titular{font-family:Georgia,"Times New Roman",serif;font-size:20px;font-weight:700}
+textarea.esc{font-family:Georgia,"Times New Roman",serif;font-size:15.5px;line-height:1.55;min-height:190px;resize:vertical}
+.count{position:sticky;bottom:-16px;background:#fff;padding:8px 0;font-weight:800;font-size:14px}
+.count.ok{color:#1E7A45}.count.no{color:var(--red)}
+#pdf:disabled{opacity:.45;cursor:not-allowed}
+.hint{font-size:13px;color:var(--muted);line-height:1.45}
+.count{font-size:12.5px;color:var(--muted);text-align:right;margin-top:4px}
+/* vista previa */
+.prev{background:#E9E9EC}
+.hoja{background:var(--paper);margin:0 auto;width:100%;max-width:640px;padding:42px 46px 50px;box-shadow:0 4px 18px rgba(0,0,0,.12);border-radius:3px;min-height:100%}
+.kick{font-size:10.5px;letter-spacing:.14em;color:var(--red);font-weight:800;text-transform:uppercase}
+.hoja h1{font-family:Georgia,"Times New Roman",serif;font-size:30px;line-height:1.15;color:var(--dark);margin:10px 0 12px;word-wrap:break-word}
+.firma{font-size:12.5px;color:var(--muted);border-bottom:1px solid #DDD5C5;padding-bottom:12px;margin-bottom:18px}
+.firma b{color:var(--ink)}
+.cuerpo p{font-family:Georgia,"Times New Roman",serif;font-size:15.5px;line-height:1.62;margin-bottom:13px;text-align:justify;hyphens:auto}
+.cuerpo p.sep{text-align:center;color:var(--muted);letter-spacing:.5em}
+.vacio{color:#B5B0A6;font-style:italic}
+@media(max-width:860px){ body{height:auto} .board{grid-template-columns:1fr} .col,.scroll{overflow:visible} .g2{grid-template-columns:1fr} }
+.reglas{background:#FAF6EE;border:1px solid #EEE3CF;border-left:5px solid var(--red);border-radius:10px;padding:10px 14px;margin-bottom:6px}
+.reglas summary{font-weight:800;font-size:14px;cursor:pointer;color:var(--dark)}
+.reglas ol{margin:8px 0 6px 20px;font-size:13.5px;line-height:1.5;color:var(--ink)}
+.reglas li{margin-bottom:4px}
+.ejbtn{margin-top:4px;border:1.5px solid var(--dark);background:#fff;color:var(--dark);border-radius:8px;padding:7px 12px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:flex-start;justify-content:center;z-index:20;overflow-y:auto;padding:30px 14px}
+#modal.on{display:flex}
+#modal .hoja{max-width:700px;position:relative}
+#modal .cerrar{position:absolute;top:12px;right:14px;border:none;background:var(--dark);color:#fff;border-radius:8px;padding:7px 12px;font-weight:800;cursor:pointer;font-family:inherit}
+#modal .etq{font-size:11px;letter-spacing:.12em;color:var(--red);font-weight:800;text-transform:uppercase;margin:6px 0 8px}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--dark);color:#fff;padding:11px 16px;border-radius:10px;font-weight:700;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9;max-width:90vw;text-align:center}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div><div class="tt">UN COMPAÑERO EN DOS ESCENAS</div><div class="ts">ESCRIBE TU PERFIL Y DESCÁRGALO EN PDF PARA MANDÁRSELO A TU COMPAÑERO</div></div>
+  <div class="tbtns"><button class="tbtn" id="borrar">Empezar de nuevo</button><button class="tbtn red" id="pdf">Descargar PDF</button></div>
+</div>
+<div class="board">
+  <div class="col">
+    <div class="ph">TU TEXTO <span id="guardado">Se guarda solo en este ordenador</span></div>
+    <div class="scroll">
+      <details class="reglas" open><summary>Reglas</summary>
+        <ol>
+          <li>Tres escenas, presente, pasado y vuelta al presente, que entre las tres sumen al menos 450 palabras.</li>
+          <li>Todo lo que escribas tiene que ser verdad. En la escena del pasado puedes ordenar y comprimir lo que te contó tu compañero, pero lo que no te haya contado no lo puedes poner.</li>
+          <li>Usa al menos un detalle de cada sentido que puedas, vista, oído, tacto u olfato.</li>
+          <li>Incluye al menos una frase dicha por tu compañero, tal cual la dijo.</li>
+          <li>Busca un hilo que una las escenas, un objeto, un gesto o una frase que aparezca en el presente y en el pasado.</li>
+        </ol>
+        <button type="button" class="ejbtn" id="verEj">Ver un ejemplo</button>
+      </details>
+      <div class="g2">
+        <div><label for="autor">Tu nombre</label><input id="autor" autocomplete="off"></div>
+        <div><label for="companero">Compañero o compañera</label><input id="companero" autocomplete="off"></div>
+      </div>
+      <label for="titular">Titular</label>
+      <input id="titular" autocomplete="off">
+      <p class="hint" style="margin-top:10px">El texto tiene tres escenas, presente, pasado y vuelta al presente, y entre las tres tienen que sumar al menos 450 palabras. Deja una línea en blanco entre párrafos.</p>
+      <label for="e1">Escena 1 · Hoy, en clase</label>
+      <textarea id="e1" class="esc"></textarea>
+      <label for="e2">Escena 2 · El pasado (puedes contarla en presente)</label>
+      <textarea id="e2" class="esc"></textarea>
+      <label for="e3">Escena 3 · Vuelta al presente</label>
+      <textarea id="e3" class="esc"></textarea>
+      <div class="count" id="count"><span id="cn">0</span> / 450 palabras</div>
+    </div>
+  </div>
+  <div class="col prev">
+    <div class="ph">ASÍ SALE EN EL PDF</div>
+    <div class="scroll"><div class="hoja">
+      <div class="kick">Periodismo narrativo · Un compañero en dos escenas</div>
+      <h1 id="vTit"></h1>
+      <div class="firma" id="vFirma"></div>
+      <div class="cuerpo" id="vTexto"></div>
+    </div></div>
+  </div>
+</div>
+<div id="modal"><div class="hoja"><button class="cerrar" id="cerrarEj">Cerrar</button>
+  <div class="kick">Ejemplo · Un compañero en dos escenas</div>
+  <h1 id="ejTit"></h1><div class="firma" id="ejFirma"></div><div class="cuerpo" id="ejTexto"></div>
+</div></div>
+<div id="toast"></div>
+<script>
+const $ = id => document.getElementById(id);
+const F = ['autor','companero','titular','e1','e2','e3'];
+const MIN = 450;
+const KEY = 'escenas_companero_v4_';
+const EJEMPLO = {"titular": "Un escritor cuando nadie escucha", "autor": "Lucía Pérez", "companero": "Álvaro Núñez", "e1": "Álvaro llega a las diez y diecisiete, dos minutos tarde, con la capucha todavía puesta y una libreta de tapas azules bajo el brazo. No saca el portátil. Se sienta en la tercera fila, junto a la ventana, y escribe la fecha en la esquina superior de la página con letra pequeña y apretada.\n\nCuando el profesor pregunta quién ha leído a Caparrós, él no levanta la mano. Pero apunta algo. Cuando una compañera dice que el libro le pareció demasiado largo, vuelve a apuntar. A las diez y cuarenta ya ha llenado dos páginas y no ha dicho una palabra.\n\n—¿Tú siempre escribes todo? —le pregunto cuando nos toca hacer la entrevista.\n\n—Todo no. Lo que dice la gente cuando no sabe que alguien la está escuchando —contesta, y gira la libreta para que no pueda leerla.", "e2": "Es el verano de 2012, en el piso de su abuela en Zamora. Álvaro tiene ocho años y una grabadora de casete plateada que ha encontrado en un cajón de la cocina, debajo de las facturas del gas. La abuela Pilar se sienta cada tarde en la mecedora del salón con la radio encendida, y él se pone delante con el aparato en la mano y el botón rojo apretado.\n\n—Abuela, ¿cuántos años tenías cuando conociste al abuelo?\n\nElla baja el volumen, se coloca las gafas y contesta despacio, como si hablara para un programa de verdad. Le cuenta que lo conoció en las fiestas de San Pedro, que él llevaba una camisa prestada dos tallas más grande y que no sabía bailar. Le cuenta también lo que nunca ha contado en las comidas de Navidad, que estuvo a punto de casarse con otro.\n\nÁlvaro graba cuatro cintas ese verano. Les escribe un título con rotulador en la pegatina de cada una, «Entrevista a la abuela 1», «Entrevista a la abuela 2», y las guarda en una caja de zapatos. Cuando su madre las encuentra y se pone a escuchar la tercera, se queda un rato callada en la cocina.\n\n—¿Esto te lo ha contado a ti? —le pregunta.\n\nÉl dice que sí y vuelve a esconder la caja debajo de la cama.", "e3": "Al terminar la clase, Álvaro guarda la libreta en la mochila sin cerrarla del todo. Se queda un momento sentado mientras los demás salen y el aula se vacía de ruido. Saca el móvil, abre la aplicación de grabar audio y la deja preparada, con el círculo rojo en el centro de la pantalla, igual que el botón de aquella grabadora plateada.\n\n—¿Y eso? —le pregunto.\n\n—Esta tarde voy a ver a mi abuela. Todavía tengo preguntas.\n\nSe pone la capucha, se cuelga la mochila de un solo hombro y sale el último, sin despedirse de nadie."};
+const lsGet = k => { try { return localStorage.getItem(KEY+k) || ''; } catch(e){ return ''; } };
+const lsSet = (k,v) => { try { localStorage.setItem(KEY+k, v); } catch(e){} };
+const toast = m => { const t=$('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2600); };
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function parrafos(txt){
+  return txt.replace(/\r/g,'').split(/\n\s*\n|\n/).map(s=>s.trim()).filter(Boolean);
+}
+function palabras(){ return ['e1','e2','e3'].reduce((t,k)=>{ const x=$(k).value.trim(); return t + (x ? x.split(/\s+/).length : 0); },0); }
+function render(){
+  const v = {}; F.forEach(k => v[k] = $(k).value);
+  $('vTit').innerHTML = v.titular.trim() ? esc(v.titular.trim()) : '<span class="vacio">Tu titular</span>';
+  const a = v.autor.trim(), c = v.companero.trim();
+  $('vFirma').innerHTML = (c ? 'Perfil de <b>'+esc(c)+'</b>' : '<span class="vacio">Perfil de…</span>') + ' · ' + (a ? 'Por <b>'+esc(a)+'</b>' : '<span class="vacio">Por…</span>');
+  const bloques = ['e1','e2','e3'].map(k => parrafos(v[k])).filter(b => b.length);
+  $('vTexto').innerHTML = bloques.length ? bloques.map(b => b.map(p => '<p>'+esc(p)+'</p>').join('')).join('<p class="sep">* * *</p>') : '<p class="vacio">Aquí aparecerá tu texto.</p>';
+  const n = palabras();
+  $('cn').textContent = n;
+  const ok = n >= MIN;
+  $('count').className = 'count ' + (ok ? 'ok' : 'no');
+  $('pdf').disabled = !ok;
+  $('pdf').title = ok ? '' : 'Necesitas al menos ' + MIN + ' palabras para descargar';
+}
+F.forEach(k => { $(k).value = lsGet(k); $(k).addEventListener('input', () => { lsSet(k, $(k).value); render(); }); });
+render();
+
+function verEjemplo(){
+  $('ejTit').textContent = EJEMPLO.titular;
+  $('ejFirma').innerHTML = 'Perfil de <b>'+esc(EJEMPLO.companero)+'</b> · Por <b>'+esc(EJEMPLO.autor)+'</b>';
+  const nombres = ['Escena 1 · Hoy, en clase','Escena 2 · El pasado, contado en presente','Escena 3 · Vuelta al presente'];
+  $('ejTexto').innerHTML = ['e1','e2','e3'].map((k,i) => '<div class="etq">'+nombres[i]+'</div>' + parrafos(EJEMPLO[k]).map(p => '<p>'+esc(p)+'</p>').join('')).join('<p class="sep">* * *</p>');
+  $('modal').classList.add('on');
+}
+$('verEj').onclick = verEjemplo;
+$('cerrarEj').onclick = () => $('modal').classList.remove('on');
+$('modal').onclick = e => { if (e.target.id === 'modal') $('modal').classList.remove('on'); };
+
+$('borrar').onclick = () => {
+  if (!['titular','e1','e2','e3'].some(k => $(k).value)) return;
+  if (!confirmar()) return;
+  ['titular','e1','e2','e3'].forEach(k => { $(k).value=''; lsSet(k,''); }); render(); toast('Texto borrado');
+};
+let pend = 0;
+function confirmar(){ const now = Date.now(); if (now - pend < 3000) { pend = 0; return true; } pend = now; toast('Pulsa otra vez para borrar el titular y las escenas'); return false; }
+
+function limpio(s){ return s.replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/…/g,'...').replace(/[^\x00-\xFF—–€]/g,''); }
+function nombreArchivo(s){ return (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,''); }
+
+$('pdf').onclick = () => {
+  const a = $('autor').value.trim(), c = $('companero').value.trim(), t = $('titular').value.trim();
+  if (!a || !c) { toast('Escribe tu nombre y el de tu compañero'); return; }
+  if (!t) { toast('Falta el titular'); return; }
+  if (['e1','e2','e3'].some(k => !$(k).value.trim())) { toast('Tienen que estar las tres escenas'); return; }
+  if (palabras() < MIN) { toast('Llevas ' + palabras() + ' palabras y necesitas al menos ' + MIN); return; }
+  if (!window.jspdf) { toast('No se ha cargado el generador de PDF, revisa la conexión'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  const L = 22, R = 188, Wd = R - L, BOT = 275;
+  let y = 24;
+  doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(200,16,46);
+  doc.text('PERIODISMO NARRATIVO  ·  UN COMPAÑERO EN DOS ESCENAS', L, y); y += 10;
+  doc.setFont('times','bold'); doc.setFontSize(24); doc.setTextColor(27,27,31);
+  doc.splitTextToSize(limpio(t), Wd).forEach(l => { doc.text(l, L, y); y += 9.5; });
+  y += 1;
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(107,107,114);
+  doc.text(limpio('Perfil de ' + c + '  ·  Por ' + a), L, y); y += 4;
+  doc.setDrawColor(221,213,197); doc.setLineWidth(0.3); doc.line(L, y, R, y); y += 9;
+  doc.setFont('times','normal'); doc.setFontSize(12); doc.setTextColor(43,43,48);
+  const LH = 6.2;
+  ['e1','e2','e3'].forEach((k, bi) => {
+    if (bi > 0) {
+      if (y > BOT) { doc.addPage(); y = 24; }
+      doc.setTextColor(150,150,150); doc.text('*   *   *', (L+R)/2, y, { align: 'center' }); doc.setTextColor(43,43,48); y += LH + 3;
+    }
+    parrafos($(k).value).forEach(p => {
+      const ls = doc.splitTextToSize(limpio(p), Wd);
+      ls.forEach((l, i) => {
+        if (y > BOT) { doc.addPage(); y = 24; }
+        const last = i === ls.length - 1;
+        doc.text(l, L, y, last ? {} : { align: 'justify', maxWidth: Wd });
+        y += LH;
+      });
+      y += 3;
+    });
+  });
+  const n = doc.getNumberOfPages();
+  for (let i = 1; i <= n; i++) { doc.setPage(i); doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(150,150,150); doc.text(i + ' / ' + n, R, 287, { align: 'right' }); }
+  doc.save('Escenas_' + (nombreArchivo(c) || 'companero') + '_por_' + (nombreArchivo(a) || 'autor') + '.pdf');
+  toast('PDF descargado. Ya puedes mandárselo a tu compañero');
+};
+</script>
+</body>
+</html>
