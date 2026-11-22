@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mímica de libros · Mimo</title>
+<style>
+:root{--red:#C8102E;--ink:#1B1B1F;--bg:#F3F1EC;--muted:#6B6B72;--border:#D8D8DC;--green:#1E7A45;--gold:#E8B54A}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+header{background:var(--ink);color:#fff;padding:12px 16px}
+header .t1{font-family:Georgia,serif;font-size:22px;font-weight:700}
+header .t2{font-size:11px;color:var(--gold);letter-spacing:.12em;text-transform:uppercase}
+.wrap{flex:1;padding:20px 16px;display:flex;flex-direction:column;gap:14px;max-width:520px;margin:0 auto;width:100%}
+.card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:18px;text-align:center}
+.lb{font-size:12px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;font-weight:800}
+.tm{font-family:Georgia,serif;font-size:28px;font-weight:700;margin-top:4px}
+input{width:100%;border:2px solid var(--border);border-radius:10px;padding:14px;font-size:24px;text-align:center;letter-spacing:.2em;text-transform:uppercase;font-family:inherit;font-weight:800}
+.btn{width:100%;border:none;border-radius:12px;padding:18px;font-size:19px;font-weight:800;font-family:inherit;color:#fff;background:var(--red);cursor:pointer}
+.btn:disabled{opacity:.4}
+.libro{background:var(--ink);color:#fff;border-radius:16px;padding:30px 18px;text-align:center}
+.libro .tit{font-family:Georgia,serif;font-size:34px;font-weight:700;line-height:1.15;margin:10px 0}
+.libro .aut{color:var(--gold);font-size:18px;font-style:italic}
+.libro .n{font-size:14px;color:#bbb;margin-top:14px}
+.aviso{font-size:15px;color:var(--muted);line-height:1.45;text-align:center}
+.err{color:var(--red);font-weight:700;text-align:center;min-height:20px}
+</style>
+</head>
+<body>
+<header><div class="t1">Mímica de libros</div><div class="t2">Pantalla del mimo</div></header>
+<div class="wrap" id="app"></div>
+<script>
+const API = location.origin + "/api/mimica";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const lsGet = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch(e){ return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch(e){} };
+let DEV = lsGet("mimica_dev", ""); if (!DEV) { DEV = Math.random().toString(36).slice(2) + Date.now().toString(36); lsSet("mimica_dev", DEV); }
+let CODE = (new URLSearchParams(location.search).get("c") || lsGet("mimica_mcode", "")).toUpperCase(), S = null, err = "";
+
+async function api(params){
+  const r = await fetch(API, { method:"POST", body: JSON.stringify(Object.assign({ c: CODE, dev: DEV }, params)) });
+  const j = await r.json(); if (j.error) throw new Error(j.error); return j;
+}
+function entrar(){
+  $("app").innerHTML = `<div class="card"><div class="lb">Código de la partida</div><input id="cd" maxlength="6" value="${esc(CODE)}" style="margin-top:10px"></div>
+    <button class="btn" id="ok">Entrar</button><div class="err">${esc(err)}</div>`;
+  $("ok").onclick = () => { CODE = $("cd").value.trim().toUpperCase(); lsSet("mimica_mcode", CODE); err = ""; refrescar(); };
+}
+function render(){
+  const s = S, turno = s.teams[s.turn];
+  let body;
+  if (s.status === "done") body = `<div class="card"><div class="tm">Partida terminada</div></div>`;
+  else if (s.status === "solved") body = `<div class="card"><div class="lb">Turno resuelto</div><div class="aviso" style="margin-top:8px">Espera al siguiente libro.</div></div>`;
+  else if (s.isMimo) body = `<div class="libro"><div class="lb" style="color:#bbb">Tienes que representar</div><div class="tit">${esc(s.title)}</div><div class="aut">${esc(s.author)}</div><div class="n">${s.title.split(/\s+/).length} palabras</div></div>
+    <div class="aviso">Que no lo vea nadie. Sin hablar, sin señalar letras y sin decir el autor.</div>`;
+  else if (s.hasMimo) body = `<div class="card"><div class="lb">Este turno ya tiene mimo</div><div class="aviso" style="margin-top:8px">Solo el móvil del mimo puede ver el libro.</div></div>`;
+  else body = `<div class="aviso">Pulsa solo si eres quien va a representar. El primer móvil que lo pulse se queda con el libro.</div><button class="btn" id="claim">Soy el mimo · ver el libro</button>`;
+  $("app").innerHTML = `<div class="card"><div class="lb">Representa</div><div class="tm">${esc(turno.name)}</div><div class="aviso" style="margin-top:6px">Libro ${s.n} de ${s.total}</div></div>${body}<div class="err" id="err"></div>`;
+  if ($("claim")) $("claim").onclick = async () => { try { await api({ a:"claim" }); refrescar(true); } catch(e){ $("err").textContent = e.message; } };
+}
+let last = "";
+async function refrescar(force){
+  if (!CODE) return entrar();
+  try { const j = await api({ a:"state" }); const js = JSON.stringify(j); if (force || js !== last) { last = js; S = j; render(); } }
+  catch(e){ err = e.message; CODE = ""; entrar(); }
+}
+refrescar();
+setInterval(() => { if (CODE) refrescar(); }, 1500);
+</script>
+</body>
+</html>
