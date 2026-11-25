@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elige el párrafo · Proyector</title><style>
+:root{--fondo:#1c2420;--verde:#1f5c46;--oro:#e39b2d;--claro:#f3f5f2}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Calibri,Arial,sans-serif;background:var(--fondo);color:#fff;min-height:100vh}
+header{padding:12px 24px;background:var(--verde);display:flex;justify-content:space-between;align-items:center;gap:10px}
+h1{margin:0;font-family:Cambria,Georgia,serif;font-size:26px}
+h1 small{display:block;font-family:"Segoe UI",Arial,sans-serif;font-size:14px;font-weight:normal;opacity:.8;letter-spacing:.06em;text-transform:uppercase}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:12px 20px}
+.btn{background:var(--oro);color:#1c2420;font-weight:bold;font-size:20px}
+.sec{background:rgba(255,255,255,.15);color:#fff}
+main{padding:20px 28px;max-width:1500px;margin:0 auto}
+.caja{background:#fff;color:#1c2420;border-radius:16px;padding:20px}
+.fila{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.preg{font-family:Cambria,Georgia,serif;font-size:clamp(28px,3vw,44px);font-weight:bold;text-align:center;margin:4px 0 18px}
+.ops{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.op{border-radius:12px;padding:16px 18px;color:#fff;display:flex;gap:14px;align-items:flex-start;font-size:clamp(15px,1.3vw,21px);line-height:1.35;min-height:120px;position:relative}
+.op .f{font-size:26px;line-height:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:34px}
+.op .f b{font-size:20px}
+.c0{background:#e21b3c}.c1{background:#1368ce}.c2{background:#c48a00}.c3{background:#26890c}
+.op.mal{opacity:.28}
+.op .n{position:absolute;right:14px;bottom:10px;font-weight:bold;font-size:22px}
+.buena{background:#fff;color:#1c2420;border-radius:16px;padding:22px 26px;display:flex;gap:18px;align-items:flex-start;border:6px solid #3fbf6a}
+.buena .tick{background:#3fbf6a;color:#fff;border-radius:50%;width:60px;height:60px;display:flex;align-items:center;justify-content:center;font-size:36px;flex:none}
+.buena .lab{font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:#1f5c46;font-weight:bold;margin-bottom:6px}
+.buena .tx{font-family:Cambria,Georgia,serif;font-style:italic;font-size:clamp(18px,1.7vw,28px);line-height:1.4}
+.mini{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.mini .op{min-height:0;font-size:15px;opacity:.55}
+.mini .op s{text-decoration-thickness:2px}
+.pq{display:grid;grid-template-columns:1.35fr 1fr;gap:22px;align-items:stretch}
+.pq h2{font-family:Cambria,Georgia,serif;margin:0 0 10px;font-size:34px;color:var(--oro)}
+.expl{font-size:clamp(20px,1.8vw,30px);line-height:1.45}
+.cita{font-family:Cambria,Georgia,serif;font-style:italic;font-size:17px;color:#46524b;border-left:4px solid #3fbf6a;padding-left:12px;margin-bottom:16px}
+.podio{display:flex;align-items:flex-end;justify-content:center;gap:10px;height:270px;margin-top:6px}
+.pl{flex:1;max-width:170px;text-align:center}
+.pl .nm{font-weight:bold;font-size:20px;margin-bottom:6px;word-break:break-word}
+.pl .pt{font-size:15px;opacity:.85;margin-bottom:6px}
+.pl .bl{border-radius:10px 10px 0 0;display:flex;align-items:flex-start;justify-content:center;font-family:Cambria,Georgia,serif;font-size:44px;font-weight:bold;padding-top:8px;color:#1c2420}
+.p1 .bl{height:150px;background:var(--oro)}.p2 .bl{height:110px;background:#cfd8d3}.p3 .bl{height:80px;background:#c98a5a}
+.resto div{display:flex;justify-content:space-between;font-size:20px;padding:8px 6px;border-top:1px solid rgba(255,255,255,.2)}
+.tiempo{font-size:36px;font-weight:bold;color:var(--oro)}
+.reloj{background:var(--oro);color:#1c2420;border-radius:50%;width:90px;height:90px;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:bold}
+.grandep .podio{height:380px}.grandep .pl{max-width:230px}.grandep .pl .nm{font-size:28px}.grandep .pl .pt{font-size:20px}.grandep .p1 .bl{height:220px}.grandep .p2 .bl{height:160px}.grandep .p3 .bl{height:115px}.grandep .resto div{font-size:26px}
+.pie{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:12px}
+.pie span{font-size:20px;opacity:.9}
+.url{font-size:clamp(26px,3vw,46px);font-weight:bold;color:var(--oro);word-break:break-all}
+.chips span{display:inline-block;background:rgba(255,255,255,.14);border-radius:20px;padding:6px 14px;margin:4px;font-size:18px}
+#login{max-width:360px;margin:70px auto}
+input[type=text]{font:inherit;width:100%;padding:12px;border-radius:8px;border:2px solid #888}
+.ko{color:#e21b3c;font-weight:bold}
+[hidden]{display:none!important}
+</style></head><body>
+<div id="login" class="caja"><p>Clave del profesor</p><input type="text" id="clave" autocomplete="off"><p><button class="btn" id="bClave">Entrar</button></p><div class="ko" id="errL"></div></div>
+<div id="app" hidden>
+<header><h1><small>Periodismo deportivo · Clase 5</small>Elige el párrafo</h1>
+<div class="fila"><span id="paso" style="font-size:18px;opacity:.9"></span><span class="tiempo" id="tm"></span><button class="sec" id="bNueva">Nueva partida</button></div></header>
+<main id="main"></main></div>
+<script>
+function io() {
+  let cid;
+  try { cid = sessionStorage.getItem('kc_cid'); if (!cid) { cid = 'c' + Math.random().toString(36).slice(2) + Date.now(); sessionStorage.setItem('kc_cid', cid); } }
+  catch (e) { cid = 'c' + Math.random().toString(36).slice(2) + Date.now(); }
+  const h = {}, fire = (ev, d) => (h[ev] || []).forEach(f => f(d));
+  const es = new EventSource('/api/kahootcronica/stream?cid=' + encodeURIComponent(cid));
+  es.onopen = () => fire('connect');
+  es.onmessage = m => { try { const x = JSON.parse(m.data); fire(x.ev, x.d); } catch (e) {} };
+  return {
+    on(ev, f) { (h[ev] = h[ev] || []).push(f); return this; },
+    emit(ev, d) { fetch('/api/kahootcronica/msg', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cid, ev, d }) }).catch(() => {}); }
+  };
+}
+</script>
+<script>
+const $ = s => document.querySelector(s), FORMAS = ["▲","◆","●","■"], LET = ["A","B","C","D"];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const socket = io(); let est = null, tick = null, clave = "";
+try { clave = localStorage.getItem("cm_clave") || ""; } catch (e) {}
+const login = c => { clave = c; socket.emit("auth", c); };
+$("#bClave").onclick = () => login($("#clave").value.trim());
+$("#clave").onkeydown = e => { if (e.key === "Enter") login($("#clave").value.trim()); };
+socket.on("connect", () => { if (clave) login(clave); });
+socket.on("auth_ok", () => { try { localStorage.setItem("cm_clave", clave); } catch (e) {} $("#login").hidden = true; $("#app").hidden = false; });
+socket.on("auth_error", () => { $("#errL").textContent = "Clave incorrecta."; });
+socket.on("estado", e => { est = e; pintar(); });
+$("#bNueva").onclick = () => { if (confirm("¿Empezar una partida nueva? Los alumnos tendrán que volver a entrar.")) socket.emit("reiniciar"); };
+// las flechas, la barra espaciadora o el mando de diapositivas avanzan como en una presentación
+document.addEventListener("keydown", e => {
+  if (!est || $("#app").hidden || e.target.tagName === "INPUT") return;
+  if (["ArrowRight", " ", "PageDown", "Enter"].includes(e.key)) { e.preventDefault(); if (est.fase === "lobby") socket.emit("empezar"); else if (est.fase !== "fin") socket.emit("avanzar"); }
+});
+function reloj() { clearInterval(tick); const f = () => { const s = Math.max(0, Math.ceil((est.finTs - Date.now()) / 1000)); $("#tm").textContent = ""; const g = $("#cuenta"); if (g) g.textContent = s; const c = $("#aPodio"); if (c) c.textContent = "El podio sale en " + s + " s"; }; f(); tick = setInterval(f, 200); }
+function podio(top) {
+  const r = est.ranking, p = i => r[i] ? `<div class="pl p${i + 1}"><div class="nm">${esc(r[i].nombre)}</div><div class="pt">${r[i].pts} pts</div><div class="bl">${i + 1}</div></div>` : '<div class="pl"></div>';
+  return `<div class="podio">${p(1)}${p(0)}${p(2)}</div><div class="resto">${r.slice(3, top).map((x, i) => `<div><span>${i + 4}. ${esc(x.nombre)}</span><b>${x.pts}</b></div>`).join("")}</div>`;
+}
+function pintar() {
+  if (!est) return;
+  reloj(); const m = $("#main"), q = est.pregunta, F = est.fase;
+  $("#paso").textContent = est.idx >= 0 && F !== "fin" && F !== "lobby" ? "Pregunta " + (est.idx + 1) + " de " + est.total : "";
+  if (F === "lobby") {
+    const url = location.origin + "/elige-parrafo/alumno";
+    m.innerHTML = `<div class="fila" style="align-items:flex-start;gap:28px"><div style="flex:1.3;min-width:320px">
+      <p style="font-size:24px;margin:10px 0 4px">Entra desde el móvil en</p><div class="url">${esc(url)}</div>
+      <p style="font-size:22px">y escribe tu nombre. Juegas solo.</p>
+      <div class="caja" style="margin-top:18px"><b>Tiempo para contestar</b><div class="fila" style="margin:10px 0">${est.tiempos.map(n => `<button class="${n === est.tiempo ? "btn" : "sec"}" style="${n === est.tiempo ? "" : "background:#e5ebe7;color:#1c2420"}" data-s="${n}">${n ? n + " s" : "Sin límite"}</button>`).join("")}</div>
+      <span style="opacity:.75">Como en Kahoot, la pregunta se cierra sola al acabar el tiempo o cuando han respondido todos. Después sale la correcta, luego el podio, y ahí se para hasta que sigues tú.</span>
+      <p><button class="btn" id="bEmp" style="font-size:24px">Empezar ▶</button></p></div></div>
+      <div style="flex:1;min-width:280px"><h2 style="font-family:Cambria,serif">Jugadores (${est.ranking.length})</h2><div class="chips">${est.ranking.map(x => `<span>${esc(x.nombre)}</span>`).join("") || '<span style="opacity:.6">Esperando…</span>'}</div></div></div>`;
+    m.querySelectorAll("[data-s]").forEach(b => b.onclick = () => socket.emit("segundos", Number(b.dataset.s)));
+    $("#bEmp").onclick = () => socket.emit("empezar");
+    return;
+  }
+  if (F === "fin") {
+    m.innerHTML = `<div class="preg">🏆 Podio final</div><div style="max-width:760px;margin:0 auto">${podio(10)}</div>`;
+    return;
+  }
+  const op = (o, i, extra) => `<div class="op c${i}${extra || ""}"><span class="f">${FORMAS[i]}<b>${LET[i]}</b></span><span style="flex:1">${esc(o)}</span>${F === "correcta" ? `<span class="n">${est.conteo[i]}</span>` : ""}</div>`;
+  if (F === "pregunta") {
+    m.innerHTML = `<div class="preg">${esc(q.p)}</div><div class="ops">${q.o.map((o, i) => op(o, i)).join("")}</div>
+      <div class="pie"><span>Han respondido <b>${est.respondidas}</b> de ${est.ranking.filter(x => x.conectado).length}</span>${est.finTs ? '<span class="reloj" id="cuenta"></span>' : ""}<button class="sec" id="bAv">Cerrar ya</button></div>`;
+  } else if (F === "correcta") {
+    const otras = q.o.map((o, i) => i).filter(i => i !== q.c);
+    m.innerHTML = `<div class="preg">${esc(q.p)}</div>
+      <div class="buena"><div class="tick">✔</div><div><div class="lab">Respuesta correcta · ${LET[q.c]} ${FORMAS[q.c]} · la eligieron ${est.conteo[q.c]}</div><div class="tx">«${esc(q.o[q.c])}»</div></div></div>
+      <div class="mini">${otras.map(i => `<div class="op c${i}"><span class="f">${FORMAS[i]}<b>${LET[i]}</b></span><span style="flex:1"><s>${esc(q.o[i].length > 110 ? q.o[i].slice(0, 107) + "…" : q.o[i])}</s></span><span class="n">${est.conteo[i]}</span></div>`).join("")}</div>
+      <div class="pie"><span id="aPodio"></span><button class="btn" id="bAv">Podio ▶</button></div>`;
+  } else if (F === "podio") {
+    m.innerHTML = `<div class="preg">Podio · pregunta ${est.idx + 1} de ${est.total}</div><div style="max-width:820px;margin:0 auto" class="grandep">${podio(5)}</div>
+      <div class="pie"><span>¿Por qué es la ${LET[q.c]}? Pregunta al primero.</span><button class="btn" id="bAv">Por qué ▶</button></div>`;
+  } else {
+    m.innerHTML = `<div class="caja" style="max-width:1200px;margin:10px auto 0;padding:30px 36px"><h2 style="font-family:Cambria,serif;color:#1f5c46;font-size:40px;margin:0 0 14px">Por qué es la ${LET[q.c]} ${FORMAS[q.c]}</h2>
+      <div class="cita" style="font-size:20px">«${esc(q.o[q.c])}»</div><div class="expl" style="font-size:clamp(24px,2.2vw,34px)">${esc(q.e)}</div></div>
+      <div class="pie"><span></span><button class="btn" id="bAv">${est.idx + 1 >= est.total ? "Ver el podio final 🏆" : "Siguiente pregunta ▶"}</button></div>`;
+  }
+  $("#bAv").onclick = () => socket.emit("avanzar");
+}
+</script></body></html>

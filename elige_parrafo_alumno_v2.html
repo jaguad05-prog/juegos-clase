@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elige el párrafo</title><style>
+:root{--fondo:#1c2420;--verde:#1f5c46;--oro:#e39b2d}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Calibri,Arial,sans-serif;background:var(--fondo);color:#fff}
+header{padding:12px 16px;background:var(--verde);display:flex;justify-content:space-between;align-items:center;gap:10px}
+h1{margin:0;font-family:Cambria,Georgia,serif;font-size:22px}
+h1 small{display:block;font-family:"Segoe UI",Arial,sans-serif;font-size:13px;font-weight:normal;opacity:.8}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px}
+.btn{background:var(--oro);color:#1c2420;font-weight:bold;padding:14px;width:100%;font-size:20px}
+main{max-width:640px;margin:0 auto;padding:12px}
+.caja{background:#fff;color:#1c2420;border-radius:14px;padding:18px}
+input[type=text]{font:inherit;width:100%;padding:12px;border-radius:8px;border:2px solid #888;font-size:18px}
+.ops{display:flex;flex-direction:column;gap:10px}
+.op{border-radius:10px;padding:12px 14px;color:#fff;display:flex;gap:12px;align-items:flex-start;text-align:left;font-size:15px;line-height:1.35;width:100%}
+.op .f{font-size:24px;display:flex;flex-direction:column;align-items:center;min-width:30px}
+.op .f b{font-size:17px}
+.c0{background:#e21b3c}.c1{background:#1368ce}.c2{background:#c48a00}.c3{background:#26890c}
+.grande{font-size:22px;text-align:center;padding:24px;line-height:1.5}
+.ok{color:#1a8f45;font-weight:bold;font-size:30px}.ko{color:#e21b3c;font-weight:bold}
+.preg{font-family:Cambria,Georgia,serif;font-size:20px;font-weight:bold;text-align:center;margin:6px 0 12px}
+[hidden]{display:none!important}
+</style></head><body>
+<header><h1><small id="sub">Escribe tu nombre para entrar</small>Elige el párrafo</h1><b id="pts"></b></header>
+<main><div id="entrada" class="caja"><p>Tu nombre</p><input type="text" id="nombre" maxlength="28" autocomplete="off"><p><button class="btn" id="bEnt">Entrar</button></p><div class="ko" id="err"></div></div>
+<div id="juego" hidden></div></main>
+<script>
+function io() {
+  let cid;
+  try { cid = sessionStorage.getItem('kc_cid'); if (!cid) { cid = 'c' + Math.random().toString(36).slice(2) + Date.now(); sessionStorage.setItem('kc_cid', cid); } }
+  catch (e) { cid = 'c' + Math.random().toString(36).slice(2) + Date.now(); }
+  const h = {}, fire = (ev, d) => (h[ev] || []).forEach(f => f(d));
+  const es = new EventSource('/api/kahootcronica/stream?cid=' + encodeURIComponent(cid));
+  es.onopen = () => fire('connect');
+  es.onmessage = m => { try { const x = JSON.parse(m.data); fire(x.ev, x.d); } catch (e) {} };
+  return {
+    on(ev, f) { (h[ev] = h[ev] || []).push(f); return this; },
+    emit(ev, d) { fetch('/api/kahootcronica/msg', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cid, ev, d }) }).catch(() => {}); }
+  };
+}
+</script>
+<script>
+const $ = s => document.querySelector(s), FORMAS = ["▲","◆","●","■"], LET = ["A","B","C","D"];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const socket = io(); let est = null;
+const tok = () => { try { return localStorage.getItem("kc_token") || ""; } catch (e) { return ""; } };
+const entrar = () => socket.emit("unirse", { nombre: $("#nombre").value, token: tok() });
+$("#bEnt").onclick = entrar; $("#nombre").onkeydown = e => { if (e.key === "Enter") entrar(); };
+socket.on("connect", () => { if (tok()) entrar(); });
+socket.on("error_msg", m => $("#err").textContent = m);
+socket.on("unido", d => { try { localStorage.setItem("kc_token", d.token); } catch (e) {} $("#entrada").hidden = true; $("#juego").hidden = false; $("#sub").textContent = d.nombre; });
+socket.on("reinicio", () => { try { localStorage.removeItem("kc_token"); } catch (e) {} location.reload(); });
+socket.on("estado", e => { est = e; pintar(); });
+setInterval(() => { const c = document.getElementById("cnt"); if (c && est && est.finTs) c.textContent = "· " + Math.max(0, Math.ceil((est.finTs - Date.now()) / 1000)) + " s"; }, 200);
+function pintar() {
+  if (!est || !est.mi) return;
+  const r = est.mi, j = $("#juego"), q = est.pregunta, F = est.fase;
+  $("#pts").textContent = r.pts + " pts · " + r.puesto + ".º";
+  if (F === "lobby") { j.innerHTML = '<div class="caja grande">Ya estás dentro.<br>Mira el proyector, enseguida empieza.</div>'; return; }
+  if (F === "fin") { j.innerHTML = `<div class="caja grande">¡Se acabó!<br>Has quedado <b>${r.puesto}.º</b> con <b>${r.pts}</b> puntos.</div>`; return; }
+  if (F === "pregunta") {
+    if (r.respondido !== null) { j.innerHTML = `<div class="caja grande">Has elegido la <b>${LET[r.respondido]}</b> <span style="font-size:36px">${FORMAS[r.respondido]}</span><br>Espera a que respondan todos.</div>`; return; }
+    j.innerHTML = `<div class="preg">${esc(q.p)}${est.finTs ? ` <span id="cnt" style="color:#e39b2d"></span>` : ""}</div><div class="ops">${q.o.map((o, i) => `<button class="op c${i}" data-i="${i}"><span class="f">${FORMAS[i]}<b>${LET[i]}</b></span><span>${esc(o)}</span></button>`).join("")}</div>`;
+    j.querySelectorAll("[data-i]").forEach(b => b.onclick = () => socket.emit("responder", +b.dataset.i));
+    return;
+  }
+  const res = r.respondido === null ? '<span class="ko">No has respondido</span>' : r.ok ? `<span class="ok">✔ ¡Correcto!</span><br>+${r.ganados} puntos` : `<span class="ko">✘ Era la ${LET[q.c]}</span>`;
+  j.innerHTML = `<div class="caja grande">${res}<br>Vas <b>${r.puesto}.º</b> con ${r.pts} puntos.${F === "podio" ? "<br><br>Mira el podio en el proyector." : F === "porque" ? "<br><br>Mira en el proyector por qué." : ""}</div>`;
+}
+</script></body></html>

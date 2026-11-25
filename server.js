@@ -9,6 +9,7 @@ const vm = require("vm");
 const serpientes = require("./serpientes.js");
 const madridista = require("./madridista.js");
 const kahootmad = require("./kahootmad.js");
+const kahootcronica = require("./kahootcronica.js");   // Elige el párrafo: Kahoot de la crónica de la Clase 5
 const noticias = require("./noticias.js");   // Tu noticia: los alumnos publican y el profesor las recibe
 
 const PORT = process.env.PORT || 3000;
@@ -89,6 +90,7 @@ const server = http.createServer((req, res) => {
   if (serpientes.handle(req, res, url)) return;
   if (madridista.handle(req, res, url)) return;
   if (kahootmad.handle(req, res, url)) return;
+  if (kahootcronica.handle(req, res, url)) return;
   if (noticias.handle(req, res, url)) return;
   const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla2|liguilla|ahorcado|microfono|mujer|charla|moncloa|columna|torneo|vale|prensamadrid|ordena|marca|mimica|general)\/?$/);
   if (m) {
@@ -107,7 +109,7 @@ const server = http.createServer((req, res) => {
     return;
   }
   // direcciones cortas de La gran carrera madridista (llevan siempre a la última versión)
-  const corto = { "/noticia": "/noticia_alumno_v1.html", "/noticia/profesor": "/noticia_profesor_v1.html", "/carrera-madridista": "/madridista_pantalla_v7.html", "/carrera-madridista/proyector": "/madridista_pantalla_v7.html", "/carrera-madridista/equipo": "/madridista_equipo_v7.html" };
+  const corto = { "/noticia": "/noticia_alumno_v1.html", "/noticia/profesor": "/noticia_profesor_v1.html", "/carrera-madridista": "/madridista_pantalla_v7.html", "/carrera-madridista/proyector": "/madridista_pantalla_v7.html", "/carrera-madridista/equipo": "/madridista_equipo_v7.html", "/elige-parrafo": "/elige_parrafo_pantalla_v2.html", "/elige-parrafo/alumno": "/elige_parrafo_alumno_v2.html" };
   const cp = url.pathname.replace(/\/+$/, "").toLowerCase();
   if (corto[cp]) { res.writeHead(302, { Location: corto[cp], "Cache-Control": "no-store" }); return res.end(); }
   if (url.pathname === "/salud") { res.writeHead(200, { "Content-Type": "text/plain" }); return res.end("ok"); }
