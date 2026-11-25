@@ -67,6 +67,7 @@ const JUEGOS = {
   vale: cargarJuego("vale"),   // ¿Vale para cualquiera?: el tercer juego del torneo, suelto
   prensamadrid: cargarJuego("prensamadrid"),
   ordena: cargarJuego("ordena"),   // Ordena la crónica: párrafos desordenados, gana quien la deja en verde antes
+  marca: cargarJuego("marca"),     // Marca la crónica: desarrollo del titular, jugadas y análisis en tres colores
   mimica: cargarJuego("mimica"),   // Mímica de libros: un equipo representa y los demás adivinan
   general: cargarJuego("general"),   // Clasificación general: suma los puestos de varios juegos   // El Ahorcado del Periodismo Blanco: quién cuenta el Real Madrid
 };
@@ -89,7 +90,7 @@ const server = http.createServer((req, res) => {
   if (madridista.handle(req, res, url)) return;
   if (kahootmad.handle(req, res, url)) return;
   if (noticias.handle(req, res, url)) return;
-  const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla2|liguilla|ahorcado|microfono|mujer|charla|moncloa|columna|torneo|vale|prensamadrid|ordena|mimica|general)\/?$/);
+  const m = url.pathname.match(/^\/api\/(guerra|seo|carrera|vuelta|liguilla2|liguilla|ahorcado|microfono|mujer|charla|moncloa|columna|torneo|vale|prensamadrid|ordena|marca|mimica|general)\/?$/);
   if (m) {
     cors(res);
     if (req.method === "OPTIONS") { res.writeHead(204); return res.end(); }

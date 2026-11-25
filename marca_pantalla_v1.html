@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marca la crónica · Pantalla</title>
+<style>
+:root{--red:#C8102E;--dark:#1B1B1F;--ink:#2B2B30;--gold:#E8B54A;--muted:#6B6B72;--border:#D8D8DC;--bg:#F5F5F7;
+  --g:#BFE8CC;--gd:#1E7A45;--r:#FAD4D8;--rd:#C8102E;--y:#FFE680;--yd:#8A6A00}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+.topbar{background:var(--dark);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:12px 18px;gap:10px;flex-wrap:wrap}
+.tt{font-size:16px;font-weight:800;letter-spacing:.04em}
+.ts{font-size:11px;color:var(--gold);letter-spacing:.06em}
+.tr{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.codebadge{background:#fff;color:var(--dark);font-weight:800;font-size:15px;padding:6px 12px;border-radius:8px;letter-spacing:.12em}
+.tbtn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#fff;padding:8px 13px;border-radius:8px;font-size:12.5px;cursor:pointer;font-family:inherit;font-weight:700}
+.wrap{max-width:1400px;margin:0 auto;padding:18px;display:flex;flex-direction:column;gap:16px}
+.panel{background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden}
+.ph{background:var(--dark);color:#fff;padding:11px 16px;font-size:12.5px;font-weight:800;letter-spacing:.06em;display:flex;justify-content:space-between;gap:10px}
+.ph span{color:var(--gold)}
+.pb{padding:20px}
+.btn{border:none;padding:14px 22px;border-radius:10px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit}
+.b-red{background:var(--red);color:#fff}.b-out{background:#fff;border:2px solid var(--border);color:var(--ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--muted)}
+.lobby{display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:center}
+@media(max-width:700px){.lobby{grid-template-columns:1fr}}
+.bigcode{font-size:64px;font-weight:900;letter-spacing:.14em;color:var(--dark)}
+.link{font-size:15px;word-break:break-all;color:var(--muted);margin-top:6px}
+#qr{background:#fff;padding:6px;border-radius:10px;border:1px solid var(--border)}
+.ley{display:flex;gap:16px;flex-wrap:wrap;font-size:16px;margin-top:14px}
+.ley b{padding:3px 10px;border-radius:5px}
+.tb{width:100%;border-collapse:collapse;font-size:18px}
+.tb th{text-align:left;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:2px solid var(--border)}
+.tb td{padding:10px;border-bottom:1px solid var(--border)}
+.tb td.nm{font-weight:800}
+.tb .pt{color:var(--red);font-weight:900;font-size:22px}
+.tb tr.top1{background:#FFF6DC}
+.tb tr.pend td{color:var(--muted);font-style:italic}
+.cab .m{font-size:12px;font-weight:800;letter-spacing:.14em;color:var(--red)}
+.cab h1{font-family:Georgia,serif;font-size:clamp(26px,2.8vw,40px);line-height:1.15;margin:6px 0}
+.cab p{font-family:Georgia,serif;font-style:italic;font-size:18px;color:#444;line-height:1.4}
+.sol p{font-family:Georgia,serif;font-size:20px;line-height:1.75;margin-bottom:16px}
+.sol span.g{background:var(--g)}.sol span.r{background:var(--r);color:var(--rd)}.sol span.y{background:var(--y)}
+.empty{text-align:center;color:var(--muted);padding:20px;font-style:italic;font-size:15px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--red);color:#fff;padding:12px 18px;border-radius:10px;font-weight:700;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:99}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div><div class="tt">MARCA LA CRÓNICA</div><div class="ts">GANA QUIEN MÁS ENCUENTRA</div></div>
+  <div class="tr" id="tr"></div>
+</div>
+<div class="wrap" id="main"></div>
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+const API = location.origin + "/api/marca";
+const PAGINA_ALUMNO = "marca_alumno_v1.html";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const lsGet = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch(e){ return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch(e){} };
+const lsDel = k => { try { localStorage.removeItem(k); } catch(e){} };
+const mmss = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+
+let CODE = lsGet("mar_p_code", ""), KEY = lsGet("mar_p_key", ""), S = null, verSol = false;
+
+async function api(params){
+  const r = await fetch(API, { method:"POST", body: JSON.stringify(Object.assign({ c: CODE, k: KEY }, params)) });
+  const j = await r.json();
+  if (j.error) throw new Error(j.error);
+  return j;
+}
+function toast(t){ const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("show"), 3200); }
+async function accion(params){
+  try { const j = await api(params); if (j.state){ S = j.state; pintar(); } }
+  catch(e){ toast(e.message); }
+}
+
+function pintarInicio(){
+  $("tr").innerHTML = "";
+  $("main").innerHTML = `<div class="panel"><div class="ph">NUEVA PARTIDA</div><div class="pb">
+    <p style="font-size:17px;line-height:1.5">Cada alumno entra con su nombre y marca la crónica del As del Real Madrid 5-1 PSV con tres colores. Cada trozo bien marcado suma 1 punto y cada trozo marcado con el color equivocado resta 1. Lo que la solución deja sin color no suma ni resta. Gana quien más puntos tiene y, si hay empate, quien entregó antes. El reloj de cada alumno empieza cuando entra.</p>
+    <div class="ley"><span><b style="background:var(--g)">Verde</b> desarrollo del titular</span><span><b style="background:var(--r);color:var(--rd)">Rojo</b> jugada</span><span><b style="background:var(--y)">Amarillo</b> análisis</span></div>
+    <div class="row" style="margin-top:20px"><button class="btn b-red" id="bNueva">Crear partida</button></div></div></div>`;
+  $("bNueva").onclick = async () => {
+    try { const j = await fetch(API, { method:"POST", body: JSON.stringify({ a: "new" }) }).then(r => r.json());
+      if (j.error) throw new Error(j.error);
+      CODE = j.code; KEY = j.admin; lsSet("mar_p_code", CODE); lsSet("mar_p_key", KEY); refrescar(); }
+    catch(e){ toast(e.message); }
+  };
+}
+
+function enlace(){ return location.origin + "/" + PAGINA_ALUMNO + "?c=" + CODE; }
+function pintar(){
+  if (!S) return pintarInicio();
+  const g = S.game, A = S.alumnos, ent = A.filter(a => a.entregado);
+  $("tr").innerHTML = `<span class="codebadge">${esc(g.code)}</span>`
+    + (g.status === "sol" ? `<button class="tbtn" id="bReab">Reabrir entregas</button>` : `<button class="tbtn" id="bSol">Enseñar la solución</button>`)
+    + `<button class="tbtn" id="bVer">${verSol ? "Ver la tabla" : "Ver la solución"}</button><button class="tbtn" id="bOtra">Nueva partida</button>`;
+  if ($("bSol")) $("bSol").onclick = () => { if (confirm("Al enseñar la solución se cierran las entregas. ¿Seguimos?")){ verSol = true; accion({ a: "solucion" }); } };
+  if ($("bReab")) $("bReab").onclick = () => accion({ a: "reabrir" });
+  $("bVer").onclick = () => { verSol = !verSol; pintar(); };
+  $("bOtra").onclick = () => { if (confirm("¿Empezar una partida nueva? Esta se queda guardada un mes.")){ CODE = ""; KEY = ""; lsDel("mar_p_code"); lsDel("mar_p_key"); S = null; verSol = false; pintarInicio(); } };
+
+  if (verSol) return pintarSolucion();
+  const filas = A.map((a, i) => a.entregado
+    ? `<tr class="${i === 0 ? "top1" : ""}"><td>${i + 1}</td><td class="nm">${i === 0 ? "🏆 " : ""}${esc(a.name)}</td><td class="pt">${a.puntos}</td><td>${a.aciertos}</td><td>${a.fallos}</td><td>${mmss(a.ms)}</td></tr>`
+    : `<tr class="pend"><td></td><td class="nm">${esc(a.name)}</td><td colspan="4">marcando…</td></tr>`).join("");
+  $("main").innerHTML = `
+    <div class="panel"><div class="ph">ENTRAD CON ESTE CÓDIGO <span>${A.length} ${A.length === 1 ? "alumno" : "alumnos"}</span></div><div class="pb lobby">
+      <div id="qr"></div>
+      <div><div class="bigcode">${esc(g.code)}</div><div class="link">${esc(enlace())}</div>
+        <div class="ley"><span><b style="background:var(--g)">Verde</b> desarrollo del titular</span><span><b style="background:var(--r);color:var(--rd)">Rojo</b> jugada</span><span><b style="background:var(--y)">Amarillo</b> análisis</span></div>
+        <p class="muted" style="margin-top:10px">La solución tiene ${g.total} trozos, ${g.cuenta.g} verdes, ${g.cuenta.r} rojos y ${g.cuenta.y} amarillos.</p></div>
+    </div></div>
+    <div class="panel"><div class="ph">CLASIFICACIÓN <span>${ent.length} de ${A.length} han entregado</span></div><div class="pb">
+      ${A.length ? `<table class="tb"><thead><tr><th>#</th><th>Alumno</th><th>Puntos</th><th>Aciertos</th><th>Fallos</th><th>Tiempo</th></tr></thead><tbody>${filas}</tbody></table>` : `<div class="empty">Todavía no ha entrado nadie</div>`}
+    </div></div>`;
+  try { const q = qrcode(0, "M"); q.addData(enlace()); q.make(); $("qr").innerHTML = q.createSvgTag({ cellSize: 6, margin: 2 }); } catch(e){}
+}
+function pintarSolucion(){
+  const T = S.game.texto, K = S.game.clave;
+  if (!K){
+    $("main").innerHTML = `<div class="panel"><div class="ph">LA SOLUCIÓN</div><div class="pb"><div class="empty">La solución se ve aquí cuando pulses «Enseñar la solución». Al hacerlo se cierran las entregas.</div></div></div>`;
+    return;
+  }
+  const html = T.parrafos.map((t, p) => {
+    let o = 0, s = "";
+    K.filter(k => k[0] === p).forEach(k => { s += esc(t.slice(o, k[1])) + `<span class="${k[3]}">${esc(t.slice(k[1], k[2]))}</span>`; o = k[2]; });
+    return `<p>${s + esc(t.slice(o))}</p>`;
+  }).join("");
+  $("main").innerHTML = `<div class="panel"><div class="ph">LA SOLUCIÓN <span>${K.length} trozos</span></div><div class="pb sol">
+    <div class="cab" style="margin-bottom:18px"><div class="m">${esc(T.medio.toUpperCase())}</div><h1>${esc(T.titulo)}</h1><p>${esc(T.subtitulo)}</p></div>
+    <div class="ley" style="margin:0 0 18px"><span><b style="background:var(--g)">Verde</b> desarrollo del titular</span><span><b style="background:var(--r);color:var(--rd)">Rojo</b> jugada</span><span><b style="background:var(--y)">Amarillo</b> análisis</span></div>
+    ${html}</div></div>`;
+}
+
+async function refrescar(){
+  if (!CODE) return pintarInicio();
+  try { S = await api({ a: "state" }); pintar(); }
+  catch(e){ if (/No existe/.test(e.message)){ CODE = ""; lsDel("mar_p_code"); lsDel("mar_p_key"); S = null; pintarInicio(); } else toast(e.message); }
+}
+setInterval(() => { if (CODE && !verSol) refrescar(); }, 4000);
+refrescar();
+</script>
+</body>
+</html>
