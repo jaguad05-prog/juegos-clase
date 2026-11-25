@@ -3,7 +3,7 @@
  * Cada equipo recibe los párrafos de una crónica desordenados y los lleva a las cajas numeradas.
  * Cuando ha puesto todos, se corrige: los bien puestos salen en verde y se quedan fijos, los mal puestos en rojo.
  * Los rojos no se mueven hasta que el equipo pulsa «Sacar los rojos» y vuelven a la columna de los sueltos.
- * Se juega primero la crónica de Marca y después la de As.
+ * Se juega primero la crónica 1 (Bellingham resucita al Real Madrid) y después la 2 (Hasta que Bellingham hizo magia), las dos del Real Madrid 5-1 PSV.
  * Dos modos: en clase (el profesor arranca el reloj para todos) y para casa (cada alumno entra con su nombre y su reloj empieza al entrar).
  * Gana quien termina antes con todo en verde. La solución nunca sale del servidor.
  */
@@ -12,40 +12,123 @@ var P = PropertiesService.getScriptProperties();
 var MAX_EQUIPOS = 60;
 
 var CRONICAS = {
-  marca: {
-    medio: "Marca",
-    titulo: "Carlos Espí saca al Madrid de otro lío",
-    subtitulo: "El punta vuelve a anotar en el tramo final el gol del triunfo ante un Celta notable que puso en apuros a los blancos desde los cinco minutos, con gol de Durán. Bellingham brilla de nuevo",
-    cajas: ["Idea del titular", "Alineaciones comentadas y contexto", "Desarrollo", "", "", "", "", "Final"],
-    bloques: [
-      { id: "A", texto: "Cambió Giráldez tras el descanso, a Jutglà por Hugo Álvarez. Pero cambió el Madrid, que salió más agresivo. Al minuto evitó Javi Rodríguez, el gol de Carreras, que apareció por sorpresa en el área pequeña. Metió intensidad el equipo blanco, hundiendo a su adversario, aunque tampoco hacía trabajar a Radu. Así que a los diez minutos, triple cambio. Valverde, Cucurella y Vinicius. Suplente en la primera justa con Diomande de igual a igual, saltó con media hora larga para sacar rebeldía, carácter y desborde. Que falta hacían." },
-      { id: "B", texto: "Venía el Celta de Giráldez como un equipo más sólido que atrevido, cambiando el plan de pasados ejercicios. Sin ningún fichaje en el once y seis titulares formados en el Fortuna, el equipo gallego se comportó con inteligencia, cerrando espacios en defensa, prietas las filas, y desplegándose con movilidad en ataque." },
-      { id: "C", texto: "No se puede negar que Mourinho lo puso todo para ganar. Metió primero a Endrick y después a Espí. Tampoco se achantó Giráldez, que refrescó el ataque con Driouech, Rueda y, sobre todo, con Aspas, ovacionado por la grada en su última visita al Bernabéu. Dejó un pase estupendo que no acertó a desviar en boca de gol Javi Rueda, que entró como un trueno. Perdonó el Celta que no se cerró, asumiendo riesgos, y lo pagó. En una transición salió Bellingham con elegancia, abrió a Vini y sirvió el centro templado para el cabezazo salvador de Espí. Héroe. Honor también para Junior, desequilibrante en ambos tantos para rescatar un partido complicadísimo por mérito del Celta. Pero el Madrid este año huele bien porque tiene pegada de sobra. Espí es un cañón." },
-      { id: "D", texto: "Incomodó a un Madrid que creyó que podría gestionar el partido sin mucho esfuerzo, con su inercia ganadora, y le costó hasta generar ocasiones. Probó Diomande pronto, con un centro que no alcanzó a rematar en plancha Bernardo, pero el equipo de Mourinho no remató entre los tres palos hasta pasada la media hora. En cambio, los gallegos generaron varias acciones de mérito, casi siempre con Williot como protagonista. La más clara, rematando al lateral de la red un centro atrás de Carreira tras jugada larga y fluida. Las más frecuentes, a la espalda de Arnold, señalado por el Bernabéu." },
-      { id: "E", texto: "Espí. Carlos Espí. El Real Madrid invocó a su solucionador de problemas y volvió a actuar como tal. Un partido complejo, trabado, bien trabajado y defendido por el Celta, cayó del lado blanco cuando apareció el ariete para cabecear un gran centro de Vinicius, que aceptó de buen grado su papel de revulsivo. La eficacia de Espí sacó a su equipo de otro lío, como ante el Espanyol o el Elche, y mantuvo la buena racha blanca desde el Metropolitano en un partido sin mucho brillo pero efica para dejar sin premio a un Celta al que este año no le sale la moneda de cara casi nunca. Esta vez jugó bien, y no fue bastante." },
-      { id: "F", texto: "No se puede negar que Vinicius lo intentó. Perdió las primeras. Incluso salió Mourinho a animarle cuando perdió una pelota sencilla. El caso es que el Celta se había estirado para crear dos buenas opciones, un tiro de Jutglá desde la frontal, solo y fuera, y otro duro y esquinado de Durán que sacó a pasear la mano sagrada de Courtois, y ambas sirvieron de preámbulo del empate. Persistió Vinicius con una diagonal, metió en la frontal a Mbappé que la dejó muerta y Bellingham cruzó a la red. Intratable Jude." },
-      { id: "G", texto: "Costó al Bernabéu entrar en partido, después del sobrecogedor homenaje a Jesús de Miguel y su familia. Una muestra de respeto abrumadora por parte de ambos clubes, jueces y aficionados. Después de una de las ovaciones más largas y sentidas que se recuerdan, el pitido inicial descorchó al Celta, que salió mandón y aprovechó las rotaciones del Madrid. Alargó la primera posesión hasta provocar un córner, atrajo al rival a su campo y sorprendió con un pase de primeras de Ilaix cruzado, excelente. Marcó Pablo Durán, que disfruta a campo abierto en Chamartín, pero sirvió con precisión Williot Swedberg, que se consagró un año atrás en el estadio blanco. Irrumpió en el área como un turista, a espaldas de Trent, y sirvió un caramelo bajo las piernas de Huijsen. Sorpresa." },
-      { id: "H", texto: "Tan discreto estuvo el Madrid que Mou puso a calentar a medio banquillo desde el minuto 22. Faltaba movimiento, especialmente sin balón, y por eso el Celta sufría poco. Pero bastó una pelota filtrada en el área para que Mbappé sacara un penalti. Se escurrió de Javi Rodríguez, que le enganchó del brazo. Dónde vas. Penaltito, sí, pero mucho menos que el de Santander. Adrián Cordero pitó, no corrigió el VAR y Kylian se dispuso a cobrar la pieza. Ahí entendió el Bernabéu que la noche no venía fácil. El 10 remató fuerte, centrado, engañando a Radu, arriba. Nada. Pese al arreón de Bellingham, el más inspirado con la pelota, al descanso con 0-1." }
+  "c1": {
+    "medio": "Crónica 1",
+    "titulo": "Bellingham resucita al Real Madrid",
+    "subtitulo": "El inglés, suplente, sale en el descanso con 0-1 para convertir a un equipo muerto ante el PSV en el viejo Rey de Europa. Vinicius se libera al cerrar la goleada y provoca el abrazo del grupo",
+    "cajas": [
+      "Idea del titular",
+      "Alineaciones comentadas y contexto",
+      "Alineaciones comentadas y contexto",
+      "Desarrollo",
+      "Desarrollo",
+      "Desarrollo",
+      "Final"
     ],
-    solucion: ["E", "B", "G", "D", "H", "A", "F", "C"]
+    "bloques": [
+      {
+        "id": "A",
+        "texto": "Quedó claro pues que no era de esos días en que el Madrid se toma el asunto con rigor de inicio. Tampoco ayuda ese 4-3-3 con Diomande, Mbappé y Vinicius en ataque, ante la ausencia de Bellingham, que lo había jugado todo hasta la fecha. Por mucho que trabaje el marfileño, la inferioridad es manifiesta sin balón, y más ante un adversario con buen pie como el PSV. En su reválida personal, Vini quiso liderar la reacción. Estrelló en la cruceta en una diagonal de las suyas. Y facilitó con un estupendo primer toque el dos contra uno de Mbappé y Arda. Tocó mal Kylian y se fue al limbo la ocasión. Era el minuto 14 y parecía que cambiaba la película. Ya."
+      },
+      {
+        "id": "B",
+        "texto": "No se vayan todavía, aún hay más. Porque Bellingham volvió a zidanear con un pase a Vini, que había errado un par de ocasiones claras, y completó la manita. Jude corrió como un poseso a abrazar al 7, y tras él, el grupo entero. Se debe hacer de querer el brasileño. Bien está lo que bien acaba. Y para aspirar a todo, Junior será necesario. Mientras tanto, en la BMV, Jude es el Rey."
+      },
+      {
+        "id": "C",
+        "texto": "El correctivo fue tan serio que Mourinho asumió su apuesta fallida con triple cambio al descanso. Relevó a los dos centrales para defender hacia adelante y aclarar la salida del juego y, sobre todo, ingresó Bellingham, que lo primero que hizo fue servir un primer toque primoroso para dejar solo a Valverde. El centro del uruguayo fue tan tenso que no llegó por media talla. Con Arda y Bernardo en el doble pivote, el Madrid fue un huracán. Se contagiaron todos, el primero el turco, que facilitó el empate con un primer toque sutil para la llegada de Valverde, el falso lateral capaz de dominar el juego desde atrás. Pudieron anotar Vini, Bellingham con una tijera espectacular, Diomande, Mbappé, pero era de justicia que quien rompiera la baraja fuese Jude. Acompañó el ataque, controló al aire, se dio el autopase por arriba y desde la frontal conectó la volea con el exterior, cruzada, imposible. Un gol extraordinario para un futbolista descomunal."
+      },
+      {
+        "id": "D",
+        "texto": "Jude Bellingham. No busquen más. El fútbol del inglés, con el 5 a la espalda que inmortalizó Zidane, es capaz de resucitar a un muerto, que es lo que parecía el Real Madrid al descanso. El equipo blanco se fue al descanso por debajo en el marcador y zarandeado en el juego por un asombroso PSV, presionante a todo campo. Pero corrigió Mourinho, metió a Zinedine Bellingham junto a los centrales titulares y arrasó al equipo neerlandés. Goleó en medio partido por fútbol, por actitud y por acierto, redimiendo a quienes acababan de recibir pitos. Como Mbappé, autor de un doblete. Y también, por fin, como Vinicius, que cerró la goleada con un buen tanto y el abrazo colectivo de un equipo en racha. Cinco de cinco. Pie y medio en octavos."
+      },
+      {
+        "id": "E",
+        "texto": "No se quedó ahí el equipo blanco, incontenible con viento a favor. No había ni rastro del PSV desde que Perisic se quedara en el vestuario. Con el Madrid desbocado aparecieron las carencias del cuadro neerlandés,  especialmente en la salida. Estuvo a punto de liarla Geertruida, pero el pecado cayó en la cuenta de Sano, que regaló la pelota a Arda y el turco regaló el tercero a Mbappé. No se contuvo el Madrid, exacto en todos los sectores. Incluso al corregir desventajas como la de Konaté ante Van Bommel. La goleada era inevitable. Entraron Camavinga, que debió ser expulsado por una plancha temeraria, y Brahim. No tuvo minutos Espí, pese a su portada ante el Celta. Pero Mou tiene ángel, y Díaz sirvió un balón perfecto para que Mbappé recordase a Ronaldo Nazario. Regate en largo y 4-1."
+      },
+      {
+        "id": "F",
+        "texto": "Pese al buen sabor final, la primera mitad fue terrible. Y no es la primera vez. Sorprendió el riesgo asumido por el PSV. Tanto que cogió a contrapié a un Madrid repleto de rotaciones. Especialmente en defensa, con Rüdiger y Militao en el eje. A pares por toda la pradera del Bernabéu, los neerlandeses sumaron tres acciones de gol en diez minutos. La primera, por movilidad, no llegó Mijnans a cabecear el centro envenenado de Perisic. La segunda, por velocidad, Van Bommel dejó atrás a Militao, se plantó ante Courtois y remató al lateral de la red. Y la tercera, por osadía, se la apuntó Sergiño Dest, que superó con facilidad a su par, trazó la diagonal y remató al costado de la portería."
+      },
+      {
+        "id": "G",
+        "texto": "Empezó a recuperar la pelota prontísimo el PSV, por su ambición defensiva y por la falta de futbolistas que se ofrecieran en largo para lucharla, bajarla, jugar de espaldas. Y combinaron los neerlandeses, con sus volantes indetectables. Probó Sano de lejos, pero fue Mijnans quien rompió la baraja. Combinó con Van Bommel, buscó línea de fondo y recibió el pisotón imprudente de Tchouaméni en área. No lo vio Eskas en directo pero corrigió el VAR. Perisic, socio eterno de Modric en la generación dorada de Croacia, transformó el penalti y desató aún más al PSV, dueño y señor del partido. Perdonaron Van Bommel y Sano, solo en el área para el cabezazo. Y el Bernabéu señaló a Vinicius y Mbappé por su falta de intensidad, de coraje, de rebeldía. Lo mínimo, vaya. Perdían muchas. Casi todas. Y se quedaban mirando. No podía ni sospecharse lo que estaba por venir."
+      }
+    ],
+    "solucion": [
+      "D",
+      "F",
+      "A",
+      "G",
+      "C",
+      "E",
+      "B"
+    ]
   },
-  as: {
-    medio: "As",
-    titulo: "Espí siempre llega a tiempo",
-    subtitulo: "Otro gol del valenciano, a cinco minutos del final, salva a un Madrid que tiró un tiempo. A un buen Celta solo le falló la puntería. Mbappé erró un penalti.",
-    cajas: ["Idea del titular", "Alineaciones comentadas y contexto (Madrid)", "Alineaciones comentadas y contexto (Celta)", "Desarrollo", "", "", "", "", "Final"],
-    bloques: [
-      { id: "A", texto: "En la segunda mitad al Celta se le vino el Madrid encima. Aquel equipo alegre y atrevido de los inicios quedó encogido en dos líneas amuralladas, estrechas para no hundirse demasiado. Sobre su área cayó mas lluvia fina que granizada, pero se vio realmente sometido, más cuando Mourinho activó el plan de emergencia: de un golpe metió a Valverde y Cucurella por los dos laterales y a Vinicius por Bernardo Silva, para abrir aún más el campo. Una acrobacia arriesgada, con tres puntas y dos mediapuntas para pasar por el ojo de la aguja." },
-      { id: "B", texto: "Al Celta, al que le aguarda una paliza similar, no se le hizo tan largo el parón porque tuvo Copa en Salamanca la semana pasada. Allí jugó con lo que parecía una alineación alternativa que quizá no lo fuera tanto, porque cuatro de aquel once repitieron en el Bernabéu. En el equipo vigués importan menos los nombres que el plan. Los tres centrales le permiten escalonar mucho a sus futbolistas, maniobra útil para eludir la primera presión del adversario con cierta facilidad." },
-      { id: "C", texto: "Aún faltaba la última carga, la de Carlos Espí, clavo ardiendo que tantas veces ha sujetado al equipo. Diez minutos para la locura, con cuatro delanteros y dos mediapuntas para descamisarse. Y una vez más el estado de excepción acabó en estado de felicidad. Espí cazó un cabezazo a centro de Vinicius, que sacó como pudo Radu para que el valenciano mandase a la red el rechace. Lo nunca visto en el Madrid es lo siempre visto." },
-      { id: "D", texto: "Ante los ojos de Nadal, tan irreductible como el Madrid y que en el club siempre tuvo voz y ahora tiene voto, Carlos Espí completó otro curso de salvamento y socorrismo. A cinco minutos del final le dio el triunfo a un Madrid que arregló en medio tiempo lo que estropeó en el otro medio. Fue ante un Celta magnífico en la primera mitad y superviviente en la segunda. En cualquier caso, no fue el Madrid de las últimas semanas. Entregó mucho atrás, anduvo desmadejado en el inicio y poco preciso en el agitado final, cuando sintió que un empate en casa en esta Liga resulta entre grave y crítico. Sin embargo, bastaron el alboroto de Vinicius, que fue suplente, y el oportunismo recurrente de Carlos Espí para sacarle del apuro y cazar al Barça al menos por un día en la enésima remontada de un equipo que si algo sabe es corregirse." },
-      { id: "E", texto: "Ese Madrid de luto se alargó, aunque hubo algún movimiento esperanzador de Diomande, que tiene la irreverencia y el optimismo que un día derrochó Vinicius. Casi le sirvió el empate a Bernardo Silva. Fue la primera prueba de vida del equipo blanco, que no tranquilizó a Mourinho. A los veinte minutos tenía ya tres suplentes calentando. Su situación pudo empeorarla por tres veces Williot, en una incursión por la izquierda que culminó con un cruce de centro y remate que no fue ni lo uno ni lo otro, sino pifia, en un tiro al lateral de la red sin rivales en tres metros a la redonda y en un mano a mano que perdió ante Courtois, que siempre aparece en los títulos de crédito. Los lances ponían sobre la mesa la extrema vulnerabilidad defensiva del Madrid tras cada pérdida. Lo denunciaron los primeros pitos del Bernabéu." },
-      { id: "F", texto: "La previa del partido tenía su punto de morbo e intriga. La cosa andaba en si los cinco goles anotados con Brasil serían suficiente penitencia para que Vinicius volviera a un once del Madrid con toda la competencia apta. La cuestión ahora es si resuelve o incomoda. Mourinho habló en la víspera de que no existen intocables en el grupo y hasta ahí quiso leer. Suficiente. En los partidos de Champions, para los que Vinicius sí estaba disponible, anunció su titularidad con sobrada antelación. Que no lo dijera en esta ocasión despejaba de manera implícita la incógnita. El frente de ataque había estado impecable en los cuatro partidos ligueros sin él y a Mourinho le pareció razonable mantenerlo, especialmente porque pretendía reformar otras zonas más castigadas por la ventana FIFA. De esos intocables que el portugués desmiente se quedaron fuera Valverde, Cucurella y Tchouameni, decisión de riesgo porque sus relevos (Trent, Carreras y Camavinga) han estado muy lejos de ellos, pero explicable porque al Madrid le esperan ocho partidos en 29 días." },
-      { id: "G", texto: "El paso adelante del equipo blanco le abrió una ventana de contragolpe al Celta, que volvió a tomar aire. Jutglá y Pablo Durán rondaron el 0-2. Como tantas veces, una parada de Courtois fue la antesala de un gol del Madrid. Lo marcó Bellingham, tras arrancada de Vinicius y con Mbappé como estación de paso." },
-      { id: "H", texto: "Se lo explicó pronto al Madrid cuando un cambio de juego de Ilaix Moriba desmontó el tinglado defensivo blanco. El resto, hasta llegar al gol, fue tan preciso como sencillo: pase profundo de Javi Galán, desmarque y centro raso de Williot (verdugo de Xabi Alonso con su doblete en el mismo escenario hace menos de un año) y remate a placer de Pablo Durán. Los parones siempre interrumpen algo, un sueño en el caso del Madrid, que había encadenado ocho victorias en ocho partidos entre las dos ventanas FIFA. El regreso le cogió en frío. El gol, también, aunque se vio venir pronto. El equipo no atendió al aviso de Mourinho, que explicó con acierto que en el Celta, un grupo con aire juvenil y canterano, los méritos superaban con mucho a los puntos." },
-      { id: "I", texto: "El peligro de los de Mourinho no respondía a una labor coral, sino a ocurrencias, de Arda Güler y Mbappé, principalmente. En una de ellas, Javi Rodríguez agarró mínimamente al francés cuando se disponía a disparar. Penalti justito, pero pitable, que Mbappé lanzó al corazón del fondo norte. El error resumía bien una primera mitad desganada y desacertada de su equipo frente a un Celta superior, que hizo el mejor fútbol y tuvo las mejores oportunidades. Se le marcharon y lo lamentó luego." }
+  "c2": {
+    "medio": "Crónica 2",
+    "titulo": "Hasta que Bellingham hizo magia",
+    "subtitulo": "El inglés, que hizo un gol prodigioso, transforma a un Madrid distraído en el primer tiempo y de ensueño en el segundo, en el que marcó cinco goles. Doblete de Mbappé.",
+    "cajas": [
+      "Idea del titular",
+      "Alineaciones comentadas y contexto",
+      "Alineaciones comentadas y contexto",
+      "Alineaciones comentadas y contexto",
+      "Desarrollo",
+      "Desarrollo",
+      "Desarrollo",
+      "Desarrollo",
+      "Final"
     ],
-    solucion: ["D", "F", "B", "H", "E", "I", "A", "G", "C"]
+    "bloques": [
+      {
+        "id": "A",
+        "texto": "La valentía del PSV estaba por encima de los galgos del Madrid en un partido jugado a la tremenda. El equipo de Mourinho, siempre al borde de una pérdida fatal muy cerca de Courtois; el de Bosz, menos expuesto a las contras blancas en los balones largos y a las ocurrencias de Vinicius, que necesita una reconquista. Pronto se procuró el brasileño un disparo cruzado, de izquierda a derecha, que tocó el palo. Pareció dispuesto a volver a camelarse al Bernabéu, pero se quedó ahí durante toda la primera mitad.\n\nEn el intercambio de golpes, desigual, porque los holandeses eran claramente mejores, el primero se lo llevó el Madrid y pareció justo. Tchouameni pisó imprudentemente a Mijnans muy dentro del área, infracción que se le pasó a Eskas, pero no al VAR. Penalti, transformación del veteranísimo Perisic y el Madrid, por enésima vez, autoexigiéndose una remontada. El Bernabéu, que ha visto tantas películas de acción con final feliz, no pareció inquietarse en exceso pese a que el equipo pasaba un calvario para cruzar el mediocampo. La presión del PSV ahogaba, la del Madrid andaba entre tibia e imperceptible. El resultado era que todo lo noticiable sucedía en su área: dos acometidas de Van Bommel, un tiro cruzado de Mijnans, un despeje salvador de Cucurella..."
+      },
+      {
+        "id": "B",
+        "texto": "En diez minutos tuvo tres goles a su alcance el PSV, en un cabezazo de Mijnans con mejor posición que postura; en una arrancada de Van Bommel, apellido ilustre, que dejó atrás a un Militao lejos de sí mismo y culminó con un mal remate, y en un disparo al lateral de la red de Dest, que luce el 8 para renegar de su papel de lateral."
+      },
+      {
+        "id": "C",
+        "texto": "La imagen resultó tan preocupante que Mourinho optó por medidas radicales: en el entretiempo cambió a los dos centrales y metió a Bellingham por Tchouameni, su único mediocentro de cierre. Ese desfibrilador le había funcionado hasta ahora. También esta vez, con Valverde como principal impulsor.\n\nÉl provocó la primera ocasión y le puso nombre al empate en una jugada de artesanía: centro pasado de Vinicius, toque de Diomande, taconazo de Güler y remate del uruguayo, que entró como una centella en el área. Al PSV le sobrevino, de improviso, el ganador de quince Champions y un imperio, británico por más señas."
+      },
+      {
+        "id": "D",
+        "texto": "Aquella juerga se alargó. Mbappé marcó a pase de un Güler empoderadísimo e hizo doblete en la recta final, Vinicius estrelló un balón en el palo y otro en el cuerpo de Kovar antes de cerrar la manita, a Bellingham le faltaron dos dedos para llegar a un envío letal del propio Vinicius... A los postres, Mourinho metió a Camavinga para evitar sorpresas (y casi se encuentra con otra, una roja que mereció) y ahorrarse otro milagro de Espí, porque esta vez el extintor fue Bellingham."
+      },
+      {
+        "id": "E",
+        "texto": "El PSV arruinó el sueño de la mejor generación de canteranos madridistas, Quinta que lo ganó todo menos una Copa de Europa. De aquello hace casi cuarenta años y aunque el club ha cerrado esa herida con nueve Champions de sutura, una visita del equipo holandés vuelve a hacer visible la cicatriz. Durante un tiempo, el primero, ese fantasma recorrió el Bernabéu, porque el Madrid volvió a tener un lado oscuro, con falta de fútbol e intensidad. Luego entró Bellingham y se hizo la luz. El equipo de Mourinho brindó un segundo acto excepcional: presionó, robó sin un mediocentro defensivo, creó, mandó, remató, goleó y borró del mapa a un grupo que antes había parecido una enorme amenaza."
+      },
+      {
+        "id": "F",
+        "texto": "Un Madrid reconfigurado se sintió en el alambre. Mourinho invierte a largo plazo. Ahorrar en otoño es florecer en primavera, parece indicar el plan. De ahí la redundancia en rotaciones extremas como esta. Cuatro defensas nuevos respecto al partido contra el Celta, eso sí, debidamente combinados: jugaron los centrales suplentes y los laterales titulares. Por delante, el motor habitual de dos velocidades (Tchouameni y Bernardo). Y arriba, el funambulismo de poner a Vinicius sin quitar a Diomande ni tocar a Mbappé. El excedente era un mediapunta y esta vez le tocó parar a Bellingham, que en cada partido se juega con Güler el MVP de la temporada. La maniobra afectó al equilibrio del equipo, especialmente en la salida de pelota."
+      },
+      {
+        "id": "G",
+        "texto": "Y es que el cambio de partido y hasta de planeta podría ser atribuible a Bellingham, cuya influencia en el juego fue descomunal, pero también tuvo que ver la voluntad general, con el regreso de un Madrid cardiaco, arrollador, casi enfurecido. En plena tormenta Kovar salvó tres goles en cuatro minutos, a tiros cercanos de Güler, Mbappé y Bellingham. Súbitamente, el PSV perdió el dominio, el encanto y el orden hasta que Kovar no pudo con el cuarto intento, un prodigio de Bellingham: control con la izquierda, toquecito sin dejar caer con la derecha y volea precisa desde fuera del área. Magia en tres actos. Un gol que no olvidará el Bernabéu."
+      },
+      {
+        "id": "H",
+        "texto": "La victoria reiteró el mensaje de que Bellingham y Güler son irremplazables, de que Konaté y Huijsen son irrenunciables, de que Diomande es intocable y de que, en el área, Mbappé es imparable. Vinicius le puso ganas y se llevó el premio del gol. Casos como el del PSV son recurrentes en las competiciones europeas: equipos muy dominantes en su Ligas (los holandeses han marcado en todos los partidos y son líderes), muy habituados a apropiarse de la pelota, que en la Champions se encuentran con la cruda realidad y pierden la alegría y, a menudo, los puntos. No fue este el caso. Bosz no movió un milímetro sus principios, con Dest y Kostic, extremos disfrazados de laterales, su cuarteto ofensivo habitual y una presión avanzadísima y fiera uno contra uno hasta las últimas consecuencias. Lo aprovechó ante un Madrid distraído y desmayado al principio y pagó luego por su valentía."
+      },
+      {
+        "id": "I",
+        "texto": "Lo mejor al descanso era el marcador, una vez más, porque nada había funcionado en el Madrid. Los centrales andaban inseguros; Tchouameni, el patrullero, desbordado; Arda Güler, impreciso; Mbappé, obcecado, y Diomande y Vinicius, anulados por un adversario que defendía excelentemente en campo contrario y también en su área."
+      }
+    ],
+    "solucion": [
+      "E",
+      "H",
+      "B",
+      "F",
+      "A",
+      "I",
+      "C",
+      "G",
+      "D"
+    ]
   }
 };
 
@@ -97,7 +180,7 @@ function limpiarViejas() {
   for (var k2 in todo) { var pt = k2.split("_"); if (pt.length >= 2 && borrar[pt[1]]) P.deleteProperty(k2); }
 }
 
-var ORDEN = Object.keys(CRONICAS);   // primero Marca, después As
+var ORDEN = Object.keys(CRONICAS);   // primero la crónica 1, después la 2
 
 function cronicaPublica(id) {
   var c = CRONICAS[id];
