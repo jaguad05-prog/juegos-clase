@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Colorear la crónica</title>
+<style>
+:root{--red:#C8102E;--dark:#1B1B1F;--ink:#2B2B30;--gold:#E8B54A;--muted:#6B6B72;--border:#D8D8DC;--bg:#F5F5F7;--paper:#FFFDF8;
+  --g:#BFE8CC;--gd:#1E7A45;--r:#FAD4D8;--rd:#C8102E;--y:#FFE680;--yd:#8A6A00}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+.topbar{background:var(--dark);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:12px 18px;gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:20}
+.tt{font-size:16px;font-weight:800;letter-spacing:.04em}
+.ts{font-size:11px;color:var(--gold);letter-spacing:.06em}
+.tr{display:flex;gap:10px;align-items:center;font-weight:800}
+.reloj{background:#fff;color:var(--dark);padding:6px 12px;border-radius:8px;font-variant-numeric:tabular-nums}
+.wrap{max-width:920px;margin:0 auto;padding:18px;display:flex;flex-direction:column;gap:14px}
+.panel{background:#fff;border-radius:14px;border:1px solid var(--border);padding:20px}
+.btn{border:none;padding:12px 18px;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.b-red{background:var(--red);color:#fff}.b-out{background:#fff;border:2px solid var(--border);color:var(--ink)}
+input{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:10px;font-size:17px;font-family:inherit;margin-top:6px}
+input:focus{outline:none;border-color:var(--red)}
+label{font-weight:800;font-size:13px;letter-spacing:.05em;color:var(--muted);display:block;margin-top:12px}
+.err{color:var(--red);font-weight:700;margin-top:10px;min-height:18px}
+.muted{color:var(--muted)}
+.herr{position:sticky;top:58px;z-index:15;background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;box-shadow:0 6px 18px rgba(0,0,0,.06)}
+.tool{border:3px solid transparent;border-radius:10px;padding:10px 14px;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;display:flex;gap:8px;align-items:center}
+.tool .n{background:rgba(0,0,0,.12);border-radius:20px;padding:1px 8px;font-size:12px}
+.tool.g{background:var(--g);color:var(--gd)}.tool.r{background:var(--r);color:var(--rd)}.tool.y{background:var(--y);color:var(--yd)}
+.tool.x{background:#EEE;color:#444}
+.tool.on{border-color:var(--dark);box-shadow:0 0 0 2px #fff inset}
+.herr .sp{flex:1}
+.cab .m{font-size:12px;font-weight:800;letter-spacing:.14em;color:var(--red);text-transform:uppercase}
+.cab h1{font-family:Georgia,serif;font-size:30px;line-height:1.15;margin:6px 0}
+.cab p{font-family:Georgia,serif;font-style:italic;font-size:17px;color:#444;line-height:1.4}
+#texto{font-family:Georgia,"Times New Roman",serif;font-size:18px;line-height:1.75;user-select:text;-webkit-user-select:text}
+#texto p{margin-bottom:16px}
+#texto span.g{background:var(--g)}
+#texto span.r{background:var(--r);color:var(--rd)}
+#texto span.y{background:var(--y)}
+#texto span.m{cursor:pointer;border-radius:3px}
+#texto span.ok{outline:2px solid #1E7A45;outline-offset:1px}
+#texto span.ko{text-decoration:line-through;text-decoration-color:#000}
+.aviso{border-radius:12px;padding:14px 16px;font-weight:700;line-height:1.45}
+.aviso.info{background:#fff;border:1px solid var(--border)}
+.aviso.win{background:#E9F6EE;border:2px solid #1E7A45;color:#1E7A45}
+.ley{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;margin-top:8px}
+.ley b{padding:2px 8px;border-radius:4px}
+.sol p{font-family:Georgia,serif;font-size:16px;line-height:1.7;margin-bottom:12px}
+.sol span.g{background:var(--g)}.sol span.r{background:var(--r);color:var(--rd)}.sol span.y{background:var(--y)}
+.sol span.hit{outline:2px solid #1E7A45;outline-offset:1px}
+h2{font-size:15px;letter-spacing:.06em;margin-bottom:10px}
+.sec{font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--dark);display:inline-block;padding:5px 10px;border-radius:6px;margin:10px 0 12px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--red);color:#fff;padding:12px 18px;border-radius:10px;font-weight:700;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:99}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div><div class="tt">COLOREAR LA CRÓNICA</div><div class="ts">DESARROLLO DEL TITULAR, JUGADAS Y ANÁLISIS</div></div>
+  <div class="tr" id="tr"></div>
+</div>
+<div class="wrap" id="main"></div>
+<div id="toast"></div>
+
+<script>
+const API = location.origin + "/api/marca";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const lsGet = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch(e){ return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch(e){} };
+const mmss = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+const SEC = (T, p) => { const x = (T.secciones || []).find(s => s[0] === p); return x ? `<div class="sec">${esc(x[1])}</div>` : ""; };
+const NOMBRES = { g: "Desarrollo del titular", r: "Jugada", y: "Análisis" };
+
+const qs = new URLSearchParams(location.search);
+let CODE = (qs.get("c") || lsGet("mar_code", "")).toUpperCase();
+let DEV = lsGet("mar_dev", "");
+if (!DEV){ DEV = "d" + Math.random().toString(36).slice(2, 12); lsSet("mar_dev", DEV); }
+let S = null, desfase = 0, color = "g", vista = "", col = null, enviando = false;   // col: por párrafo, el color de cada letra
+
+async function api(params){
+  const r = await fetch(API, { method:"POST", body: JSON.stringify(Object.assign({ c: CODE, dev: DEV }, params)) });
+  const j = await r.json();
+  if (j.error) throw new Error(j.error);
+  return j;
+}
+function toast(t){ const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("show"), 3200); }
+
+// ── entrada ──
+function pintarEntrada(){
+  vista = "entrada";
+  $("tr").innerHTML = "";
+  $("main").innerHTML = `<div class="panel">
+    <h2>ENTRA EN LA PARTIDA</h2>
+    <p class="muted" style="line-height:1.5">Vas a leer la crónica de El País del Real Madrid 5-1 PSV y a marcarla con tres colores. El reloj empieza en cuanto entras.</p>
+    ${qs.get("c") ? "" : `<label>CÓDIGO DE LA PARTIDA</label><input id="inC" maxlength="6" value="${esc(CODE)}" style="text-transform:uppercase;letter-spacing:.15em">`}
+    <label>TU NOMBRE Y APELLIDO</label><input id="inN" maxlength="40" value="${esc(lsGet("mar_name", ""))}">
+    <div style="margin-top:16px"><button class="btn b-red" id="bEntrar">Empezar</button></div><div class="err" id="err"></div></div>`;
+  $("bEntrar").onclick = entrar;
+  $("inN").onkeydown = e => { if (e.key === "Enter") entrar(); };
+}
+async function entrar(){
+  if ($("inC")) CODE = $("inC").value.trim().toUpperCase();
+  const name = $("inN").value.trim();
+  if (!CODE) return $("err").textContent = "Escribe el código";
+  if (!name) return $("err").textContent = "Escribe tu nombre";
+  try { await api({ a: "join", name }); lsSet("mar_code", CODE); lsSet("mar_name", name); await refrescar(); }
+  catch(e){ $("err").textContent = e.message; }
+}
+
+// ── marcas ──
+function claveLocal(){ return "mar_m_" + CODE + "_" + (S && S.me ? S.me.name : ""); }
+function iniciarCol(){
+  const P = S.game.texto.parrafos;
+  col = P.map(t => new Array(t.length).fill(""));
+  let guardadas = [];
+  if (S.me.entregado) guardadas = S.me.marcas;
+  else { try { guardadas = JSON.parse(lsGet(claveLocal(), "[]")); } catch(e){} }
+  guardadas.forEach(m => { const a = col[m[0]]; if (!a) return; for (let i = m[1]; i < m[2] && i < a.length; i++) a[i] = m[3]; });
+}
+function marcasDeCol(){
+  const out = [];
+  col.forEach((a, p) => { let i = 0; while (i < a.length){ if (!a[i]){ i++; continue; } let j = i; while (j < a.length && a[j] === a[i]) j++; out.push([p, i, j, a[i]]); i = j; } });
+  return out;
+}
+function guardarLocal(){ lsSet(claveLocal(), JSON.stringify(marcasDeCol())); }
+function trozos(a){   // tramos seguidos del mismo color
+  const out = []; let i = 0;
+  while (i < a.length){ let j = i; while (j < a.length && a[j] === a[i]) j++; out.push([i, j, a[i]]); i = j; }
+  return out;
+}
+const letra = ch => /[\p{L}\p{N}]/u.test(ch || "");
+function ajustar(t, s, e){   // la marca se amplía a palabras enteras
+  while (s > 0 && letra(t[s - 1]) && letra(t[s])) s--;
+  while (e < t.length && letra(t[e]) && letra(t[e - 1])) e++;
+  while (s < e && /\s/.test(t[s])) s++;
+  while (e > s && /\s/.test(t[e - 1])) e--;
+  return [s, e];
+}
+function posicion(node, off){   // de un punto del texto a [párrafo, letra]
+  let el = node.nodeType === 3 ? node.parentElement : node;
+  if (node.nodeType !== 3){
+    // punto entre nodos: se toma el inicio del hijo correspondiente o el final del párrafo
+    const p = el.closest("p[data-p]"); if (!p) return null;
+    const hijo = node.childNodes[off];
+    if (hijo && hijo.dataset && hijo.dataset.o !== undefined) return [+p.dataset.p, +hijo.dataset.o];
+    if (el.dataset && el.dataset.o !== undefined) return [+p.dataset.p, +el.dataset.o + (off ? el.textContent.length : 0)];
+    return [+p.dataset.p, off ? S.game.texto.parrafos[+p.dataset.p].length : 0];
+  }
+  const p = el.closest("p[data-p]"); if (!p || el.dataset.o === undefined) return null;
+  return [+p.dataset.p, +el.dataset.o + off];
+}
+function aplicarSeleccion(){
+  if (S.me.entregado) return;
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed || !sel.rangeCount) return;
+  const r = sel.getRangeAt(0);
+  if (!$("texto").contains(r.commonAncestorContainer)) return;
+  let a = posicion(r.startContainer, r.startOffset), b = posicion(r.endContainer, r.endOffset);
+  if (!a || !b) return;
+  const P = S.game.texto.parrafos;
+  for (let p = a[0]; p <= b[0]; p++){
+    let s = p === a[0] ? a[1] : 0, e = p === b[0] ? b[1] : P[p].length;
+    [s, e] = ajustar(P[p], s, e);
+    for (let i = s; i < e; i++) col[p][i] = color === "x" ? "" : color;
+  }
+  sel.removeAllRanges();
+  guardarLocal(); pintarTexto();
+}
+function borrarTrozo(p, o){
+  if (S.me.entregado || color !== "x") return;
+  const a = col[p], c = a[o]; if (!c) return;
+  let s = o, e = o; while (s > 0 && a[s - 1] === c) s--; while (e < a.length && a[e] === c) e++;
+  for (let i = s; i < e; i++) a[i] = "";
+  guardarLocal(); pintarTexto();
+}
+
+// ── pintar ──
+function pintarJuego(){
+  vista = "juego";
+  const T = S.game.texto;
+  iniciarCol();
+  $("main").innerHTML = `
+    <div id="aviso"></div>
+    <div class="herr" id="herr"></div>
+    <div class="panel">
+      <div class="cab"><div class="m">${esc(T.medio)}</div><h1>${esc(T.titulo)}</h1><p>${esc(T.subtitulo)}</p></div>
+      <div id="texto" style="margin-top:20px"></div>
+    </div>
+    <div id="solucion"></div>`;
+  $("texto").addEventListener("mouseup", () => setTimeout(aplicarSeleccion, 0));
+  $("texto").addEventListener("touchend", () => setTimeout(aplicarSeleccion, 350));
+  $("texto").addEventListener("click", e => { const sp = e.target.closest("span.m"); if (sp) borrarTrozo(+sp.closest("p").dataset.p, +sp.dataset.o); });
+  pintarTexto();
+  pintarEstado();
+}
+function pintarHerramientas(){
+  if (S.me.entregado){ $("herr").style.display = "none"; return; }
+  const n = { g: 0, r: 0, y: 0 }; marcasDeCol().forEach(m => n[m[3]]++);
+  $("herr").innerHTML = ["g", "r", "y"].map(c => `<button class="tool ${c}${color === c ? " on" : ""}" data-c="${c}">${NOMBRES[c]} <span class="n">${n[c]}</span></button>`).join("")
+    + `<button class="tool x${color === "x" ? " on" : ""}" data-c="x">Borrar</button><span class="sp"></span><button class="btn b-red" id="bEnt">Entregar</button>`;
+  $("herr").querySelectorAll(".tool").forEach(b => b.onclick = () => { color = b.dataset.c; pintarHerramientas(); });
+  $("bEnt").onclick = entregar;
+}
+function pintarTexto(){
+  const det = S.me.det, clave = S.game.clave;
+  $("texto").innerHTML = S.game.texto.parrafos.map((t, p) => SEC(S.game.texto, p) + `<p data-p="${p}">` + trozos(col[p]).map(([s, e, c]) => {
+    let extra = "";
+    if (det && clave && c){
+      // tras la solución: contorno verde si el trozo acierta algo de la solución con su color, tachado si no
+      const acierta = clave.some(k => k[0] === p && k[3] === c && Math.min(e, k[2]) - Math.max(s, k[1]) >= Math.min(8, k[2] - k[1]));
+      extra = acierta ? " ok" : " ko";
+    }
+    return `<span data-o="${s}" class="${c ? c + " m" : ""}${extra}">${esc(t.slice(s, e))}</span>`;
+  }).join("") + `</p>`).join("");
+  pintarHerramientas();
+}
+function pintarEstado(){
+  const me = S.me, g = S.game;
+  $("tr").innerHTML = `<span>${esc(me.name)}</span>` + (me.entregado ? "" : `<span class="reloj" id="reloj">0:00</span>`);
+  if (!me.entregado){
+    $("aviso").innerHTML = `<div class="aviso info">Elige un color y selecciona con el ratón el trozo de texto. Para quitar una marca, pulsa «Borrar» y haz clic en ella.
+      <div class="ley"><span><b style="background:var(--g)">Verde</b> desarrollo del titular</span><span><b style="background:var(--r);color:var(--rd)">Rojo</b> jugada</span><span><b style="background:var(--y)">Amarillo</b> análisis</span></div>
+      <div class="muted" style="font-weight:400;margin-top:8px">Cada trozo bien marcado suma 1 y cada trozo marcado con el color equivocado resta 1. Gana quien más puntos tiene y, si hay empate, quien entregó antes.</div></div>`;
+  } else {
+    const pts = me.puntos === 1 ? "1 punto" : me.puntos + " puntos";
+    $("aviso").innerHTML = `<div class="aviso win">✅ Entregado en ${mmss(me.ms)}. Tienes ${pts} (${me.aciertos} ${me.aciertos === 1 ? "acierto" : "aciertos"} y ${me.fallos} ${me.fallos === 1 ? "fallo" : "fallos"}) y vas ${me.puesto}.º de ${S.alumnos.filter(a => a.entregado).length}.
+      ${g.clave ? "" : `<div style="font-weight:400;margin-top:6px">Cuando el profesor enseñe la solución, la verás aquí debajo.</div>`}</div>`;
+  }
+  if (g.clave && me.det) pintarSolucion();
+}
+function pintarSolucion(){
+  const T = S.game.texto, K = S.game.clave, det = S.me.det;
+  const html = T.parrafos.map((t, p) => {
+    const ks = K.map((k, i) => [k, i]).filter(x => x[0][0] === p);
+    let o = 0, s = "";
+    ks.forEach(([k, i]) => { s += esc(t.slice(o, k[1])) + `<span class="${k[3]}${det[i].bien ? " hit" : ""}">${esc(t.slice(k[1], k[2]))}</span>`; o = k[2]; });
+    return SEC(T, p) + `<p>${s + esc(t.slice(o))}</p>`;
+  }).join("");
+  $("solucion").innerHTML = `<div class="panel sol"><h2>LA SOLUCIÓN</h2><p class="muted" style="font-family:Arial;font-size:14px">Con contorno verde, los trozos que has encontrado. En tu texto de arriba, lo tachado es lo que no coincide.</p>${html}</div>`;
+}
+
+async function entregar(){
+  if (enviando) return;
+  const m = marcasDeCol();
+  if (!m.length) return toast("Todavía no has marcado nada");
+  if (!confirmar()) return;
+  enviando = true;
+  try { await api({ a: "entregar", marcas: m }); await refrescar(true); }
+  catch(e){ toast(e.message); }
+  enviando = false;
+}
+function confirmar(){
+  const b = $("bEnt");
+  if (b.dataset.seguro) return true;
+  b.dataset.seguro = "1"; b.textContent = "¿Seguro? Pulsa otra vez";
+  setTimeout(() => { if (b.isConnected){ delete b.dataset.seguro; b.textContent = "Entregar"; } }, 4000);
+  return false;
+}
+
+async function refrescar(forzar){
+  if (!CODE) return pintarEntrada();
+  let j;
+  try { j = await api({ a: "state" }); }
+  catch(e){ if (/No existe/.test(e.message)){ CODE = ""; lsSet("mar_code", ""); } return pintarEntrada(); }
+  const antes = S;
+  S = j; desfase = Date.now() - S.now;
+  if (!S.me) return vista === "entrada" ? null : pintarEntrada();
+  const cambio = !antes || !antes.me || antes.me.entregado !== S.me.entregado || !!antes.game.clave !== !!S.game.clave;
+  if (vista !== "juego" || forzar || cambio){ if (vista !== "juego") pintarJuego(); else { iniciarCol(); pintarTexto(); pintarEstado(); } }
+}
+setInterval(() => {
+  if (S && S.me && !S.me.entregado && $("reloj")) $("reloj").textContent = mmss(Date.now() - desfase - S.me.inicio);
+}, 500);
+setInterval(() => { if (vista === "juego" && S && S.me && (S.me.entregado ? !S.game.clave : true)) refrescar(); }, 6000);
+refrescar();
+</script>
+</body>
+</html>
