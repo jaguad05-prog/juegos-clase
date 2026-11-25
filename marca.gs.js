@@ -1,5 +1,5 @@
 /**
- * MARCA LA CRÓNICA · servidor · v1
+ * COLOREAR LA CRÓNICA · servidor · v2 (antes «Marca la crónica»)
  * Cada alumno entra con su nombre y marca la crónica del As (Real Madrid 5-1 PSV) en tres colores:
  * verde el desarrollo del titular, rojo las jugadas y amarillo el análisis.
  * Al entregar se corrige con la solución del profesor. Un trozo de la solución cuenta como encontrado
@@ -32,6 +32,9 @@ var CRONICA = {
 };
 
 // Solución: [párrafo, desde, hasta, color]  g = desarrollo del titular, r = jugada, y = análisis
+// Bloques de la crónica, como en «Ordenar crónica»: párrafo en el que empieza cada uno
+var SECCIONES = [[0, "Primer párrafo · Desarrollo del titular"], [1, "Contexto y alineaciones"], [4, "Desarrollo"], [10, "Final"]];
+
 var CLAVE = [[0, 444, 687, "g"], [1, 0, 245, "y"], [1, 246, 790, "y"], [2, 0, 78, "r"], [2, 79, 109, "y"], [2, 111, 141, "r"], [2, 161, 206, "y"], [2, 207, 280, "r"], [2, 282, 332, "y"], [3, 0, 733, "y"], [4, 0, 253, "y"], [4, 254, 285, "y"], [4, 317, 409, "r"], [4, 410, 510, "y"], [5, 136, 249, "r"], [5, 259, 298, "y"], [5, 360, 607, "y"], [5, 608, 761, "r"], [6, 0, 325, "y"], [7, 0, 188, "r"], [7, 189, 295, "y"], [8, 3, 211, "r"], [8, 212, 316, "y"], [9, 0, 242, "y"], [9, 243, 350, "r"], [9, 351, 411, "y"], [9, 412, 589, "r"], [9, 590, 610, "g"], [9, 611, 646, "y"], [10, 26, 287, "r"], [10, 288, 404, "r"], [10, 405, 482, "y"]];
 
 function doGet(e) { return responder((e && e.parameter) || {}); }
@@ -127,7 +130,7 @@ function estado(p) {
   var resp = { ok: true, now: Date.now(), admin: esProfe };
   resp.game = { code: g.code, status: g.status, players: Object.keys(J).length, total: CLAVE.length,
     cuenta: { g: CLAVE.filter(function (k) { return k[3] === "g"; }).length, r: CLAVE.filter(function (k) { return k[3] === "r"; }).length, y: CLAVE.filter(function (k) { return k[3] === "y"; }).length } };
-  resp.game.texto = { medio: CRONICA.medio, titulo: CRONICA.titulo, subtitulo: CRONICA.subtitulo, parrafos: CRONICA.parrafos };
+  resp.game.texto = { medio: CRONICA.medio, titulo: CRONICA.titulo, subtitulo: CRONICA.subtitulo, parrafos: CRONICA.parrafos, secciones: SECCIONES };
   var tb = tabla(c);
   resp.alumnos = tb.map(function (a) { return { name: a.name, entregado: a.entregado, puntos: a.puntos, aciertos: a.aciertos, fallos: a.fallos, ms: a.ms }; });
   if (g.status === "sol") resp.game.clave = CLAVE;
